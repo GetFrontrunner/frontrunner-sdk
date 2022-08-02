@@ -1,0 +1,146 @@
+import logging
+from typing import Dict, List
+from time import time_ns
+from math import log
+from google.protobuf.json_format import MessageToDict
+from orjson import dumps
+
+from pyinjective.async_client import AsyncClient
+from pyinjective.constant import Network  # , Denom
+from pyinjective.composer import Composer
+from pyinjective.transaction import Transaction
+from pyinjective.wallet import PrivateKey
+from pyinjective.utils import (
+    derivative_price_from_backend,
+    spot_price_from_backend,
+    spot_quantity_from_backend,
+)
+from pyinjective.orderhash import build_eip712_msg, domain_separator
+from sha3 import keccak_256 as sha3_keccak_256
+
+from utils.utilities import RedisProducer, add_message_type
+from utils.granter import Granter
+from utils.markets import Market
+
+
+class InjectiveData:
+    def __init__(
+        self,
+        markets: List[Market],
+        redis_addr: str = "127.0.0.1:6379",
+    ):
+        self.markets = markets
+        self.granters: List[Granter] = []
+        self.nodes = ["sentry0", "sentry1", "sentry3", "k8s"]
+        self.node_idx = -1
+
+        self.network = Network.mainnet(node=self.nodes[self.node_idx])
+        self.composer = Composer(network=self.network.string())
+        self.client = AsyncClient(
+            self.network, insecure=False if self.nodes[self.node_idx] == "k8s" else True
+        )
+        self.redis = RedisProducer(redis_addr=redis_addr)
+
+        self.derivative_market_denoms = {
+            granter.market.market_id: granter
+            for granter in self.granters
+            if granter.market.market_type == "derivative"
+        }
+
+    async def shutdown_client(self):
+        await self.client.close_exchange_channel()
+        await self.client.close_chain_channel()
+
+    async def switch_node(self):
+        logging.info("-- SWITCHING NODE --")
+        logging.info(f"-- Current node: { self.nodes[self.node_idx] }")
+        if self.node_idx < len(self.nodes) - 1:
+            self.node_idx += 1
+        else:
+            self.node_idx = 0
+
+        self.network = Network.mainnet(self.nodes[self.node_idx])
+        self.composer = Composer(network=self.network.string())
+        if self.nodes[self.node_idx] == "k8s":
+            insecure = False
+        else:
+            insecure = True
+
+        await self.shutdown_client()
+        self.client = AsyncClient(self.network, insecure=insecure)
+        logging.info(f"-- New node: { self.nodes[self.node_idx] }")
+
+    async def injective_trade_stream(self):
+        topic = "Defi/injective_trades"
+        while True:
+            logging.info("starting injective_trade_stream")
+            market_ids = set()
+            for market in self.markets:
+                market_ids.add(market.market_id)
+
+            if len(market_ids) == 0:
+                logging.info("No market to stream for injective trades")
+                return
+
+            trades = await self.client.stream_derivative_trades(
+                market_ids=list(market_ids)
+            )
+            print(market_ids)
+
+            async for trade in trades:
+                # print(trade)
+                data = MessageToDict(trade)
+                data = add_message_type(data, "inj_trade")
+                self.redis.produce(topic, dumps(data))
+            logging.info("injective trade has been shut down")
+
+    async def injective_orderbook_stream(self):
+        topic = "Defi/injective_orderbook"
+        while True:
+            logging.info("starting injective_orderbook_stream_derivative")
+            market_ids = set()
+            for market in self.markets:
+                market_ids.add(market.market_id)
+
+            logging.info(f"market_ids: {market_ids}")
+            if len(market_ids) == 0:
+                logging.warning("No market to stream injective orderbook")
+                return
+
+            orderbook = await self.client.stream_derivative_orderbooks(
+                market_ids=list(market_ids)
+            )
+
+            async for orders in orderbook:
+                data = MessageToDict(orders)
+                data = add_message_type(data, "inj_orderbook")
+                self.redis.produce(topic, dumps(data))
+            logging.info("injective orderbook has been shut down")
+
+    async def injective_position_stream(self):
+        """
+        get subaccount positions from exchange
+        entry_price is biased, and restart the bot will lose all local entry
+        local entry price is biased, its' always higher than the real entry price
+        """
+        topic = "Defi/injective_position"
+        while True:
+            logging.info("starting injective_position_stream")
+            market_ids = set()
+            for market in self.markets:
+                market_ids.add(market.market_id)
+
+            if len(market_ids) == 0:
+                logging.warning("No market to stream injective position")
+                return
+
+            logging.info(f"market_ids: {market_ids}")
+
+            positions = await self.client.stream_derivative_positions(
+                market_ids=list(market_ids)
+            )
+            async for position in positions:
+                data = MessageToDict(position)
+                data = add_message_type(data, "inj_position")
+                self.redis.produce(topic, dumps(data))
+            logging.info("injective position has been shut down")
