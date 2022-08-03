@@ -20,11 +20,11 @@ from pyinjective.orderhash import build_eip712_msg, domain_separator
 from sha3 import keccak_256 as sha3_keccak_256
 
 
-from utils.orders import Order, OrderList, compute_order_hashes, get_subaccount_nonce
+from utils.objects import Order, OrderList
 from utils.markets import factory, Market, ActiveMarket, StagingMarket
 from utils.client import build_client, switch_node
 from utils.granter import Granter
-from utils.utilities import RedisConsumer
+from utils.utilities import RedisConsumer, compute_order_hash, get_nounce
 
 # from chain.execution import build_replace_orders_msgs, execute
 

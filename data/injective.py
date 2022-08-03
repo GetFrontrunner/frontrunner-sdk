@@ -21,6 +21,7 @@ from sha3 import keccak_256 as sha3_keccak_256
 from utils.utilities import RedisProducer, add_message_type
 from utils.granter import Granter
 from utils.markets import Market
+from utils.client import build_client, switch_node
 
 
 class InjectiveData:
@@ -32,43 +33,24 @@ class InjectiveData:
         self.markets = markets
         self.granters: List[Granter] = []
         self.nodes = ["sentry0", "sentry1", "sentry3", "k8s"]
-        self.node_idx = -1
+        self.node_idx = 3
 
-        self.network = Network.mainnet(node=self.nodes[self.node_idx])
-        self.composer = Composer(network=self.network.string())
-        self.client = AsyncClient(
-            self.network, insecure=False if self.nodes[self.node_idx] == "k8s" else True
-        )
+        (
+            self.node_idx,
+            self.network,
+            self.composer,
+            self.client,
+            self.lcd_endpoint,
+        ) = build_client(self.node_idx, self.nodes)
         self.redis = RedisProducer(redis_addr=redis_addr)
-
-        self.derivative_market_denoms = {
-            granter.market.market_id: granter
-            for granter in self.granters
-            if granter.market.market_type == "derivative"
-        }
 
     async def shutdown_client(self):
         await self.client.close_exchange_channel()
         await self.client.close_chain_channel()
 
-    async def switch_node(self):
-        logging.info("-- SWITCHING NODE --")
-        logging.info(f"-- Current node: { self.nodes[self.node_idx] }")
-        if self.node_idx < len(self.nodes) - 1:
-            self.node_idx += 1
-        else:
-            self.node_idx = 0
-
-        self.network = Network.mainnet(self.nodes[self.node_idx])
-        self.composer = Composer(network=self.network.string())
-        if self.nodes[self.node_idx] == "k8s":
-            insecure = False
-        else:
-            insecure = True
-
+    async def shutdown_and_switch_client(self):
         await self.shutdown_client()
-        self.client = AsyncClient(self.network, insecure=insecure)
-        logging.info(f"-- New node: { self.nodes[self.node_idx] }")
+        switch_node(self.node_idx, self.nodes)
 
     async def injective_trade_stream(self):
         topic = "Defi/injective_trades"
