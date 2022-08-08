@@ -3,26 +3,46 @@ import logging
 from typing import Any
 from dataclasses import dataclass
 
-from typing import Any, Optional
+from typing import Any, Optional, Dict, List
+from utilities import compute_orderhash
+from pyinjective.composer import Composer
+from pyinjective.constant import Denom
 
-from sortedcontainers import SortedList
-
-# from math import floor
-# from configparser import ConfigParser
-# import importlib.resources as pkg_resources
-# import pyinjective
-# from pyinjective.constant import Network, Denom
+from markets import Market  # , ActiveMarket, StagingMarket
 
 #### Market specific objects
 
 
 class Order:
-    def __init__(self, price: float, quantity: float, order_type: str, msg):
+    def __init__(
+        self,
+        price: float,
+        quantity: float,
+        order_type: str,
+        subaccount_id: str,
+        fee_recipient: str,
+        inj_address: str,
+        is_buy: bool,
+        market: Market,
+        denom: Denom,
+        composer: Composer,
+    ):
         self.price = price
         self.quantity = quantity
         self.hash: Optional[str] = None
         self.order_type = order_type
-        self.msg = msg
+        self.subaccount_id = subaccount_id
+        self.is_buy = is_buy
+        self.market = market
+        self.msg = (
+            self._create_market_order_msg(
+                subaccount_id, fee_recipient, inj_address, market, composer, denom
+            )
+            if self.order_type == "market"
+            else self._create_limit_order_msg(
+                subaccount_id, fee_recipient, inj_address, market, composer, denom
+            )
+        )
 
     def __lt__(self, obj):
         return self.price < obj.price
@@ -39,21 +59,98 @@ class Order:
     def __eq__(self, obj):
         return self.price == obj.price
 
-    def update_orderhash(self, orderhash):
-        self.hash = orderhash
+    def _create_limit_order_msg(
+        self,
+        subaccount_id: str,
+        fee_recipient: str,
+        inj_address: str,
+        market: Market,
+        composer: Composer,
+        denom: Denom,
+    ):
+        if market.market_id:
+            return composer.BinaryOptionsOrder(
+                sender=inj_address,
+                market_id=market.market_id,
+                subaccount_id=subaccount_id,
+                fee_recipient=fee_recipient,
+                price=self.price,
+                quantity=self.quantity,
+                is_buy=self.is_buy,
+                is_reduce_only=False,
+                denom=denom,
+            )
+        else:
+            raise Exception("missing market id")
+
+    def _create_market_order_msg(
+        self,
+        subaccount_id: str,
+        fee_recipient: str,
+        inj_address: str,
+        market: Market,
+        composer: Composer,
+        denom: Denom,
+    ):
+        if market.market_id:
+            price = (
+                round(self.price * 1.05, 2)
+                if self.is_buy
+                else round(self.price * 0.95, 2)
+            )
+            return composer.BinaryOptionsOrder(
+                sender=inj_address,
+                market_id=market.market_id,
+                subaccount_id=subaccount_id,
+                fee_recipient=fee_recipient,
+                price=price,
+                quantity=self.quantity,
+                is_buy=self.is_buy,
+                is_reduce_only=False,
+                denom=denom,
+            )
+        else:
+            raise Exception("missing market id")
+
+    def update_orderhash(self, lcd_endpoint: str):
+        if self.msg and self.subaccount_id:
+            compute_orderhash(self, lcd_endpoint, self.subaccount_id)
+        else:
+            raise Exception("missing subaccount id")
 
 
 class OrderList:
     def __init__(self):
-        self.list: SortedList = SortedList([], key=lambda x: x.price)
+        self.list: Dict[str, Order] = {}
 
     def add(self, order: Order):
-        self.list.add(order)
+        if order.hash:
+            self.list[order.hash] = order
+        else:
+            raise Exception("")
 
-    def remove(self, orderhash: str):
-        for order in self.list:
-            if order.orderhash == orderhash:
-                self.list.remove(order)
+    def remove_by_orderhash(self, orderhash: str):
+        order = self.list[orderhash]
+        del self.list[orderhash]
+        print(f"success delete order {order.price}, {order.quantity}")
+
+    def remove_by_price_lower(self, price: float) -> List[str]:
+        orderhash_list = []
+        for (orderhash, order) in self.list.items():
+            if order.price <= price:
+                orderhash_list.append((orderhash))
+        return orderhash_list
+
+    def remove_by_price_upper(self, price: float) -> List[str]:
+        orderhash_list = []
+        for (orderhash, order) in self.list.items():
+            if order.price >= price:
+                orderhash_list.append((orderhash))
+        return orderhash_list
+
+    def __iter__(self):
+        for orderhash, order in self.list.items():
+            yield orderhash, order
 
 
 @dataclass(init=True, repr=True)
@@ -81,36 +178,6 @@ class CancelOrder:
 
     def __eq__(self, obj):
         return self.market_id == obj.market_id
-
-
-# @dataclass(init=True, repr=True)
-# class Order:
-#    """
-#    order objects,
-#    """
-#
-#    price: float
-#    quantity: float
-#    timestamp: int = 0
-#    msg_type: str = ""  # limit market
-#    order_hash: str = ""
-#    market_type: str = "derivative"
-#    msg: Any = None
-#
-#    def __lt__(self, obj):
-#        return self.price < obj.price
-#
-#    def __gt__(self, obj):
-#        return self.price > obj.price
-#
-#    def __le__(self, obj):
-#        return self.price <= obj.price
-#
-#    def __ge__(self, obj):
-#        return self.price >= obj.price
-#
-#    def __eq__(self, obj):
-#        return self.price == obj.price
 
 
 @dataclass(init=True, repr=True, eq=True, order=False)

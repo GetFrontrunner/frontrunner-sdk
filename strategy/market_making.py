@@ -24,9 +24,7 @@ from utils.objects import Order, OrderList
 from utils.markets import factory, Market, ActiveMarket, StagingMarket
 from utils.client import build_client, switch_node
 from utils.granter import Granter
-from utils.utilities import RedisConsumer, compute_order_hash, get_nounce
-
-# from chain.execution import build_replace_orders_msgs, execute
+from utils.utilities import RedisConsumer, compute_orderhash, get_nounce
 
 
 from asyncio import sleep, get_event_loop
@@ -54,13 +52,10 @@ class Model:
         self.ask_orderbook = None
         self.position = None
         self.last_trade = None
-        self.kline = None
         self.granters: List[Granter] = []  # get_perp_granters(configs, [], n_markets=1)
         self.last_granter_update = 0
         self.consumer = self.get_consumer(redis_addr, topics)
 
-        CONFIG_DIR = "../configs/config_guild_2.ini"
-        self.configs.read(CONFIG_DIR)
         self.fee_recipient = fee_recipient
         self.gas_price = 500000000
 
@@ -94,9 +89,6 @@ class Model:
         self.bid_orderbook = data["bid"]
         self.ask_orderbook = data["ask"]
 
-    async def on_kline(self, data):
-        self.kline = data
-
     async def on_position(self, data):
         self.position = data
 
@@ -124,15 +116,146 @@ class Model:
     def create_orders_for_granters(self):
         if self.granters:
             for granter in self.granters:
-                pass
-            self._compute_order_hashes()
+                bid_price = 0.5
+                bid_quantity = 1
+                marekt_dict = {"ticker": "staging"}
+                market = factory(**marekt_dict)
+                granter.create_bid_orders(
+                    price=bid_price,
+                    quantity=bid_quantity,
+                    is_limit=True,
+                    market=market,
+                    composer=self.composer,
+                    lcd_endpoint=self.lcd_endpoint,
+                )
 
-            # batch_create_limit_orders_perp(self.signals, perp_granter)
+                ask_price = 0.5
+                ask_quantity = 1
+                marekt_dict = {"ticker": "staging"}
+                market = factory(**marekt_dict)
+                granter.create_ask_orders(
+                    price=ask_price,
+                    quantity=ask_quantity,
+                    is_limit=True,
+                    market=market,
+                    composer=self.composer,
+                    lcd_endpoint=self.lcd_endpoint,
+                )
 
-    def _compute_order_hashes(self):
+    def batch_replace_order(self):
+        msg = self._build_batch_new_orders_msg()
+
+    def batch_new_order(self):
+        msg = self._build_batch_new_orders_msg()
+
+    def batch_cancel(self):
+        pass
+
+    def _build_batch_replace_orders_msg(self):
+        binary_options_orders_to_create = []
+        binary_options_orders_to_cancel = []
+        binary_options_market_ids_to_cancel_all = []
+
         for granter in self.granters:
-            pass
-            # batch_compute_order_hashes(granter, self.lcd_endpoint, self.subaccount_id)
+            tmp = (
+                [
+                    ask_order.market.market_id
+                    for (orderhash, ask_order) in granter.limit_asks
+                ]
+                + [
+                    bid_order.market.market_id
+                    for (orderhash, bid_order) in granter.limit_bids
+                ]
+                + [
+                    ask_order.market.market_id
+                    for (orderhash, ask_order) in granter.market_asks
+                ]
+                + [
+                    bid_order.market.market_id
+                    for (orderhash, bid_order) in granter.market_bids
+                ]
+            )
+            binary_options_orders_to_create.extend(tmp)
+
+        binary_options_market_ids_to_cancel_all = list(
+            set([order.market.market_id for order in binary_options_orders_to_create])
+        )
+        msg = self.composer.MsgBatchUpdateOrders(
+            sender=self.address.to_acc_bech32(),
+            subaccount_id=self.subaccount_id,
+            binary_options_orders_to_create=binary_options_orders_to_create,
+            binary_options_orders_to_cancel=binary_options_orders_to_cancel,
+            binary_options_market_ids_to_cancel_all=binary_options_market_ids_to_cancel_all,
+        )
+        return msg
+
+    def _build_batch_new_orders_msg(self):
+        binary_options_orders_to_create = []
+
+        for granter in self.granters:
+            tmp = (
+                [
+                    ask_order.market.market_id
+                    for (orderhash, ask_order) in granter.limit_asks
+                ]
+                + [
+                    bid_order.market.market_id
+                    for (orderhash, bid_order) in granter.limit_bids
+                ]
+                + [
+                    ask_order.market.market_id
+                    for (orderhash, ask_order) in granter.market_asks
+                ]
+                + [
+                    bid_order.market.market_id
+                    for (orderhash, bid_order) in granter.market_bids
+                ]
+            )
+            binary_options_orders_to_create.extend(tmp)
+
+        msg = self.composer.MsgBatchUpdateOrders(
+            sender=self.address.to_acc_bech32(),
+            subaccount_id=self.subaccount_id,
+            binary_options_orders_to_create=binary_options_orders_to_create,
+        )
+        return msg
+
+    def _build_batch_cancel_all_orders_msg(self):
+        binary_options_market_ids_to_cancel_all = []
+
+        for granter in self.granters:
+            tmp = (
+                [
+                    ask_order.market.market_id
+                    for (orderhash, ask_order) in granter.limit_asks
+                ]
+                + [
+                    bid_order.market.market_id
+                    for (orderhash, bid_order) in granter.limit_bids
+                ]
+                + [
+                    ask_order.market.market_id
+                    for (orderhash, ask_order) in granter.market_asks
+                ]
+                + [
+                    bid_order.market.market_id
+                    for (orderhash, bid_order) in granter.market_bids
+                ]
+            )
+            binary_options_market_ids_to_cancel_all.extend(set(tmp))
+
+        binary_options_market_ids_to_cancel_all = list(
+            set(binary_options_market_ids_to_cancel_all)
+        )
+        msg = self.composer.MsgBatchUpdateOrders(
+            sender=self.address.to_acc_bech32(),
+            subaccount_id=self.subaccount_id,
+            binary_options_market_ids_to_cancel_all=binary_options_market_ids_to_cancel_all,
+        )
+        return msg
+
+    def single_new_order(self):
+        pass
 
     def get_loop(self):
         return get_event_loop()

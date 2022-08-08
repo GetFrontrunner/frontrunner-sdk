@@ -271,7 +271,7 @@ def get_nounce(lcd_endpoint: str, subaccount_id: str) -> int:
     return 0
 
 
-def compute_order_hash(order: Order, lcd_endpoint: str, subaccount_id: str):
+def compute_orderhash(order: Order, lcd_endpoint: str, subaccount_id: str):
     # get starting nonce
     nonce = get_nounce(lcd_endpoint, subaccount_id)
     logging.info("starting subaccount nonce: %d" % nonce)
