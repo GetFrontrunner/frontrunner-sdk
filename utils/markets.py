@@ -1,10 +1,10 @@
 from datetime import datetime
+from time import time
 
 
 def factory(**kwargs):
-    if kwargs.get("ticker", None):
-        current_date = datetime.now().strftime("%m%d/%Y")
-        if current_date in kwargs.get("ticker"):
+    if kwargs.get("ticker"):
+        if len(kwargs.get("ticker").split("-")) == 3:
             return ActiveMarket(
                 ticker=kwargs.get("ticker"),  # "staging-1659438300-NYM-WSH"
                 oracle_symbol=kwargs.get("oracle_symbol"),  # "Frontrunner"
@@ -61,7 +61,9 @@ def factory(**kwargs):
                 settlement_price=kwargs.get("settlement_price"),  # None
             )
         else:
-            raise Exception("Unknown type of market")
+            print("Unknown type of market: ", kwargs.get("ticker"))
+            # raise Exception("Unknown type of market")
+            return None
     else:
         raise Exception("No market")
 
