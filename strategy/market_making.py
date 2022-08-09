@@ -21,8 +21,8 @@ from sha3 import keccak_256 as sha3_keccak_256
 
 
 from utils.objects import Order, OrderList
-from utils.markets import factory, Market, ActiveMarket, StagingMarket
-from utils.client import build_client, switch_node
+from utils.markets import factory  # , Market, ActiveMarket, StagingMarket
+from utils.client import build_client, build_client_switch_node
 from utils.granter import Granter
 from utils.utilities import RedisConsumer, compute_orderhash, get_nounce
 
@@ -118,6 +118,7 @@ class Model:
             for granter in self.granters:
                 bid_price = 0.5
                 bid_quantity = 1
+                ## TODO: add a market
                 marekt_dict = {"ticker": "staging"}
                 market = factory(**marekt_dict)
                 granter.create_bid_orders(

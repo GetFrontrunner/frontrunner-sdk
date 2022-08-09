@@ -12,7 +12,9 @@ def build_client(node_idx=3, nodes=["sentry0", "sentry1", "sentry3", "k8s"]):
     return node_idx, network, composer, client, lcd_endpoint
 
 
-def switch_node(node_idx=3, nodes=["sentry0", "sentry1", "sentry3", "k8s"]):
+def build_client_switch_node(
+    node_idx=3, nodes=["sentry0", "sentry1", "sentry3", "k8s"]
+):
     node_idx += 1
     node_idx %= len(nodes)
     network = Network.mainnet(node=nodes[node_idx])
