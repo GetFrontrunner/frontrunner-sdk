@@ -11,7 +11,6 @@ from pyinjective.constant import Network
 from pyinjective.composer import Composer
 from pyinjective.transaction import Transaction
 from pyinjective.wallet import PrivateKey  # , Address
-import importlib.resources as pkg_resources
 
 
 # Grant permission to Grantee
