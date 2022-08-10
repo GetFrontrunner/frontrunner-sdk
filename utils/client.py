@@ -3,7 +3,7 @@ from pyinjective.constant import Network  # , Denom
 from pyinjective.composer import Composer
 
 
-def build_client(node_idx=3, nodes=["sentry0", "sentry1", "sentry3", "k8s"]):
+def create_client(node_idx=3, nodes=["sentry0", "sentry1", "sentry3", "k8s"]):
     node_idx %= len(nodes)
     network = Network.mainnet(node=nodes[node_idx])
     composer = Composer(network=network.string())
@@ -12,7 +12,7 @@ def build_client(node_idx=3, nodes=["sentry0", "sentry1", "sentry3", "k8s"]):
     return node_idx, network, composer, client, lcd_endpoint
 
 
-def build_client_switch_node(
+def switch_node_recreate_client(
     node_idx=3, nodes=["sentry0", "sentry1", "sentry3", "k8s"]
 ):
     node_idx += 1

@@ -21,7 +21,7 @@ from sha3 import keccak_256 as sha3_keccak_256
 from utils.utilities import RedisProducer, add_message_type
 from utils.granter import Granter
 from utils.markets import Market
-from utils.client import build_client, switch_node
+from utils.client import create_client, switch_node_recreate_client
 
 
 class InjectiveData:
@@ -41,7 +41,7 @@ class InjectiveData:
             self.composer,
             self.client,
             self.lcd_endpoint,
-        ) = build_client(self.node_idx, self.nodes)
+        ) = create_client(self.node_idx, self.nodes)
         self.redis = RedisProducer(redis_addr=redis_addr)
 
     async def shutdown_client(self):
@@ -50,7 +50,13 @@ class InjectiveData:
 
     async def shutdown_and_switch_client(self):
         await self.shutdown_client()
-        switch_node(self.node_idx, self.nodes)
+        (
+            self.node_idx,
+            self.network,
+            self.composer,
+            self.client,
+            self.lcd_endpoint,
+        ) = switch_node_recreate_client(self.node_idx, self.nodes)
 
     async def injective_trade_stream(self):
         topic = "Defi/injective_trades"

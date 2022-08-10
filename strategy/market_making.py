@@ -22,7 +22,7 @@ from sha3 import keccak_256 as sha3_keccak_256
 
 from utils.objects import Order, OrderList
 from utils.markets import factory  # , Market, ActiveMarket, StagingMarket
-from utils.client import build_client, build_client_switch_node
+from utils.client import create_client, switch_node_recreate_client
 from utils.granter import Granter
 from utils.utilities import RedisConsumer, compute_orderhash, get_nounce
 
@@ -66,7 +66,7 @@ class Model:
             self.composer,
             self.client,
             self.lcd_endpoint,
-        ) = build_client(node_idx=3, nodes=nodes)
+        ) = create_client(node_idx=3, nodes=nodes)
         self.lcd_endpoint = self.network.lcd_endpoint
         # load account
         self.priv_key: PrivateKey = PrivateKey.from_hex(private_key)
