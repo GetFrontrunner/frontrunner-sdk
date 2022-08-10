@@ -5,7 +5,7 @@ import logging
 from typing import List, Tuple
 
 from utils.objects import OrderList, Order
-from utils.markets import Market  # , ActiveMarket, StagingMarket
+from utils.markets import Market
 
 logging.basicConfig(
     level=logging.DEBUG,
