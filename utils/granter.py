@@ -4,8 +4,8 @@ from pyinjective.constant import Denom
 import logging
 from typing import List, Tuple
 
-from objects import OrderList, Order
-from markets import Market  # , ActiveMarket, StagingMarket
+from utils.objects import OrderList, Order
+from utils.markets import Market  # , ActiveMarket, StagingMarket
 
 logging.basicConfig(
     level=logging.DEBUG,

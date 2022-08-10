@@ -4,13 +4,13 @@ import signal
 import logging
 from math import floor
 from typing import Any
-from dataclasses import dataclass
 from configparser import ConfigParser
 from typing import List, Dict, Any
 
 import importlib.resources as pkg_resources
 import pyinjective
 from pyinjective.constant import Network, Denom
+from pyinjective.orderhash import build_eip712_msg, domain_separator
 from asyncio import (
     create_task,
     all_tasks,
@@ -22,12 +22,12 @@ from asyncio import (
 )
 from redis import StrictRedis
 from redis import asyncio as aredis
-import asyncio
 
 from requests import get
-from pyinjective.orderhash import build_eip712_msg, domain_separator
 from sha3 import keccak_256 as sha3_keccak_256
-from objects import Order
+import asyncio
+
+# from objects import Order
 
 
 def add_message_type(data: Dict[str, Any], msg_type):
@@ -271,7 +271,7 @@ def get_nounce(lcd_endpoint: str, subaccount_id: str) -> int:
     return 0
 
 
-def compute_orderhash(order: Order, lcd_endpoint: str, subaccount_id: str):
+def compute_orderhash(order, lcd_endpoint: str, subaccount_id: str):
     # get starting nonce
     nonce = get_nounce(lcd_endpoint, subaccount_id)
     logging.info("starting subaccount nonce: %d" % nonce)

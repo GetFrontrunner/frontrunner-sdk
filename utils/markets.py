@@ -2,7 +2,7 @@ from datetime import datetime
 from time import time
 
 
-def factory(**kwargs):
+def factory(disable_error_msg: bool = False, **kwargs):
     if kwargs.get("ticker"):
         if len(kwargs.get("ticker").split("-")) == 3:
             return ActiveMarket(
@@ -61,7 +61,10 @@ def factory(**kwargs):
                 settlement_price=kwargs.get("settlement_price"),  # None
             )
         else:
-            print("Unknown type of market: ", kwargs.get("ticker"))
+            if disable_error_msg:
+                pass
+            else:
+                print("Unknown type of market: ", kwargs.get("ticker"))
             # raise Exception("Unknown type of market")
             return None
     else:

@@ -121,27 +121,28 @@ class Model:
                 ## TODO: add a market
                 marekt_dict = {"ticker": "staging"}
                 market = factory(**marekt_dict)
-                granter.create_bid_orders(
-                    price=bid_price,
-                    quantity=bid_quantity,
-                    is_limit=True,
-                    market=market,
-                    composer=self.composer,
-                    lcd_endpoint=self.lcd_endpoint,
-                )
+                if market:
+                    granter.create_bid_orders(
+                        price=bid_price,
+                        quantity=bid_quantity,
+                        is_limit=True,
+                        market=market,
+                        composer=self.composer,
+                        lcd_endpoint=self.lcd_endpoint,
+                    )
 
-                ask_price = 0.5
-                ask_quantity = 1
-                marekt_dict = {"ticker": "staging"}
-                market = factory(**marekt_dict)
-                granter.create_ask_orders(
-                    price=ask_price,
-                    quantity=ask_quantity,
-                    is_limit=True,
-                    market=market,
-                    composer=self.composer,
-                    lcd_endpoint=self.lcd_endpoint,
-                )
+                    ask_price = 0.5
+                    ask_quantity = 1
+                    granter.create_ask_orders(
+                        price=ask_price,
+                        quantity=ask_quantity,
+                        is_limit=True,
+                        market=market,
+                        composer=self.composer,
+                        lcd_endpoint=self.lcd_endpoint,
+                    )
+                else:
+                    print("bad market")
 
     def batch_replace_order(self):
         msg = self._build_batch_new_orders_msg()
@@ -283,3 +284,11 @@ class Model:
             #    gas_price=self.gas_price,
             #    msgs=msg,
             # )
+
+
+if __name__ == "__main__":
+    from utils.get_markets import get_all_active_markets
+
+    active_markets = get_all_active_markets(disable_error_msg=True)
+    active_market = active_markets[0]
+    print(active_market.market_id)

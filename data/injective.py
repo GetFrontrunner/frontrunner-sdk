@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, List
+from typing import List, Union
 from time import time_ns
 from math import log
 from google.protobuf.json_format import MessageToDict
@@ -20,18 +20,19 @@ from sha3 import keccak_256 as sha3_keccak_256
 
 from utils.utilities import RedisProducer, add_message_type
 from utils.granter import Granter
-from utils.markets import Market
+from utils.markets import ActiveMarket, StagingMarket
 from utils.client import create_client, switch_node_recreate_client
 
 
 class InjectiveData:
     def __init__(
         self,
-        markets: List[Market],
+        markets: Union[List[ActiveMarket], List[StagingMarket]],
+        granters: List[Granter],
         redis_addr: str = "127.0.0.1:6379",
     ):
         self.markets = markets
-        self.granters: List[Granter] = []
+        self.granters: List[Granter] = granters
         self.nodes = ["sentry0", "sentry1", "sentry3", "k8s"]
         self.node_idx = 3
 

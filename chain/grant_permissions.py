@@ -27,6 +27,7 @@ class Granter:
         # select network: mainnet
         if is_testnet:
             self.network = Network.testnet()
+            insecure = False
         else:
             self.network = Network.mainnet(node)
         self.composer = Composer(network=self.network.string())
@@ -116,7 +117,12 @@ class Granter:
         res = await self.client.send_tx_block_mode(tx_raw_bytes)
         # print(res)
         res_msg = self.composer.MsgResponses(res.data)
-        print(res_msg)
+        print(f"{self.inj_address} grant permission to {self.grantee_address}")
+        for (permission, reps) in zip(self.binary_permissions, res_msg):
+            if reps.ByteSize() == 0:
+                print(f"granted permission: {permission.split('.')[-1]}")
+            else:
+                print(f"failed to grant permission : {permission.split('.')[-1]}")
 
     async def _build_grant_permissions_message(self) -> List:
 
@@ -149,26 +155,27 @@ class Granter:
 
 
 if __name__ == "__main__":
-    from dotenv import load_dotenv
+    import os
 
-    load_dotenv()
+    # from dotenv import load_dotenv
+    # load_dotenv()
+    # Getting non-existent keys
+    grantee_private_key = os.getenv("grantee_private_key")  # None
+    grantee_inj_address = os.getenv("grantee_inj_address")  # None
+
+    granter_private_key = os.getenv("granter_private_key")  # None
+    granter_inj_address = os.getenv("granter_inj_address")  # None
 
     data = {
-        "granter": {
-            "inj_address": "GRANTER INJ ADDRESS",
-            "priv_key": "GRANTER_PRIVATE_KEY",
-        },
         "grantee": {
-            "inj_address": "GRANTEE_ADDRESS",
-            "priv_key": "GRANTEE_PRIVATE_KEY",
+            "inj_address": grantee_inj_address,
+            "priv_key": grantee_private_key,
+        },
+        "granter": {
+            "priv_key": granter_private_key,
+            "inj_address": granter_inj_address,
         },
     }
-
-    config_dir = denoms_mainnet = pkg_resources.read_text(
-        pyinjective, "denoms_mainnet.ini"
-    )
-    configs = ConfigParser()
-    configs.read_string(config_dir)
 
     for account, info in data.items():
         if info["inj_address"] is None:
@@ -186,7 +193,7 @@ if __name__ == "__main__":
                         info["priv_key"],
                         grantee_address=data["grantee"]["inj_address"],
                         insecure=True,
-                        is_testnet=False,
+                        is_testnet=True,
                     )
 
                     loop = get_event_loop()

@@ -4,11 +4,11 @@ from typing import Any
 from dataclasses import dataclass
 
 from typing import Any, Optional, Dict, List
-from utilities import compute_orderhash
 from pyinjective.composer import Composer
 from pyinjective.constant import Denom
 
-from markets import Market  # , ActiveMarket, StagingMarket
+from utils.utilities import compute_orderhash
+from utils.markets import Market  # , ActiveMarket, StagingMarket
 
 #### Market specific objects
 
