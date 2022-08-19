@@ -24,6 +24,7 @@ from utils.objects import Order, OrderList
 from utils.markets import factory  # , Market, ActiveMarket, StagingMarket
 from utils.client import create_client, switch_node_recreate_client
 from utils.granter import Granter
+from utils.get_markets import get_all_active_markets, get_all_staging_markets
 from utils.utilities import RedisConsumer, compute_orderhash, get_nounce
 
 
@@ -38,14 +39,15 @@ load_dotenv()
 class Model:
     def __init__(
         self,
-        configs: ConfigParser,
+        # configs: ConfigParser,
         private_key: str,
-        redis_addr: str,
-        fee_recipient: str,
         topics: List[str],
+        redis_addr: str = "127.0.0.1:6379",
+        fee_recipient: Optional[str] = None,
         expire_in: int = 60,
+        is_testnet: bool = False,
     ):
-        self.configs = configs
+        # self.configs = configs
         self.tob_bid_price = None
         self.tob_ask_price = None
         self.bid_orderbook = None
@@ -56,7 +58,6 @@ class Model:
         self.last_granter_update = 0
         self.consumer = self.get_consumer(redis_addr, topics)
 
-        self.fee_recipient = fee_recipient
         self.gas_price = 500000000
 
         nodes = ["sentry0", "sentry1", "sentry3", "k8s"]
@@ -66,7 +67,7 @@ class Model:
             self.composer,
             self.client,
             self.lcd_endpoint,
-        ) = create_client(node_idx=3, nodes=nodes)
+        ) = create_client(node_idx=3, nodes=nodes, is_testnet=is_testnet)
         self.lcd_endpoint = self.network.lcd_endpoint
         # load account
         self.priv_key: PrivateKey = PrivateKey.from_hex(private_key)
@@ -74,6 +75,11 @@ class Model:
         self.address = self.pub_key.to_address().init_num_seq(self.network.lcd_endpoint)
         self.inj_address = self.address.to_acc_bech32()
         self.subaccount_id = self.address.get_subaccount_id(index=0)
+
+        if fee_recipient:
+            self.fee_recipient = self.inj_address
+        else:
+            self.fee_recipient = fee_recipient
 
         self.expire_in = expire_in
 
@@ -92,9 +98,7 @@ class Model:
     async def on_position(self, data):
         self.position = data
 
-    def get_consumer(
-        self, redis_addr: "str" = "127.0.0.1:6379", topics: List[str] = []
-    ):
+    def get_consumer(self, redis_addr: str, topics: List[str]):
         return RedisConsumer(
             redis_addr,
             topics=topics,
@@ -112,6 +116,24 @@ class Model:
         #    )
         # else:
         #    raise Exception("No config")
+
+    def create_granter(
+        self, inj_address: str, market_ticker: str = "1660281000-CLE-DET"
+    ):
+        markets = get_all_active_markets(True)
+        for active_market in markets:
+            if active_market.ticker == market_ticker:
+                granter = Granter(
+                    market=active_market,
+                    inj_address=inj_address,
+                    fee_recipient=self.inj_address,
+                )
+                print(
+                    f"market: {granter.market.ticker}, market id: {granter.market.market_id}"
+                )
+            else:
+                pass
+            # raise Exception("can't find the market")
 
     def create_orders_for_granters(self):
         if self.granters:
