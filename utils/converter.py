@@ -1,5 +1,4 @@
 from decimal import Decimal, getcontext
-from typing import Optional
 
 """
 market_type = str(input("Enter spot or derivative as market type:"))

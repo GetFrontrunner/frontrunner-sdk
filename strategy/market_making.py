@@ -1,9 +1,9 @@
 # get current positions, if program restarted, this will lose all tracked info
 # TODO use both perp and spot market to compute variances
+import os
 from typing import List, Dict, Optional
 import datetime
 from expiringdict import ExpiringDict
-
 
 from pyinjective.async_client import AsyncClient
 from pyinjective.constant import Network  # , Denom
@@ -16,17 +16,16 @@ from pyinjective.utils import (
     spot_quantity_from_backend,
 )
 
-from pyinjective.orderhash import build_eip712_msg, domain_separator
-from sha3 import keccak_256 as sha3_keccak_256
+from utils.markets import binary_states_market_factory  # , Market, ActiveMarket, StagingMarket
 
-
-from utils.objects import Order, OrderList
-from utils.markets import factory  # , Market, ActiveMarket, StagingMarket
-from utils.client import create_client, switch_node_recreate_client
-from utils.granter import Granter
+from utils.binary_state_market_granter import BinaryStateGranter
 from utils.get_markets import get_all_active_markets, get_all_staging_markets
-from utils.utilities import RedisConsumer, compute_orderhash, get_nounce
-
+from utils.utilities import RedisConsumer, get_nonce
+from utils.objects import Order, Probability, Probabilities, Event
+from utils.markets import Market, ActiveMarket, StagingMarket
+from chain.execution import execute
+from chain.client import create_client, switch_node_recreate_client
+import logging
 
 from asyncio import sleep, get_event_loop
 from dotenv import load_dotenv
@@ -48,15 +47,25 @@ class Model:
         is_testnet: bool = False,
     ):
         # self.configs = configs
-        self.tob_bid_price = None
-        self.tob_ask_price = None
+        self.tob_ask_for_price = None
+        self.tob_ask_against_price = None
+        self.tob_bid_for_price = None
+        self.tob_bid_against_price = None
+
         self.bid_orderbook = None
         self.ask_orderbook = None
+
         self.position = None
         self.last_trade = None
-        self.granters: List[Granter] = []  # get_perp_granters(configs, [], n_markets=1)
+        self.granters: List[BinaryStateGranter] = []  # get_perp_granters(configs, [], n_markets=1)
         self.last_granter_update = 0
         self.consumer = self.get_consumer(redis_addr, topics)
+
+        # local orders
+        self.buy_for_orders = {}
+        self.buy_against_orders = {}
+        self.sell_for_orders = {}
+        self.sell_against_orders = {}
 
         self.gas_price = 500000000
 
@@ -68,15 +77,18 @@ class Model:
             self.client,
             self.lcd_endpoint,
         ) = create_client(node_idx=3, nodes=nodes, is_testnet=is_testnet)
+
         self.lcd_endpoint = self.network.lcd_endpoint
         # load account
         self.priv_key: PrivateKey = PrivateKey.from_hex(private_key)
         self.pub_key: PublicKey = self.priv_key.to_public_key()
-        self.address = self.pub_key.to_address().init_num_seq(self.network.lcd_endpoint)
+        logging.info(f"self.network.lcd_endpoint: {self.lcd_endpoint}")
+        self.address = self.pub_key.to_address().init_num_seq(self.lcd_endpoint)
         self.inj_address = self.address.to_acc_bech32()
         self.subaccount_id = self.address.get_subaccount_id(index=0)
+        logging.debug(self.subaccount_id)
 
-        if fee_recipient:
+        if not fee_recipient:
             self.fee_recipient = self.inj_address
         else:
             self.fee_recipient = fee_recipient
@@ -89,7 +101,7 @@ class Model:
 
     async def on_trade(self, data):
         self.last_trade = data
-        print(data)
+        logging.debug(data)
 
     async def on_depth(self, data):
         self.bid_orderbook = data["bid"]
@@ -97,6 +109,15 @@ class Model:
 
     async def on_position(self, data):
         self.position = data
+
+    async def on_probabilities(self, probabilities):
+        """
+        Probabilities object
+        TODO:
+            3 events market
+            2 events market
+        """
+        raise NotImplementedError("Subclasses should implement this!")
 
     def get_consumer(self, redis_addr: str, topics: List[str]):
         return RedisConsumer(
@@ -106,211 +127,133 @@ class Model:
             on_trade=self.on_trade,
             on_depth=self.on_depth,
             on_position=self.on_position,
+            on_probabilities=self.on_probabilities,
         )
 
-    def update_granters(self):
-        pass
-        # if self.configs:
-        #    self.perp_granters = get_perp_granters(
-        #        self.configs, self.perp_granters, n_markets=1
-        #    )
-        # else:
-        #    raise Exception("No config")
+    async def get_granters_portfolio(self):
+        raise NotImplementedError("Subclasses should implement this!")
 
-    def create_granter(
-        self, inj_address: str, market_ticker: str = "1660281000-CLE-DET"
-    ):
-        markets = get_all_active_markets(True)
-        for active_market in markets:
-            if active_market.ticker == market_ticker:
-                granter = Granter(
-                    market=active_market,
-                    inj_address=inj_address,
-                    fee_recipient=self.inj_address,
-                )
-                print(
-                    f"market: {granter.market.ticker}, market id: {granter.market.market_id}"
-                )
-            else:
-                pass
-            # raise Exception("can't find the market")
+    async def batch_replace_orders(self):
+        msg = self._build_batch_replace_orders_msg()
+        msg = self.composer.MsgExec(grantee=self.inj_address, msgs=[msg])
+        return await execute(
+            pub_key=self.pub_key,
+            priv_key=self.priv_key,
+            address=self.address,
+            network=self.network,
+            client=self.client,
+            composer=self.composer,
+            gas_price=self.gas_price,
+            msg=msg,
+        )
 
-    def create_orders_for_granters(self):
-        if self.granters:
-            for granter in self.granters:
-                bid_price = 0.5
-                bid_quantity = 1
-                ## TODO: add a market
-                marekt_dict = {"ticker": "staging"}
-                market = factory(**marekt_dict)
-                if market:
-                    granter.create_bid_orders(
-                        price=bid_price,
-                        quantity=bid_quantity,
-                        is_limit=True,
-                        market=market,
-                        composer=self.composer,
-                        lcd_endpoint=self.lcd_endpoint,
-                    )
+    async def batch_new_orders(self, orders: List):
+        msg = self._build_batch_new_orders_msg(orders=orders)
+        logging.debug(f"msg: {msg}")
+        msg = self.composer.MsgExec(grantee=self.inj_address, msgs=[msg])
+        return await execute(
+            pub_key=self.pub_key,
+            priv_key=self.priv_key,
+            address=self.address,
+            network=self.network,
+            client=self.client,
+            composer=self.composer,
+            gas_price=self.gas_price,
+            msg=msg,
+        )
 
-                    ask_price = 0.5
-                    ask_quantity = 1
-                    granter.create_ask_orders(
-                        price=ask_price,
-                        quantity=ask_quantity,
-                        is_limit=True,
-                        market=market,
-                        composer=self.composer,
-                        lcd_endpoint=self.lcd_endpoint,
-                    )
-                else:
-                    print("bad market")
-
-    def batch_replace_order(self):
-        msg = self._build_batch_new_orders_msg()
-
-    def batch_new_order(self):
-        msg = self._build_batch_new_orders_msg()
-
-    def batch_cancel(self):
-        pass
+    async def batch_cancel(self, cancel_current_open_orders=False):
+        if cancel_current_open_orders:
+            msg = self._build_cancel_all_current_open_orders()
+        else:
+            msg = self._build_batch_cancel_all_orders_msg()
+        msg = self.composer.MsgExec(grantee=self.inj_address, msgs=[msg])
+        return await execute(
+            pub_key=self.pub_key,
+            priv_key=self.priv_key,
+            address=self.address,
+            network=self.network,
+            client=self.client,
+            composer=self.composer,
+            gas_price=self.gas_price,
+            msg=msg,
+        )
 
     def _build_batch_replace_orders_msg(self):
-        binary_options_orders_to_create = []
-        binary_options_orders_to_cancel = []
-        binary_options_market_ids_to_cancel_all = []
+        raise NotImplementedError("Subclasses should implement this!")
 
-        for granter in self.granters:
-            tmp = (
-                [
-                    ask_order.market.market_id
-                    for (orderhash, ask_order) in granter.limit_asks
-                ]
-                + [
-                    bid_order.market.market_id
-                    for (orderhash, bid_order) in granter.limit_bids
-                ]
-                + [
-                    ask_order.market.market_id
-                    for (orderhash, ask_order) in granter.market_asks
-                ]
-                + [
-                    bid_order.market.market_id
-                    for (orderhash, bid_order) in granter.market_bids
-                ]
-            )
-            binary_options_orders_to_create.extend(tmp)
-
-        binary_options_market_ids_to_cancel_all = list(
-            set([order.market.market_id for order in binary_options_orders_to_create])
-        )
-        msg = self.composer.MsgBatchUpdateOrders(
-            sender=self.address.to_acc_bech32(),
-            subaccount_id=self.subaccount_id,
-            binary_options_orders_to_create=binary_options_orders_to_create,
-            binary_options_orders_to_cancel=binary_options_orders_to_cancel,
-            binary_options_market_ids_to_cancel_all=binary_options_market_ids_to_cancel_all,
-        )
-        return msg
-
-    def _build_batch_new_orders_msg(self):
-        binary_options_orders_to_create = []
-
-        for granter in self.granters:
-            tmp = (
-                [
-                    ask_order.market.market_id
-                    for (orderhash, ask_order) in granter.limit_asks
-                ]
-                + [
-                    bid_order.market.market_id
-                    for (orderhash, bid_order) in granter.limit_bids
-                ]
-                + [
-                    ask_order.market.market_id
-                    for (orderhash, ask_order) in granter.market_asks
-                ]
-                + [
-                    bid_order.market.market_id
-                    for (orderhash, bid_order) in granter.market_bids
-                ]
-            )
-            binary_options_orders_to_create.extend(tmp)
-
-        msg = self.composer.MsgBatchUpdateOrders(
-            sender=self.address.to_acc_bech32(),
-            subaccount_id=self.subaccount_id,
-            binary_options_orders_to_create=binary_options_orders_to_create,
-        )
-        return msg
+    def _build_batch_new_orders_msg(self, orders: List[Order]):
+        raise NotImplementedError("Subclasses should implement this!")
 
     def _build_batch_cancel_all_orders_msg(self):
-        binary_options_market_ids_to_cancel_all = []
+        tmp_binary_options_market_ids_to_cancel_all = []
 
         for granter in self.granters:
-            tmp = (
-                [
-                    ask_order.market.market_id
-                    for (orderhash, ask_order) in granter.limit_asks
-                ]
-                + [
-                    bid_order.market.market_id
-                    for (orderhash, bid_order) in granter.limit_bids
-                ]
-                + [
-                    ask_order.market.market_id
-                    for (orderhash, ask_order) in granter.market_asks
-                ]
-                + [
-                    bid_order.market.market_id
-                    for (orderhash, bid_order) in granter.market_bids
-                ]
-            )
-            binary_options_market_ids_to_cancel_all.extend(set(tmp))
 
-        binary_options_market_ids_to_cancel_all = list(
-            set(binary_options_market_ids_to_cancel_all)
-        )
+            tmp = [limit_order.msg for limit_order in granter.limit_orders] + [
+                market_order.msg for market_order in granter.market_orders
+            ]
+            tmp_binary_options_market_ids_to_cancel_all.extend(set(tmp))
+
+        binary_options_market_ids_to_cancel_all = list(set(tmp_binary_options_market_ids_to_cancel_all))
+        if not binary_options_market_ids_to_cancel_all:
+            for granter in self.granters:
+                # print(f"marekt id: {granter.market.market_id}")
+                binary_options_market_ids_to_cancel_all.append(granter.market.market_id)
+
+        logging.info(f"Canceling {binary_options_market_ids_to_cancel_all}")
         msg = self.composer.MsgBatchUpdateOrders(
-            sender=self.address.to_acc_bech32(),
+            sender=self.inj_address,
             subaccount_id=self.subaccount_id,
             binary_options_market_ids_to_cancel_all=binary_options_market_ids_to_cancel_all,
         )
         return msg
 
-    def single_new_order(self):
-        pass
+    def _build_cancel_all_current_open_orders(self):
+        binary_options_market_ids_to_cancel_all = []
+        for granter in self.granters:
+            # print(f"marekt id: {granter.market.market_id}")
+            binary_options_market_ids_to_cancel_all.append(granter.market.market_id)
+
+        logging.info(f"Canceling {binary_options_market_ids_to_cancel_all}")
+        msg = self.composer.MsgBatchUpdateOrders(
+            sender=self.inj_address,
+            subaccount_id=self.subaccount_id,
+            binary_options_market_ids_to_cancel_all=binary_options_market_ids_to_cancel_all,
+        )
+        return msg
+
+    async def get_orders(self):
+        raise NotImplementedError("Subclasses should implement this!")
+
+    async def _get_orders(self, market: Market, subaccount_id: str):
+        orders = await self.client.get_historical_derivative_orders(
+            market_id=market.market_id,
+            subaccount_id=subaccount_id,
+            state="booked",  # TODO need to test if partial filled is included in booked
+        )
+        async for order in orders:
+            if order.order_type == "buy" and not order.is_reduce_only:
+                print("buy_for")
+                self.buy_for_orders[order.order_hash] = order
+            elif order.order_type == "sell" and not order.is_reduce_only:
+                print("buy_against")
+                self.buy_against_orders[order.order_hash] = order
+            elif order.order_type == "buy" and order.is_reduce_only:
+                print("sell_against")
+                self.sell_against_orders[order.order_hash] = order
+            elif order.order_type == "sell" and order.is_reduce_only:
+                print("sell_for")
+                self.sell_for_orders[order.order_hash] = order
+            else:
+                print("unknown order type")
+
+    async def get_positions(self):
+        # TODO
+        raise NotImplemented("Subclasses should implement this")
 
     def get_loop(self):
         return get_event_loop()
 
-    async def run(self):
-        print("getting data")
-        await sleep(30)
-        print("slept 30s")
-        while True:
-            self.update_granters()
-            self.create_orders_for_granters()
-            # msg = build_replace_orders_msgs(
-            #    self.composer,
-            #    list(set(self.perp_granters + self.spot_granters)),
-            #    self.inj_address,
-            # )
-            # await execute(
-            #    pub_key=self.pub_key,
-            #    priv_key=self.priv_key,
-            #    address=self.address,
-            #    network=self.network,
-            #    client=self.client,
-            #    composer=self.composer,
-            #    gas_price=self.gas_price,
-            #    msgs=msg,
-            # )
-
-
-if __name__ == "__main__":
-    from utils.get_markets import get_all_active_markets
-
-    active_markets = get_all_active_markets(disable_error_msg=True)
-    active_market = active_markets[0]
-    print(active_market.market_id)
+    async def run(self, t=10):
+        raise NotImplementedError("Subclasses should implement this!")

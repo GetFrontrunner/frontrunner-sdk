@@ -71,9 +71,7 @@ class InjectiveData:
                 logging.info("No market to stream for injective trades")
                 return
 
-            trades = await self.client.stream_derivative_trades(
-                market_ids=list(market_ids)
-            )
+            trades = await self.client.stream_derivative_trades(market_ids=list(market_ids))
             print(market_ids)
 
             async for trade in trades:
@@ -96,9 +94,7 @@ class InjectiveData:
                 logging.warning("No market to stream injective orderbook")
                 return
 
-            orderbook = await self.client.stream_derivative_orderbooks(
-                market_ids=list(market_ids)
-            )
+            orderbook = await self.client.stream_derivative_orderbooks(market_ids=list(market_ids))
 
             async for orders in orderbook:
                 data = MessageToDict(orders)
@@ -125,9 +121,7 @@ class InjectiveData:
 
             logging.info(f"market_ids: {market_ids}")
 
-            positions = await self.client.stream_derivative_positions(
-                market_ids=list(market_ids)
-            )
+            positions = await self.client.stream_derivative_positions(market_ids=list(market_ids))
             async for position in positions:
                 data = MessageToDict(position)
                 data = add_message_type(data, "inj_position")

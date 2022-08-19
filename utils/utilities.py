@@ -22,10 +22,15 @@ from asyncio import (
 )
 from redis import StrictRedis
 from redis import asyncio as aredis
+from pickle import loads
+
+# from data.betradar.utilities import Probabilities
 
 from requests import get
 from sha3 import keccak_256 as sha3_keccak_256
 import asyncio
+
+# from data.matchbook.utilities import Events
 
 # from objects import Order
 
@@ -60,6 +65,7 @@ class RedisConsumer:
         "on_trade_callback",
         "on_depth_callback",
         "on_position_callback",
+        "on_probabilities_callback",
     ]
 
     def __init__(
@@ -70,6 +76,7 @@ class RedisConsumer:
         on_trade,
         on_depth,
         on_position,
+        on_probabilities,
     ):
         ip, port = redis_addr.split(":")
         port = int(port)
@@ -81,6 +88,7 @@ class RedisConsumer:
         self.on_tob_callback = on_tob
         self.on_depth_callback = on_depth
         self.on_trade_callback = on_trade
+        self.on_probabilities_callback = on_probabilities
 
         loop = asyncio.get_event_loop()
         loop.create_task(self.aconsume())
@@ -90,24 +98,16 @@ class RedisConsumer:
         if self.topics:
             await self.redis_consumer.subscribe(*self.topics)
         else:
-            raise Exception("No topics to subscribe to")
-        async for msg in self.redis_consumer.listen():
-            try:
-                print(msg)
-                payload = msg
+            logging.info("No topics to subscribe to")
 
-                if "tob" in payload["msg_type"]:
-                    await self.on_tob_callback(payload)
-                elif "depth" in payload["msg_type"]:
-                    await self.on_depth_callback(payload)
-                elif "trade" in payload["msg_type"]:
-                    await self.on_trade_callback(payload)
-                elif "position" in payload["msg_type"]:
-                    await self.on_position_callback(payload)
-                else:
-                    print("unknown data", payload)
-            except Exception as e:
-                pass
+        async for msg in self.redis_consumer.listen():
+            # print(msg)
+            if msg["data"] == 1:
+                logging.info(f"first msg topic {msg['channel'].decode('utf-8')}")
+            else:
+                payload = loads(msg["data"])
+                # logging.info(payload.events)
+                await self.on_probabilities_callback(payload)
 
     async def subscribe(self, topics):
         newsub = set(topics) - self.topics
@@ -161,9 +161,7 @@ class MarketConfig:
     market infos
     """
 
-    def __init__(
-        self, base_ticker: str, quote_ticker: str, market_type: str, node: str = "k8s"
-    ):
+    def __init__(self, base_ticker: str, quote_ticker: str, market_type: str, node: str = "k8s"):
         self.base_ticker = base_ticker
         self.quote_ticker = quote_ticker
         self.market_type = market_type.title()
@@ -177,19 +175,14 @@ class MarketConfig:
         if market_type == "spot":
             self.base_peggy, self.base_decimals = Denom.load_peggy_denom(
                 self.network.env,
-                f"W{base_ticker.upper()}"
-                if self.base_ticker in ["btc", "eth"]
-                else self.base_ticker.upper(),
+                f"W{base_ticker.upper()}" if self.base_ticker in ["btc", "eth"] else self.base_ticker.upper(),
             )
-        self.quote_peggy, self.quote_decimals = Denom.load_peggy_denom(
-            self.network.env, quote_ticker.upper()
-        )
+        self.quote_peggy, self.quote_decimals = Denom.load_peggy_denom(self.network.env, quote_ticker.upper())
         for section in self.config.sections():
             if len(section) == 66:
-                if (
-                    f"{base_ticker.upper()}/{quote_ticker.upper()}"
-                    in self.config.get(section, "description")
-                ) and (self.market_type in self.config.get(section, "description")):
+                if (f"{base_ticker.upper()}/{quote_ticker.upper()}" in self.config.get(section, "description")) and (
+                    self.market_type in self.config.get(section, "description")
+                ):
                     self.market_id = section
 
         self.market_denom = Denom.load_market(self.network.env, self.market_id)
@@ -247,7 +240,6 @@ def handle_task_result(task: Task) -> None:
     """
     asyncio task result handler
     """
-
     try:
         task.result()
     except CancelledError:
@@ -255,11 +247,10 @@ def handle_task_result(task: Task) -> None:
     except Exception:  # pylint: disable=broad-except
         logging.exception("Exception raised by task = %r", task)
         raise Exception("Exception raised by task = %r", task)
-
     # only support msgs from single subaccount
 
 
-def get_nounce(lcd_endpoint: str, subaccount_id: str) -> int:
+def get_nonce(lcd_endpoint: str, subaccount_id: str) -> int:
     url = f"{lcd_endpoint}/injective/exchange/v1beta1/exchange/{subaccount_id}"
     n = 3
     while n > 0:
@@ -271,12 +262,13 @@ def get_nounce(lcd_endpoint: str, subaccount_id: str) -> int:
     return 0
 
 
-def compute_orderhash(order, lcd_endpoint: str, subaccount_id: str):
+"""
+def compute_orderhash(order, nonce: int):
     # get starting nonce
-    nonce = get_nounce(lcd_endpoint, subaccount_id)
-    logging.info("starting subaccount nonce: %d" % nonce)
+    # nonce = get_nounce(lcd_endpoint, subaccount_id)
+    logging.info(f"starting subaccount nounce: {nonce}")
     # increase nonce for next order
-    nonce += 1
+    # nonce += 1
     # construct eip712 msg
     msg = build_eip712_msg(order.msg, nonce)
     # compute order hash
@@ -287,3 +279,5 @@ def compute_orderhash(order, lcd_endpoint: str, subaccount_id: str):
         keccak256.update(typed_bytes)
         order_hash = keccak256.hexdigest()
         order.hash = f"0x{order_hash}"
+
+"""

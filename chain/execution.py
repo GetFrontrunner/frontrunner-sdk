@@ -1,12 +1,11 @@
 import logging
 
-# from security_module import batch_compute_order_hashes
 from pyinjective.transaction import Transaction
 from pyinjective.wallet import Address, PublicKey, PrivateKey
 from pyinjective.composer import Composer
 from pyinjective.async_client import AsyncClient
 from pyinjective.constant import Network  # , Denom
-from utils.granter import Granter
+from utils.granter import MultiStateGranter, BinaryStateGranter
 from typing import List, Any
 
 
@@ -18,20 +17,22 @@ async def execute(
     client: AsyncClient,
     composer: Composer,
     gas_price: int,
-    msgs: List[Any],
+    msg: Any,
     send_mode: str = "block",
     update_sequence: bool = True,
 ):
-    if not update_sequence:
-        seq = address.get_sequence()
+    logging.debug(f"msg: {msg}")
+    if update_sequence:
+        await address.async_init_num_seq(network.lcd_endpoint)
+        seq = address.sequence
     else:
-        seq = address.init_num_seq(network.lcd_endpoint).get_sequence()
+        seq = client.get_sequence()
 
     tx = (
         Transaction()
-        .with_messages(msgs)
+        .with_messages(msg)
         .with_sequence(seq)
-        .with_account_num(address.get_number())
+        .with_account_num(client.get_number())
         .with_chain_id(network.chain_id)
     )
 
@@ -43,11 +44,13 @@ async def execute(
     (sim_res, success) = await client.simulate_tx(sim_tx_raw_bytes)
     if not success:
         logging.error(f"failed simulation: {sim_res}")
+    logging.debug(f"sim_res: {sim_res}")
 
     sim_res_msg = Composer.MsgResponses(sim_res.result.data, simulation=True)
     if sim_res_msg is None:
         logging.error(f"simulation result: {sim_res_msg}")
         return
+    logging.info(f"sim_res_msg: {sim_res_msg}")
 
     gas_limit = sim_res.gas_info.gas_used + 20000
 
@@ -78,7 +81,6 @@ async def execute(
         logging.error(f"broadcast error: {e}")
         return
 
-    # logging.debug("type res: ", type(res)) FIXME need to check gas
     res_msg = composer.MsgResponses(res.data)
     if len(res_msg) == 0:
         address.get_sequence()
