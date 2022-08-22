@@ -1,5 +1,6 @@
 # get current positions, if program restarted, this will lose all tracked info
 # TODO use both perp and spot market to compute variances
+import os
 from typing import List, Dict, Optional
 import datetime
 from expiringdict import ExpiringDict
@@ -26,6 +27,7 @@ from utils.client import create_client, switch_node_recreate_client
 from utils.granter import Granter
 from utils.get_markets import get_all_active_markets, get_all_staging_markets
 from utils.utilities import RedisConsumer, compute_orderhash, get_nounce
+from utils.markets import Market, ActiveMarket, StagingMarket, factory
 
 
 from asyncio import sleep, get_event_loop
@@ -117,23 +119,32 @@ class Model:
         # else:
         #    raise Exception("No config")
 
-    def create_granter(
-        self, inj_address: str, market_ticker: str = "1660281000-CLE-DET"
+    def create_granter(self, inj_address: str, market: ActiveMarket) -> Granter:
+        # for active_market in markets:
+        # if active_market.ticker == market_ticker:
+        granter = Granter(
+            market=market,
+            inj_address=inj_address,
+            fee_recipient=self.inj_address,
+        )
+        print(
+            f"granter: {granter.inj_address}, market: {granter.market.ticker}, market id: {granter.market.market_id}"
+        )
+        return granter
+
+    def create_granters(
+        self,
+        inj_addresses: List[str],
     ):
-        markets = get_all_active_markets(True)
-        for active_market in markets:
-            if active_market.ticker == market_ticker:
-                granter = Granter(
-                    market=active_market,
-                    inj_address=inj_address,
-                    fee_recipient=self.inj_address,
-                )
-                print(
-                    f"market: {granter.market.ticker}, market id: {granter.market.market_id}"
-                )
-            else:
-                pass
-            # raise Exception("can't find the market")
+        all_active_markets = get_all_active_markets(True)
+        n = len(inj_addresses)
+        print("n: ", n)
+        if len(inj_addresses) < len(all_active_markets):
+            granters = [
+                self.create_granter(inj_addresses[idx % n], market=active_market)
+                for idx, active_market in enumerate(all_active_markets)
+            ]
+            self.granters = granters
 
     def create_orders_for_granters(self):
         if self.granters:
@@ -313,4 +324,18 @@ if __name__ == "__main__":
 
     active_markets = get_all_active_markets(disable_error_msg=True)
     active_market = active_markets[0]
-    print(active_market.market_id)
+    print(f"market_id: {active_market.market_id}")
+
+    # Getting non-existent keys
+    grantee_private_key = os.getenv("grantee_private_key")  # None
+    grantee_inj_address = os.getenv("grantee_inj_address")  # None
+
+    granter_private_key = os.getenv("granter_private_key")  # None
+    granter_inj_address = os.getenv("granter_inj_address")  # None
+
+    if grantee_private_key and granter_inj_address:
+        model = Model(private_key=grantee_private_key, topics=[], is_testnet=True)
+        model.create_granters([granter_inj_address])
+        # model.create_granters(inj_address=[granter_inj_address])
+
+        # print(model.granters)
