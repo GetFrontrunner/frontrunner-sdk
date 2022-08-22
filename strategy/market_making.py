@@ -309,7 +309,7 @@ class Model:
 
 
 if __name__ == "__main__":
-    from utils.get_markets import get_all_active_markets
+    # from utils.get_markets import get_all_active_markets
 
     active_markets = get_all_active_markets(disable_error_msg=True)
     active_market = active_markets[0]
