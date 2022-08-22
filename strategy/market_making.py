@@ -110,6 +110,25 @@ class Model:
             on_position=self.on_position,
         )
 
+    async def get_granters_portfolio(self):
+        if self.granters:
+            for granter in self.granters:
+                portfolio = await self.client.get_portfolio(granter.inj_address)
+                granter.available_balance = float(
+                    portfolio.portfolio.subaccounts[0].available_balance
+                )
+                granter.locked_balance = float(
+                    portfolio.portfolio.subaccounts[0].locked_balance
+                )
+                print(
+                    f"granter: {granter.inj_address}, market: {granter.market.ticker}, market id: {granter.market.market_id}"
+                )
+                print(
+                    f"available_balance: {granter.available_balance}, locked_balance: {granter.locked_balance}"
+                )
+                print(portfolio)
+                print()
+
     def update_granters(self):
         pass
         # if self.configs:
@@ -138,13 +157,13 @@ class Model:
     ):
         all_active_markets = get_all_active_markets(True)
         n = len(inj_addresses)
-        print("n: ", n)
         if len(inj_addresses) < len(all_active_markets):
             granters = [
                 self.create_granter(inj_addresses[idx % n], market=active_market)
                 for idx, active_market in enumerate(all_active_markets)
             ]
             self.granters = granters
+        print(f"number of granters: {len(self.granters)}")
 
     def create_orders_for_granters(self):
         if self.granters:
@@ -319,23 +338,23 @@ class Model:
             # )
 
 
-if __name__ == "__main__":
-    # from utils.get_markets import get_all_active_markets
-
-    active_markets = get_all_active_markets(disable_error_msg=True)
-    active_market = active_markets[0]
-    print(f"market_id: {active_market.market_id}")
-
-    # Getting non-existent keys
-    grantee_private_key = os.getenv("grantee_private_key")  # None
-    grantee_inj_address = os.getenv("grantee_inj_address")  # None
-
-    granter_private_key = os.getenv("granter_private_key")  # None
-    granter_inj_address = os.getenv("granter_inj_address")  # None
-
-    if grantee_private_key and granter_inj_address:
-        model = Model(private_key=grantee_private_key, topics=[], is_testnet=True)
-        model.create_granters([granter_inj_address])
-        # model.create_granters(inj_address=[granter_inj_address])
-
-        # print(model.granters)
+# if __name__ == "__main__":
+#    # from utils.get_markets import get_all_active_markets
+#
+#    active_markets = get_all_active_markets(disable_error_msg=True)
+#    active_market = active_markets[0]
+#    print(f"market_id: {active_market.market_id}")
+#
+#    # Getting non-existent keys
+#    grantee_private_key = os.getenv("grantee_private_key")  # None
+#    grantee_inj_address = os.getenv("grantee_inj_address")  # None
+#
+#    granter_private_key = os.getenv("granter_private_key")  # None
+#    granter_inj_address = os.getenv("granter_inj_address")  # None
+#
+#    if grantee_private_key and granter_inj_address:
+#        model = Model(private_key=grantee_private_key, topics=[], is_testnet=True)
+#        model.create_granters([granter_inj_address])
+#        # model.create_granters(inj_address=[granter_inj_address])
+#
+#        # print(model.granters)

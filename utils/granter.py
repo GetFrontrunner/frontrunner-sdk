@@ -32,6 +32,8 @@ class Granter:
             min_price_tick_size=1000,
             min_quantity_tick_size=0.0001,
         )
+        self.available_balance: float = 0.0
+        self.locked_balance: float = 0.0
 
     def create_bid_orders(
         self,
