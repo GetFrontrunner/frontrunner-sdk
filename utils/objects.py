@@ -68,6 +68,7 @@ class Order:
         composer: Composer,
         denom: Denom,
     ):
+        # print(f"market_id: {market.market_id}")
         if market.market_id:
             return composer.BinaryOptionsOrder(
                 sender=inj_address,
@@ -112,9 +113,9 @@ class Order:
         else:
             raise Exception("missing market id")
 
-    def update_orderhash(self, lcd_endpoint: str):
+    def update_orderhash(self, nounce: int):
         if self.msg and self.subaccount_id:
-            compute_orderhash(self, lcd_endpoint, self.subaccount_id)
+            compute_orderhash(self, nounce)
         else:
             raise Exception("missing subaccount id")
 

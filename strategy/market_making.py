@@ -26,7 +26,7 @@ from utils.markets import factory  # , Market, ActiveMarket, StagingMarket
 from utils.client import create_client, switch_node_recreate_client
 from utils.granter import Granter
 from utils.get_markets import get_all_active_markets, get_all_staging_markets
-from utils.utilities import RedisConsumer, compute_orderhash, get_nounce
+from utils.utilities import RedisConsumer, compute_orderhash, get_nonce
 from utils.markets import Market, ActiveMarket, StagingMarket, factory
 
 
@@ -138,7 +138,9 @@ class Model:
         # else:
         #    raise Exception("No config")
 
-    def create_granter(self, inj_address: str, market: ActiveMarket) -> Granter:
+    def create_granter(
+        self, inj_address: str, lcd_endpoint: str, market: ActiveMarket
+    ) -> Granter:
         # for active_market in markets:
         # if active_market.ticker == market_ticker:
         granter = Granter(
@@ -146,8 +148,9 @@ class Model:
             inj_address=inj_address,
             fee_recipient=self.inj_address,
         )
+        granter.get_nonce(lcd_endpoint)
         print(
-            f"granter: {granter.inj_address}, market: {granter.market.ticker}, market id: {granter.market.market_id}"
+            f"granter: {granter.inj_address}, nonce: {granter.nonce}, market: {granter.market.ticker}, market id: {granter.market.market_id}"
         )
         return granter
 
@@ -159,42 +162,69 @@ class Model:
         n = len(inj_addresses)
         if len(inj_addresses) < len(all_active_markets):
             granters = [
-                self.create_granter(inj_addresses[idx % n], market=active_market)
+                self.create_granter(
+                    inj_addresses[idx % n],
+                    lcd_endpoint=self.lcd_endpoint,
+                    market=active_market,
+                )
                 for idx, active_market in enumerate(all_active_markets)
             ]
             self.granters = granters
         print(f"number of granters: {len(self.granters)}")
 
-    def create_orders_for_granters(self):
+    def _create_orders_for_granters(
+        self,
+        granter: Granter,
+        bid_price: float,
+        bid_quantity: int,
+        ask_price: float,
+        ask_quantity: int,
+        is_limit: bool,
+    ):
+        granter.create_bid_orders(
+            price=bid_price,
+            quantity=bid_quantity,
+            is_limit=is_limit,
+            composer=self.composer,
+        )
+        granter.create_ask_orders(
+            price=ask_price,
+            quantity=ask_quantity,
+            is_limit=is_limit,
+            composer=self.composer,
+        )
+
+    def create_market_orders_for_granters(self):
         if self.granters:
             for granter in self.granters:
-                bid_price = 0.5
+                bid_price = 0.49
                 bid_quantity = 1
-                ## TODO: add a market
-                marekt_dict = {"ticker": "staging"}
-                market = factory(**marekt_dict)
-                if market:
-                    granter.create_bid_orders(
-                        price=bid_price,
-                        quantity=bid_quantity,
-                        is_limit=True,
-                        market=market,
-                        composer=self.composer,
-                        lcd_endpoint=self.lcd_endpoint,
-                    )
+                ask_price = 0.51
+                ask_quantity = 1
+                self._create_orders_for_granters(
+                    granter,
+                    bid_price=bid_price,
+                    bid_quantity=bid_quantity,
+                    ask_price=ask_price,
+                    ask_quantity=ask_quantity,
+                    is_limit=False,
+                )
 
-                    ask_price = 0.5
-                    ask_quantity = 1
-                    granter.create_ask_orders(
-                        price=ask_price,
-                        quantity=ask_quantity,
-                        is_limit=True,
-                        market=market,
-                        composer=self.composer,
-                        lcd_endpoint=self.lcd_endpoint,
-                    )
-                else:
-                    print("bad market")
+    def create_limit_orders_for_granters(self):
+        if self.granters:
+            for granter in self.granters:
+                bid_price = 0.49
+                bid_quantity = 1
+                ask_price = 0.51
+                ask_quantity = 1
+                self._create_orders_for_granters(
+                    granter,
+                    bid_price=bid_price,
+                    bid_quantity=bid_quantity,
+                    ask_price=ask_price,
+                    ask_quantity=ask_quantity,
+                    is_limit=True,
+                )
 
     def batch_replace_order(self):
         msg = self._build_batch_new_orders_msg()
@@ -320,7 +350,7 @@ class Model:
         print("slept 30s")
         while True:
             self.update_granters()
-            self.create_orders_for_granters()
+            self.create_limit_orders_for_granters()
             # msg = build_replace_orders_msgs(
             #    self.composer,
             #    list(set(self.perp_granters + self.spot_granters)),

@@ -6,6 +6,7 @@ from typing import List, Tuple
 
 from utils.objects import OrderList, Order
 from utils.markets import Market
+from utils.utilities import get_nonce
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -34,16 +35,25 @@ class Granter:
         )
         self.available_balance: float = 0.0
         self.locked_balance: float = 0.0
+        self.nonce = 0
+
+    def get_nonce(self, lcd_endpoint: str):
+        self.nonce = get_nonce(
+            lcd_endpoint=lcd_endpoint, subaccount_id=self.subaccount_id
+        )
+
+    def update_nonce(self):
+        self.nonce += 1
 
     def create_bid_orders(
         self,
         price: float,
         quantity: int,
         is_limit: bool,
-        market: Market,
         composer: Composer,
-        lcd_endpoint: str,
     ):
+        self.update_nonce()
+        print("nonce: ", self.nonce)
         if is_limit:
             order = Order(
                 price=price,
@@ -53,11 +63,11 @@ class Granter:
                 fee_recipient=self.fee_recipient,
                 inj_address=self.inj_address,
                 is_buy=True,
-                market=market,
+                market=self.market,
                 denom=self.denom,
                 composer=composer,
             )
-            order.update_orderhash(lcd_endpoint)
+            order.update_orderhash(self.nonce)
             self.limit_bids.add(order)
         else:
             order = Order(
@@ -68,11 +78,11 @@ class Granter:
                 fee_recipient=self.fee_recipient,
                 inj_address=self.inj_address,
                 is_buy=True,
-                market=market,
+                market=self.market,
                 denom=self.denom,
                 composer=composer,
             )
-            order.update_orderhash(lcd_endpoint)
+            order.update_orderhash(self.nonce)
             self.market_bids.add(order)
 
     def create_ask_orders(
@@ -80,10 +90,10 @@ class Granter:
         price: float,
         quantity: int,
         is_limit: bool,
-        market: Market,
         composer: Composer,
-        lcd_endpoint: str,
+        # lcd_endpoint: str,
     ):
+        self.update_nonce()
         if is_limit:
             order = Order(
                 price=price,
@@ -93,12 +103,12 @@ class Granter:
                 fee_recipient=self.fee_recipient,
                 inj_address=self.inj_address,
                 is_buy=False,
-                market=market,
+                market=self.market,
                 denom=self.denom,
                 composer=composer,
             )
-            order.update_orderhash(lcd_endpoint)
-            self.limit_bids.add(order)
+            order.update_orderhash(self.nonce)
+            self.limit_asks.add(order)
         else:
             order = Order(
                 price=price,
@@ -108,11 +118,11 @@ class Granter:
                 fee_recipient=self.fee_recipient,
                 inj_address=self.inj_address,
                 is_buy=False,
-                market=market,
+                market=self.market,
                 denom=self.denom,
                 composer=composer,
             )
-            order.update_orderhash(lcd_endpoint)
+            order.update_orderhash(self.nonce)
             self.market_asks.add(order)
 
     def _cancel_order(

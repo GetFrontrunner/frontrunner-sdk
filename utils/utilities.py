@@ -259,7 +259,7 @@ def handle_task_result(task: Task) -> None:
     # only support msgs from single subaccount
 
 
-def get_nounce(lcd_endpoint: str, subaccount_id: str) -> int:
+def get_nonce(lcd_endpoint: str, subaccount_id: str) -> int:
     url = f"{lcd_endpoint}/injective/exchange/v1beta1/exchange/{subaccount_id}"
     n = 3
     while n > 0:
@@ -271,12 +271,12 @@ def get_nounce(lcd_endpoint: str, subaccount_id: str) -> int:
     return 0
 
 
-def compute_orderhash(order, lcd_endpoint: str, subaccount_id: str):
+def compute_orderhash(order, nonce: int):
     # get starting nonce
-    nonce = get_nounce(lcd_endpoint, subaccount_id)
-    logging.info("starting subaccount nonce: %d" % nonce)
+    # nonce = get_nounce(lcd_endpoint, subaccount_id)
+    logging.info(f"starting subaccount nounce: {nonce}")
     # increase nonce for next order
-    nonce += 1
+    # nonce += 1
     # construct eip712 msg
     msg = build_eip712_msg(order.msg, nonce)
     # compute order hash
