@@ -90,10 +90,11 @@ class RedisConsumer:
         if self.topics:
             await self.redis_consumer.subscribe(*self.topics)
         else:
-            raise Exception("No topics to subscribe to")
+            print("No topics to subscribe to")
+
         async for msg in self.redis_consumer.listen():
             try:
-                print(msg)
+                # print(msg)
                 payload = msg
 
                 if "tob" in payload["msg_type"]:

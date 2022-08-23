@@ -27,7 +27,9 @@ from utils.client import create_client, switch_node_recreate_client
 from utils.granter import Granter
 from utils.get_markets import get_all_active_markets, get_all_staging_markets
 from utils.utilities import RedisConsumer, compute_orderhash, get_nonce
-from utils.markets import Market, ActiveMarket, StagingMarket, factory
+from utils.markets import Market, ActiveMarket, StagingMarket
+from chain.execution import execute
+import logging
 
 
 from asyncio import sleep, get_event_loop
@@ -77,6 +79,7 @@ class Model:
         self.address = self.pub_key.to_address().init_num_seq(self.network.lcd_endpoint)
         self.inj_address = self.address.to_acc_bech32()
         self.subaccount_id = self.address.get_subaccount_id(index=0)
+        logging.debug(self.subaccount_id)
 
         if fee_recipient:
             self.fee_recipient = self.inj_address
@@ -91,7 +94,7 @@ class Model:
 
     async def on_trade(self, data):
         self.last_trade = data
-        print(data)
+        logging.debug(data)
 
     async def on_depth(self, data):
         self.bid_orderbook = data["bid"]
@@ -120,14 +123,13 @@ class Model:
                 granter.locked_balance = float(
                     portfolio.portfolio.subaccounts[0].locked_balance
                 )
-                print(
+                logging.debug(
                     f"granter: {granter.inj_address}, market: {granter.market.ticker}, market id: {granter.market.market_id}"
                 )
-                print(
+                logging.debug(
                     f"available_balance: {granter.available_balance}, locked_balance: {granter.locked_balance}"
                 )
-                print(portfolio)
-                print()
+                logging.debug(portfolio)
 
     def update_granters(self):
         pass
@@ -141,15 +143,13 @@ class Model:
     def create_granter(
         self, inj_address: str, lcd_endpoint: str, market: ActiveMarket
     ) -> Granter:
-        # for active_market in markets:
-        # if active_market.ticker == market_ticker:
         granter = Granter(
             market=market,
             inj_address=inj_address,
             fee_recipient=self.inj_address,
         )
         granter.get_nonce(lcd_endpoint)
-        print(
+        logging.debug(
             f"granter: {granter.inj_address}, nonce: {granter.nonce}, market: {granter.market.ticker}, market id: {granter.market.market_id}"
         )
         return granter
@@ -169,8 +169,8 @@ class Model:
                 )
                 for idx, active_market in enumerate(all_active_markets)
             ]
-            self.granters = granters
-        print(f"number of granters: {len(self.granters)}")
+            self.granters = granters[:1]
+        logging.debug(f"number of granters: {len(self.granters)}")
 
     def _create_orders_for_granters(
         self,
@@ -226,14 +226,48 @@ class Model:
                     is_limit=True,
                 )
 
-    def batch_replace_order(self):
-        msg = self._build_batch_new_orders_msg()
+    async def batch_replace_order(self):
+        msg = self._build_batch_replace_orders_msg()
+        msg = self.composer.MsgExec(grantee=self.inj_address, msgs=[msg])
+        return await execute(
+            pub_key=self.pub_key,
+            priv_key=self.priv_key,
+            address=self.address,
+            network=self.network,
+            client=self.client,
+            composer=self.composer,
+            gas_price=self.gas_price,
+            msg=msg,
+        )
 
-    def batch_new_order(self):
+    async def batch_new_order(self):
         msg = self._build_batch_new_orders_msg()
+        logging.info(msg)
+        msg = self.composer.MsgExec(grantee=self.inj_address, msgs=[msg])
+        return await execute(
+            pub_key=self.pub_key,
+            priv_key=self.priv_key,
+            address=self.address,
+            network=self.network,
+            client=self.client,
+            composer=self.composer,
+            gas_price=self.gas_price,
+            msg=msg,
+        )
 
-    def batch_cancel(self):
-        pass
+    async def batch_cancel(self):
+        msg = self._build_batch_cancel_all_orders_msg()
+        msg = self.composer.MsgExec(grantee=self.inj_address, msgs=[msg])
+        return await execute(
+            pub_key=self.pub_key,
+            priv_key=self.priv_key,
+            address=self.address,
+            network=self.network,
+            client=self.client,
+            composer=self.composer,
+            gas_price=self.gas_price,
+            msg=msg,
+        )
 
     def _build_batch_replace_orders_msg(self):
         binary_options_orders_to_create = []
@@ -242,22 +276,10 @@ class Model:
 
         for granter in self.granters:
             tmp = (
-                [
-                    ask_order.market.market_id
-                    for (orderhash, ask_order) in granter.limit_asks
-                ]
-                + [
-                    bid_order.market.market_id
-                    for (orderhash, bid_order) in granter.limit_bids
-                ]
-                + [
-                    ask_order.market.market_id
-                    for (orderhash, ask_order) in granter.market_asks
-                ]
-                + [
-                    bid_order.market.market_id
-                    for (orderhash, bid_order) in granter.market_bids
-                ]
+                [ask_order.msg for (orderhash, ask_order) in granter.limit_asks]
+                + [bid_order.msg for (orderhash, bid_order) in granter.limit_bids]
+                + [ask_order.msg for (orderhash, ask_order) in granter.market_asks]
+                + [bid_order.msg for (orderhash, bid_order) in granter.market_bids]
             )
             binary_options_orders_to_create.extend(tmp)
 
@@ -265,7 +287,7 @@ class Model:
             set([order.market.market_id for order in binary_options_orders_to_create])
         )
         msg = self.composer.MsgBatchUpdateOrders(
-            sender=self.address.to_acc_bech32(),
+            sender=self.inj_address,
             subaccount_id=self.subaccount_id,
             binary_options_orders_to_create=binary_options_orders_to_create,
             binary_options_orders_to_cancel=binary_options_orders_to_cancel,
@@ -278,28 +300,23 @@ class Model:
 
         for granter in self.granters:
             tmp = (
-                [
-                    ask_order.market.market_id
-                    for (orderhash, ask_order) in granter.limit_asks
-                ]
-                + [
-                    bid_order.market.market_id
-                    for (orderhash, bid_order) in granter.limit_bids
-                ]
-                + [
-                    ask_order.market.market_id
-                    for (orderhash, ask_order) in granter.market_asks
-                ]
-                + [
-                    bid_order.market.market_id
-                    for (orderhash, bid_order) in granter.market_bids
-                ]
+                [ask_order.msg for (orderhash, ask_order) in granter.limit_asks]
+                + [bid_order.msg for (orderhash, bid_order) in granter.limit_bids]
+                + [ask_order.msg for (orderhash, ask_order) in granter.market_asks]
+                + [bid_order.msg for (orderhash, bid_order) in granter.market_bids]
             )
+            logging.debug(f"len(tmp): {len(tmp)}")
             binary_options_orders_to_create.extend(tmp)
+            for orderhash, ask_order in granter.limit_asks:
+                logging.info(f"{orderhash}, {ask_order.hash}")
+            for orderhash, bid_order in granter.limit_bids:
+                logging.info(f"{orderhash}, {bid_order.hash}")
 
+        logging.debug(f"grantee inj address: {self.inj_address}")
+        logging.debug(binary_options_orders_to_create)
+        logging.info(f"n orders to create: {len(binary_options_orders_to_create)}")
         msg = self.composer.MsgBatchUpdateOrders(
-            sender=self.address.to_acc_bech32(),
-            subaccount_id=self.subaccount_id,
+            sender=self.inj_address,
             binary_options_orders_to_create=binary_options_orders_to_create,
         )
         return msg
@@ -332,7 +349,7 @@ class Model:
             set(binary_options_market_ids_to_cancel_all)
         )
         msg = self.composer.MsgBatchUpdateOrders(
-            sender=self.address.to_acc_bech32(),
+            sender=self.inj_address,
             subaccount_id=self.subaccount_id,
             binary_options_market_ids_to_cancel_all=binary_options_market_ids_to_cancel_all,
         )
@@ -345,46 +362,15 @@ class Model:
         return get_event_loop()
 
     async def run(self):
-        print("getting data")
+        logging.info("getting data")
+        logging.info("sleep for 30s")
         await sleep(30)
-        print("slept 30s")
+        logging.info("slept 30s")
         while True:
             self.update_granters()
             self.create_limit_orders_for_granters()
-            # msg = build_replace_orders_msgs(
-            #    self.composer,
-            #    list(set(self.perp_granters + self.spot_granters)),
-            #    self.inj_address,
-            # )
-            # await execute(
-            #    pub_key=self.pub_key,
-            #    priv_key=self.priv_key,
-            #    address=self.address,
-            #    network=self.network,
-            #    client=self.client,
-            #    composer=self.composer,
-            #    gas_price=self.gas_price,
-            #    msgs=msg,
-            # )
-
-
-# if __name__ == "__main__":
-#    # from utils.get_markets import get_all_active_markets
-#
-#    active_markets = get_all_active_markets(disable_error_msg=True)
-#    active_market = active_markets[0]
-#    print(f"market_id: {active_market.market_id}")
-#
-#    # Getting non-existent keys
-#    grantee_private_key = os.getenv("grantee_private_key")  # None
-#    grantee_inj_address = os.getenv("grantee_inj_address")  # None
-#
-#    granter_private_key = os.getenv("granter_private_key")  # None
-#    granter_inj_address = os.getenv("granter_inj_address")  # None
-#
-#    if grantee_private_key and granter_inj_address:
-#        model = Model(private_key=grantee_private_key, topics=[], is_testnet=True)
-#        model.create_granters([granter_inj_address])
-#        # model.create_granters(inj_address=[granter_inj_address])
-#
-#        # print(model.granters)
+            # self.create_market_orders_for_granters()
+            resp = await self.batch_new_order()
+            logging.info(resp)
+            break
+        logging.info("finished")

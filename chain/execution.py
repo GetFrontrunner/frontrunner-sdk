@@ -18,7 +18,7 @@ async def execute(
     client: AsyncClient,
     composer: Composer,
     gas_price: int,
-    msgs: List[Any],
+    msg: Any,
     send_mode: str = "block",
     update_sequence: bool = True,
 ):
@@ -26,10 +26,11 @@ async def execute(
         seq = address.get_sequence()
     else:
         seq = address.init_num_seq(network.lcd_endpoint).get_sequence()
+    logging.info(f"msg: {msg}")
 
     tx = (
         Transaction()
-        .with_messages(msgs)
+        .with_messages(msg)
         .with_sequence(seq)
         .with_account_num(address.get_number())
         .with_chain_id(network.chain_id)
@@ -43,6 +44,7 @@ async def execute(
     (sim_res, success) = await client.simulate_tx(sim_tx_raw_bytes)
     if not success:
         logging.error(f"failed simulation: {sim_res}")
+    logging.info(f"sim_res: {sim_res}")
 
     sim_res_msg = Composer.MsgResponses(sim_res.result.data, simulation=True)
     if sim_res_msg is None:

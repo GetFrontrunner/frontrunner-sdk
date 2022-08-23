@@ -24,8 +24,11 @@ class Granter:
         self.market_asks = OrderList()
         self.fee_recipient = fee_recipient
         self.inj_address = inj_address
-        self.granter_address = Address.from_acc_bech32(self.inj_address)
+        self.granter_address = Address.from_acc_bech32(inj_address)
         self.subaccount_id = self.granter_address.get_subaccount_id(index=0)
+        logging.debug(
+            f"granter: inj address: {self.inj_address}, subaccount id: {self.subaccount_id}"
+        )
         self.denom = Denom(
             description="desc",
             base=0,
@@ -52,8 +55,12 @@ class Granter:
         is_limit: bool,
         composer: Composer,
     ):
+        logging.info(f"market id: {self.market.market_id}")
         self.update_nonce()
-        print("nonce: ", self.nonce)
+        logging.debug(f"nonce: {self.nonce}")
+        logging.debug(
+            f"subaccount_id: {self.subaccount_id}, inj address: {self.inj_address}"
+        )
         if is_limit:
             order = Order(
                 price=price,
@@ -94,6 +101,10 @@ class Granter:
         # lcd_endpoint: str,
     ):
         self.update_nonce()
+        logging.debug(f"nonce: {self.nonce}")
+        logging.debug(
+            f"subaccount_id: {self.subaccount_id}, inj address: {self.inj_address}"
+        )
         if is_limit:
             order = Order(
                 price=price,
