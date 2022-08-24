@@ -213,9 +213,10 @@ class Model:
     def create_limit_orders_for_granters(self):
         if self.granters:
             for granter in self.granters:
-                bid_price = 0.49
+                logging.info(f"granter.market.ticker: {granter.market.ticker}")
+                bid_price = 0.09
                 bid_quantity = 1
-                ask_price = 0.51
+                ask_price = 0.91
                 ask_quantity = 1
                 self._create_orders_for_granters(
                     granter,
@@ -242,7 +243,7 @@ class Model:
 
     async def batch_new_order(self):
         msg = self._build_batch_new_orders_msg()
-        logging.info(msg)
+        logging.info(f"msg: {msg}")
         msg = self.composer.MsgExec(grantee=self.inj_address, msgs=[msg])
         return await execute(
             pub_key=self.pub_key,
@@ -361,16 +362,18 @@ class Model:
     def get_loop(self):
         return get_event_loop()
 
-    async def run(self):
+    async def run(self, t=10):
         logging.info("getting data")
-        logging.info("sleep for 30s")
-        await sleep(30)
-        logging.info("slept 30s")
+        logging.info(f"sleep for {t}s")
+        await sleep(t)
+        logging.info(f"slept {t}s")
         while True:
             self.update_granters()
             self.create_limit_orders_for_granters()
             # self.create_market_orders_for_granters()
             resp = await self.batch_new_order()
+            logging.info(resp)
+            resp = await self.batch_cancel()
             logging.info(resp)
             break
         logging.info("finished")

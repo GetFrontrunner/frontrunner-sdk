@@ -33,12 +33,12 @@ if __name__ == "__main__":
     pk = "8b97260c40b7e6bf87729299e7af741b46eed5547aa317ddd6fa9bac673ef5d2"
     logging.basicConfig(level=logging.INFO)
     # market_id = "0x64ec31d044fb12929d02d74cc68d3c4a818add11b4b510c120c6e70a7310ab0d"
-    market_id = "0x00900501e9aedf812a3fe3d2af45e284c61ccec85323cd3ee29bc5252171877d"
+    market_id = "0x3035641095cd6574386dad41e8d208d2e37fc33432dd4545e943de428f016dda"
 
     # limit order
     limit_price = 0.23
     quantity = 100
-    is_buy = True
+    is_buy = False
     print("\nLIMIT ORDER:")
     order_hash = asyncio.get_event_loop().run_until_complete(
         Limit(limit_price, quantity, is_buy, market_id, pk)

@@ -1,11 +1,15 @@
 import os
 from market_making import Model
+import logging
 
 grantee_private_key = os.getenv("grantee_private_key")  # None
 grantee_inj_address = os.getenv("grantee_inj_address")  # None
 
 granter_private_key = os.getenv("granter_private_key")  # None
 granter_inj_address = os.getenv("granter_inj_address")  # None
+
+FORMAT = "[%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s"
+logging.basicConfig(format=FORMAT)
 
 if grantee_private_key and granter_inj_address:
     model = Model(private_key=grantee_private_key, topics=[], is_testnet=True)

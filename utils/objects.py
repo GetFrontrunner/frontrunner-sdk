@@ -16,6 +16,7 @@ from utils.markets import Market  # , ActiveMarket, StagingMarket
 class Order:
     def __init__(
         self,
+        nonce: int,
         price: float,
         quantity: float,
         order_type: str,
@@ -43,6 +44,7 @@ class Order:
                 subaccount_id, fee_recipient, inj_address, market, composer, denom
             )
         )
+        self.update_orderhash(nonce)
 
     def __lt__(self, obj):
         return self.price < obj.price
@@ -128,7 +130,7 @@ class OrderList:
         if order.hash:
             self.list[order.hash] = order
         else:
-            raise Exception("")
+            raise Exception("No order hash")
 
     def remove_by_orderhash(self, orderhash: str):
         order = self.list[orderhash]

@@ -58,11 +58,12 @@ class Granter:
         logging.info(f"market id: {self.market.market_id}")
         self.update_nonce()
         logging.debug(f"nonce: {self.nonce}")
-        logging.debug(
+        logging.info(
             f"subaccount_id: {self.subaccount_id}, inj address: {self.inj_address}"
         )
         if is_limit:
             order = Order(
+                nonce=self.nonce,
                 price=price,
                 quantity=quantity,
                 order_type="limit",
@@ -74,10 +75,11 @@ class Granter:
                 denom=self.denom,
                 composer=composer,
             )
-            order.update_orderhash(self.nonce)
+            # order.update_orderhash(self.nonce)
             self.limit_bids.add(order)
         else:
             order = Order(
+                nonce=self.nonce,
                 price=price,
                 quantity=quantity,
                 order_type="market",
@@ -89,7 +91,7 @@ class Granter:
                 denom=self.denom,
                 composer=composer,
             )
-            order.update_orderhash(self.nonce)
+            # order.update_orderhash(self.nonce)
             self.market_bids.add(order)
 
     def create_ask_orders(
@@ -98,7 +100,6 @@ class Granter:
         quantity: int,
         is_limit: bool,
         composer: Composer,
-        # lcd_endpoint: str,
     ):
         self.update_nonce()
         logging.debug(f"nonce: {self.nonce}")
@@ -107,6 +108,7 @@ class Granter:
         )
         if is_limit:
             order = Order(
+                nonce=self.nonce,
                 price=price,
                 quantity=quantity,
                 order_type="limit",
@@ -118,10 +120,11 @@ class Granter:
                 denom=self.denom,
                 composer=composer,
             )
-            order.update_orderhash(self.nonce)
+            # order.update_orderhash(self.nonce)
             self.limit_asks.add(order)
         else:
             order = Order(
+                nonce=self.nonce,
                 price=price,
                 quantity=quantity,
                 order_type="market",
@@ -133,7 +136,7 @@ class Granter:
                 denom=self.denom,
                 composer=composer,
             )
-            order.update_orderhash(self.nonce)
+            # order.update_orderhash(self.nonce)
             self.market_asks.add(order)
 
     def _cancel_order(

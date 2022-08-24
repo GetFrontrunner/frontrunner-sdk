@@ -26,7 +26,7 @@ async def execute(
         seq = address.get_sequence()
     else:
         seq = address.init_num_seq(network.lcd_endpoint).get_sequence()
-    logging.info(f"msg: {msg}")
+    logging.debug(f"msg: {msg}")
 
     tx = (
         Transaction()
@@ -44,7 +44,7 @@ async def execute(
     (sim_res, success) = await client.simulate_tx(sim_tx_raw_bytes)
     if not success:
         logging.error(f"failed simulation: {sim_res}")
-    logging.info(f"sim_res: {sim_res}")
+    logging.debug(f"sim_res: {sim_res}")
 
     sim_res_msg = Composer.MsgResponses(sim_res.result.data, simulation=True)
     if sim_res_msg is None:
