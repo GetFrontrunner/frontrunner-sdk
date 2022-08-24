@@ -29,6 +29,7 @@ from utils.get_markets import get_all_active_markets, get_all_staging_markets
 from utils.utilities import RedisConsumer, compute_orderhash, get_nonce
 from utils.markets import Market, ActiveMarket, StagingMarket
 from chain.execution import execute
+from chain.utilities_old import CancelOrder, LimitOrder, MarketOrder, CancelAll
 import logging
 
 
@@ -181,23 +182,25 @@ class Model:
         ask_quantity: int,
         is_limit: bool,
     ):
-        granter.create_bid_orders(
+        granter.create_orders(
             price=bid_price,
             quantity=bid_quantity,
             is_limit=is_limit,
+            is_bid=True,
             composer=self.composer,
         )
-        granter.create_ask_orders(
+        granter.create_orders(
             price=ask_price,
             quantity=ask_quantity,
             is_limit=is_limit,
+            is_bid=False,
             composer=self.composer,
         )
 
     def create_market_orders_for_granters(self):
         if self.granters:
             for granter in self.granters:
-                bid_price = 0.49
+                bid_price = 0.51
                 bid_quantity = 1
                 ask_price = 0.51
                 ask_quantity = 1
@@ -214,9 +217,9 @@ class Model:
         if self.granters:
             for granter in self.granters:
                 logging.info(f"granter.market.ticker: {granter.market.ticker}")
-                bid_price = 0.09
+                bid_price = 0.1
                 bid_quantity = 1
-                ask_price = 0.91
+                ask_price = 0.49
                 ask_quantity = 1
                 self._create_orders_for_granters(
                     granter,
@@ -357,8 +360,14 @@ class Model:
         )
         return msg
 
-    def single_new_order(self):
-        pass
+    async def single_new_order(
+        self, price: float, quantity: float, is_buy: bool, is_market: bool = False
+    ):
+        _pk = "8b97260c40b7e6bf87729299e7af741b46eed5547aa317ddd6fa9bac673ef5d2"
+        _market_id = self.granters[0].market.market_id
+        if is_market:
+            return await MarketOrder(price, quantity, is_buy, _market_id, _pk)
+        return await LimitOrder(price, quantity, is_buy, _market_id, _pk)
 
     def get_loop(self):
         return get_event_loop()
@@ -370,11 +379,15 @@ class Model:
         logging.info(f"slept {t}s")
         while True:
             self.update_granters()
-            self.create_limit_orders_for_granters()
-            # self.create_market_orders_for_granters()
-            resp = await self.batch_new_orders()
+            # self.create_limit_orders_for_granters()
+            self.create_market_orders_for_granters()
+            # resp = await self.batch_new_orders()
+            resp = await self.single_new_order(
+                price=0.3, quantity=1, is_buy=False, is_market=False
+            )
             logging.info(resp)
-            await sleep(3)
+            logging.info("will cancell all orders in 5s")
+            await sleep(5)
             resp = await self.batch_cancel()
             logging.info(resp)
             break

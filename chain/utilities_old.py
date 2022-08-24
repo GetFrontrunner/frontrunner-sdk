@@ -23,7 +23,7 @@ from pyinjective.constant import Network, Denom
 from pyinjective.wallet import PrivateKey
 
 
-async def Limit(
+async def LimitOrder(
     price: float, quantity: float, is_buy, market_id: str, private_key: str
 ) -> str:
     # select network: local, testnet, mainnet
@@ -85,8 +85,8 @@ async def Limit(
         return
 
     sim_res_msg = ProtoMsgComposer.MsgResponses(sim_res.result.data, simulation=True)
-    print("---Simulation Response---")
-    print(sim_res_msg)
+    # print("---Simulation Response---")
+    # print(sim_res_msg)
 
     # build tx
     gas_price = 500000000
@@ -110,14 +110,17 @@ async def Limit(
 
     # broadcast tx: send_tx_async_mode, send_tx_sync_mode, send_tx_block_mode
     res = await client.send_tx_sync_mode(tx_raw_bytes)
-    print("---Transaction Response---")
-    print(res)
-    print("gas wanted: {}".format(gas_limit))
-    print("gas fee: {} INJ".format(gas_fee))
-    return sim_res_msg[0].order_hash
+    # print("---Transaction Response---")
+    # print(res)
+    # print("gas wanted: {}".format(gas_limit))
+    # print("gas fee: {} INJ".format(gas_fee))
+    return sim_res_msg
 
 
-async def Market(
+# return sim_res_msg[0].order_hash
+
+
+async def MarketOrder(
     price: float, quantity: float, is_buy, market_id: str, private_key: str
 ) -> str:
     # select network: local, testnet, mainnet
@@ -176,8 +179,8 @@ async def Market(
         return
 
     sim_res_msg = ProtoMsgComposer.MsgResponses(sim_res.result.data, simulation=True)
-    print("---Simulation Response---")
-    print(sim_res_msg)
+    # print("---Simulation Response---")
+    # print(sim_res_msg)
 
     # build tx
     gas_price = 500000000
@@ -201,14 +204,17 @@ async def Market(
 
     # broadcast tx: send_tx_async_mode, send_tx_sync_mode, send_tx_block_mode
     res = await client.send_tx_sync_mode(tx_raw_bytes)
-    print("---Transaction Response---")
-    print(res)
-    print("gas wanted: {}".format(gas_limit))
-    print("gas fee: {} INJ".format(gas_fee))
-    return sim_res_msg[0].order_hash
+    # print("---Transaction Response---")
+    # print(res)
+    # print("gas wanted: {}".format(gas_limit))
+    # print("gas fee: {} INJ".format(gas_fee))
+    return sim_res_msg
 
 
-async def Cancel(
+# return sim_res_msg[0].order_hash
+
+
+async def CancelOrder(
     market_id: str,
     order_hash: str,
     private_key: str,
@@ -257,8 +263,8 @@ async def Cancel(
         return
 
     sim_res_msg = ProtoMsgComposer.MsgResponses(sim_res.result.data, simulation=True)
-    print("---Simulation Response---")
-    print(sim_res_msg)
+    # print("---Simulation Response---")
+    # print(sim_res_msg)
 
     # build tx
     gas_price = 500000000
@@ -282,14 +288,14 @@ async def Cancel(
 
     # broadcast tx: send_tx_async_mode, send_tx_sync_mode, send_tx_block_mode
     res = await client.send_tx_sync_mode(tx_raw_bytes)
-    print("---Transaction Response---")
-    print(res)
-    print("gas wanted: {}".format(gas_limit))
-    print("gas fee: {} INJ".format(gas_fee))
+    # print("---Transaction Response---")
+    # print(res)
+    # print("gas wanted: {}".format(gas_limit))
+    # print("gas fee: {} INJ".format(gas_fee))
 
 
 ################
-async def Cancel_all(market_id: str, private_key: str) -> None:
+async def CancelAll(market_id: str, private_key: str) -> None:
     # select network: local, testnet, mainnet
     network = Network.testnet()
     composer = ProtoMsgComposer(network=network.string())
@@ -334,8 +340,8 @@ async def Cancel_all(market_id: str, private_key: str) -> None:
         return
 
     sim_res_msg = ProtoMsgComposer.MsgResponses(sim_res.result.data, simulation=True)
-    print("---Simulation Response---")
-    print(sim_res_msg)
+    # print("---Simulation Response---")
+    # print(sim_res_msg)
 
     # build tx
     gas_price = 500000000
@@ -359,7 +365,7 @@ async def Cancel_all(market_id: str, private_key: str) -> None:
 
     # broadcast tx: send_tx_async_mode, send_tx_sync_mode, send_tx_block_mode
     res = await client.send_tx_sync_mode(tx_raw_bytes)
-    print("---Transaction Response---")
-    print(res)
-    print("gas wanted: {}".format(gas_limit))
-    print("gas fee: {} INJ".format(gas_fee))
+    # print("---Transaction Response---")
+    # print(res)
+    # print("gas wanted: {}".format(gas_limit))
+    # print("gas fee: {} INJ".format(gas_fee))

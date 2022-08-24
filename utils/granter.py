@@ -48,15 +48,34 @@ class Granter:
     def update_nonce(self):
         self.nonce += 1
 
-    def create_bid_orders(
+    def create_orders(
+        self,
+        price: float,
+        quantity: int,
+        is_limit: bool,
+        is_bid: bool,
+        composer: Composer,
+    ):
+        logging.info(f"market id: {self.market.market_id}")
+        self.update_nonce()
+        logging.debug(f"nonce: {self.nonce}")
+        logging.info(
+            f"subaccount_id: {self.subaccount_id}, inj address: {self.inj_address}"
+        )
+        if is_bid:
+            self._create_bid_order(price, quantity, is_limit, composer)
+        else:
+            self._create_ask_order(price, quantity, is_limit, composer)
+
+    def _create_bid_order(
         self,
         price: float,
         quantity: int,
         is_limit: bool,
         composer: Composer,
     ):
-        logging.info(f"market id: {self.market.market_id}")
-        self.update_nonce()
+        # logging.info(f"market id: {self.market.market_id}")
+        # self.update_nonce()
         logging.debug(f"nonce: {self.nonce}")
         logging.info(
             f"subaccount_id: {self.subaccount_id}, inj address: {self.inj_address}"
@@ -94,14 +113,14 @@ class Granter:
             # order.update_orderhash(self.nonce)
             self.market_bids.add(order)
 
-    def create_ask_orders(
+    def _create_ask_order(
         self,
         price: float,
         quantity: int,
         is_limit: bool,
         composer: Composer,
     ):
-        self.update_nonce()
+        # self.update_nonce()
         logging.debug(f"nonce: {self.nonce}")
         logging.debug(
             f"subaccount_id: {self.subaccount_id}, inj address: {self.inj_address}"

@@ -15,8 +15,9 @@ if grantee_private_key and granter_inj_address:
     model = Model(private_key=grantee_private_key, topics=[], is_testnet=True)
     model.create_granters([granter_inj_address])
     loop = model.get_loop()
-    loop.create_task(model.run())
-    loop.run_forever()
+    loop.run_until_complete(model.run())
+    # loop.create_task(model.run())
+    # loop.run_forever()
     # model.create_limit_orders_for_granters()
     # model.create_market_orders_for_granters()
 else:
