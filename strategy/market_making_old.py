@@ -22,7 +22,7 @@ from pyinjective.transaction import Transaction
 from pyinjective.constant import Network, Denom
 from pyinjective.wallet import PrivateKey
 
-from chain.utilities_old import Cancel, Limit, Market
+from chain.utilities_old import Cancel, Limit, Market, Cancel_all
 
 import os
 import time
@@ -33,12 +33,12 @@ if __name__ == "__main__":
     pk = "8b97260c40b7e6bf87729299e7af741b46eed5547aa317ddd6fa9bac673ef5d2"
     logging.basicConfig(level=logging.INFO)
     # market_id = "0x64ec31d044fb12929d02d74cc68d3c4a818add11b4b510c120c6e70a7310ab0d"
-    market_id = "0x3035641095cd6574386dad41e8d208d2e37fc33432dd4545e943de428f016dda"
+    market_id = "0x67e7c21141a881919ce150327027ce412aee1a239ca0dd29adb136319dee321b"
 
     # limit order
-    limit_price = 0.23
-    quantity = 100
-    is_buy = False
+    limit_price = 0.09
+    quantity = 1
+    is_buy = True
     print("\nLIMIT ORDER:")
     order_hash = asyncio.get_event_loop().run_until_complete(
         Limit(limit_price, quantity, is_buy, market_id, pk)
@@ -56,3 +56,7 @@ if __name__ == "__main__":
     # time.sleep(5)
     # print("\nCANCEL ORDER:")
     # asyncio.get_event_loop().run_until_complete(Cancel(market_id, order_hash, pk))
+
+    time.sleep(5)
+    print("\nCANCEL ALL ORDER:")
+    asyncio.get_event_loop().run_until_complete(Cancel_all(market_id, pk))

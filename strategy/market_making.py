@@ -227,7 +227,7 @@ class Model:
                     is_limit=True,
                 )
 
-    async def batch_replace_order(self):
+    async def batch_replace_orders(self):
         msg = self._build_batch_replace_orders_msg()
         msg = self.composer.MsgExec(grantee=self.inj_address, msgs=[msg])
         return await execute(
@@ -241,7 +241,7 @@ class Model:
             msg=msg,
         )
 
-    async def batch_new_order(self):
+    async def batch_new_orders(self):
         msg = self._build_batch_new_orders_msg()
         logging.info(f"msg: {msg}")
         msg = self.composer.MsgExec(grantee=self.inj_address, msgs=[msg])
@@ -349,6 +349,7 @@ class Model:
         binary_options_market_ids_to_cancel_all = list(
             set(binary_options_market_ids_to_cancel_all)
         )
+        logging.info(f"Canceling {binary_options_market_ids_to_cancel_all}")
         msg = self.composer.MsgBatchUpdateOrders(
             sender=self.inj_address,
             subaccount_id=self.subaccount_id,
@@ -371,8 +372,9 @@ class Model:
             self.update_granters()
             self.create_limit_orders_for_granters()
             # self.create_market_orders_for_granters()
-            resp = await self.batch_new_order()
+            resp = await self.batch_new_orders()
             logging.info(resp)
+            await sleep(3)
             resp = await self.batch_cancel()
             logging.info(resp)
             break

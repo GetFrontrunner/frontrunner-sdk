@@ -50,6 +50,7 @@ async def execute(
     if sim_res_msg is None:
         logging.error(f"simulation result: {sim_res_msg}")
         return
+    logging.info(f"sim_res_msg: {sim_res_msg}")
 
     gas_limit = sim_res.gas_info.gas_used + 20000
 
