@@ -361,18 +361,23 @@ class Model:
         return msg
 
     async def single_new_order(
-        self, price: float, quantity: float, is_buy: bool, is_market: bool = False
+        self,
+        pk: str,
+        price: float,
+        quantity: float,
+        is_buy: bool,
+        is_market: bool = False,
     ):
-        _pk = "8b97260c40b7e6bf87729299e7af741b46eed5547aa317ddd6fa9bac673ef5d2"
+        # _pk = "8b97260c40b7e6bf87729299e7af741b46eed5547aa317ddd6fa9bac673ef5d2"
         _market_id = self.granters[0].market.market_id
         if is_market:
-            return await MarketOrder(price, quantity, is_buy, _market_id, _pk)
-        return await LimitOrder(price, quantity, is_buy, _market_id, _pk)
+            return await MarketOrder(price, quantity, is_buy, _market_id, pk)
+        return await LimitOrder(price, quantity, is_buy, _market_id, pk)
 
     def get_loop(self):
         return get_event_loop()
 
-    async def run(self, t=10):
+    async def run(self, pk: str, t=10):
         logging.info("getting data")
         logging.info(f"sleep for {t}s")
         await sleep(t)
@@ -383,7 +388,7 @@ class Model:
             self.create_market_orders_for_granters()
             # resp = await self.batch_new_orders()
             resp = await self.single_new_order(
-                price=0.3, quantity=1, is_buy=False, is_market=False
+                pk, price=0.3, quantity=1, is_buy=True, is_market=False
             )
             logging.info(resp)
             logging.info("will cancell all orders in 5s")
