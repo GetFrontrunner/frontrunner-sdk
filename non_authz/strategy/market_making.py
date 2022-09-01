@@ -359,18 +359,18 @@ class Model:
         )
         return msg
 
-    async def single_new_order(
-        self,
-        pk: str,
-        price: float,
-        quantity: float,
-        is_buy: bool,
-        is_market: bool = False,
-    ):
-        _market_id = self.granters[0].market.market_id
-        if is_market:
-            return await MarketOrder(price, quantity, is_buy, _market_id, pk)
-        return await LimitOrder(price, quantity, is_buy, _market_id, pk)
+    # async def single_new_order(
+    #    self,
+    #    pk: str,
+    #    price: float,
+    #    quantity: float,
+    #    is_buy: bool,
+    #    is_market: bool = False,
+    # ):
+    #    _market_id = self.granters[0].market.market_id
+    #    if is_market:
+    #        return await MarketOrder(price, quantity, is_buy, _market_id, pk)
+    #    return await LimitOrder(price, quantity, is_buy, _market_id, pk)
 
     def get_loop(self):
         return get_event_loop()
