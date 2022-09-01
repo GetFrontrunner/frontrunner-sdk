@@ -1,4 +1,5 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
+from datetime import datetime
 
 
 class Country:
@@ -24,8 +25,8 @@ class Currency:
 class Sport:
     def __init__(self, data):
         self.name = data.get("name", None)
-        self.type = data.get("sport_type", None)
-        self.id = data.get("sport_id", None)
+        self.type = data.get("type", None)
+        self.id = data.get("id", None)
 
 
 class Price:
@@ -33,13 +34,13 @@ class Price:
         self,
         data,
     ):
-        self.available_amount = data.get("available_amount", None)
+        self.available_amount = data.get("available-amount", None)
         self.current = data.get("current", None)
-        self.odds_type = data.get("odds_type", None)
+        self.odds_type = data.get("odds-type", None)
         self.odds = data.get("odds", None)
-        self.decimal_odds = data.get("decimal_odds", None)
+        self.decimal_odds = data.get("decimal-odds", None)
         self.side = data.get("side", None)
-        self.exchange_type = data.get("exchange_type", None)
+        self.exchange_type = data.get("exchange-type", None)
 
 
 class Prices:
@@ -54,13 +55,13 @@ class Runner:
     ):
         self.withdrawn = data.get("withdrawn", None)
         self.prices = [Price(price) for price in data.get("prices")]
-        self.event_id = data.get("event_id", None)
-        self.id = data.get("runner_id", None)
-        self.market_id = data.get("market_id", None)
+        self.event_id = data.get("event-id", None)
+        self.id = data.get("id", None)
+        self.market_id = data.get("market-id", None)
         self.name = data.get("name", None)
         self.status = data.get("status", None)
         self.volume = data.get("volume", None)
-        self.event_participant_id = data.get("event_participant_id", None)
+        self.event_participant_id = data.get("event-participant-id", None)
 
 
 class Runners:
@@ -70,8 +71,8 @@ class Runners:
 
 class Market:
     def __init__(self, data):
-        self.event_id = data.get("event_id", None)
-        self.market_id = data.get(" market_id", None)
+        self.event_id = data.get("event-id", None)
+        self.market_id = data.get(" market-id", None)
         self.name = data.get("name", None)
         self.runners = [Runner(runner) for runner in data.get("runners", None)]
 
@@ -83,27 +84,45 @@ class Markets:
 
 class MetaTag:
     def __init__(self, data):
-        self.meta_id = data.get("meta_id", None)
+        self.meta_id = data.get("id", None)
         self.name = data.get("name", None)
-        self.meta_type = data.get("meta_type", None)
-        self.url_name = data.get("url_name", None)
+        self.meta_type = data.get("type", None)
+        self.url_name = data.get("url-name", None)
 
 
 class Event:
     def __init__(self, data):
-        self.id = data.get("event_id", None)
-        self.name = data.get("name", None)
-        self.sport_id = data.get("sport_id", None)
-        self.start = data.get("start", None)
-        self.in_running_flag = data.get("in_running_flag", None)
-        self.allow_live_betting = data.get("allow_live_betting", None)
-        self.category_id = data.get("category_id", None)
-        self.status = data.get("status", None)
-        self.volume = data.get("volume", None)
-        self.markets = [Market(market) for market in data.get("markets", None)]
-        self.meta_tags = [MetaTag(meta) for meta in data.get("meta_tags", None)]
+        self.id: Optional[int] = data.get("id", None)
+        self.name: Optional[str] = data.get("name", None)
+        self.sport_id: Optional[int] = data.get("sport-id", None)
+        if data.get("start", None):
+            self.start: Optional[datetime] = datetime.strptime(
+                data.get("start", None), "%Y-%m-%dT%H:%M:%S.%fZ"
+            )
+        else:
+            self.start = None
+
+        self.in_running_flag: Optional[bool] = data.get("in-running-flag", None)
+        self.allow_live_betting: Optional[bool] = data.get("allow-live-betting", None)
+        self.category_id: List[int] = data.get("category-id", None)
+        self.status: Optional[str] = data.get("status", None)
+        self.volume: Optional[int] = data.get("volume", None)
+        if data.get("markets", None):
+            self.markets = [Market(market) for market in data.get("markets", None)]
+        else:
+            self.markets = []
+
+        if data.get("meta-tags", None):
+            self.meta_tags = [MetaTag(meta) for meta in data.get("meta-tags", None)]
+        else:
+            self.meta_tags = []
 
 
 class Events:
-    def __init__(self, events: List[Dict[str, Any]]):
-        self.events = [Event(event) for event in events]
+    def __init__(self, events: List[Dict[str, Any]], in_running_flag: bool = True):
+        if in_running_flag:
+            self.events: List[Event] = [
+                Event(event) for event in events if event["in-running-flag"]
+            ]
+        else:
+            self.events: List[Event] = [Event(event) for event in events]
