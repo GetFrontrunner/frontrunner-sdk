@@ -48,7 +48,7 @@ class MatchbookData:
 
     async def get_sport(self):
         topic = "Matchbook/sports"
-        url = "https://api.matchbook.com/edge/rest/lookups/sports?offset=0&per-page=20&order=name%20asc&status=active"
+        url = "https://api.matchbook.com/edge/rest/lookups/sports?offset=0&per-page=2000&order=name%20asc&status=active"
         res = await self.session.post(url)
         if res.status == 200:
             data = await res.json()
@@ -64,7 +64,9 @@ class MatchbookData:
 
     async def get_events(self):
         topic = "Matchbook/events"
-        url = "https://api.matchbook.com/edge/rest/events?offset=0&per-page=20&states=open%2Csuspended%2Cclosed%2Cgraded&exchange-type=back-lay&odds-type=DECIMAL&include-prices=false&price-depth=3&price-mode=expanded&include-event-participants=false&exclude-mirrored-prices=false"
+        # url = "https://api.matchbook.com/edge/rest/events?offset=0&per-page=2000&sport-ids=15&states=open%2Cgraded&exchange-type=back-lay&odds-type=DECIMAL&include-prices=false&price-depth=3&price-mode=expanded&include-event-participants=false&exclude-mirrored-prices=false"
+
+        url = "https://api.matchbook.com/edge/rest/events?offset=0&per-page=20000&states=open%2Csuspended%2Cclosed%2Cgraded&exchange-type=back-lay&odds-type=DECIMAL&include-prices=false&price-depth=3&price-mode=expanded&include-event-participants=false&exclude-mirrored-prices=false"
         res = await self.session.post(url)
         if res.status == 200:
             data = await res.json()
@@ -96,7 +98,7 @@ class MatchbookData:
 
     async def get_markets(self, n=10):
         topic = "Matchbook/markets"
-        url = "https://api.matchbook.com/edge/rest/events/event_id/markets?offset=0&per-page=20&states=open%2Csuspended&exchange-type=back-lay&odds-type=DECIMAL&include-prices=false&price-depth=3&price-mode=expanded&exclude-mirrored-prices=false"
+        url = "https://api.matchbook.com/edge/rest/events/event_id/markets?offset=0&per-page=20000&states=open%2Csuspended&exchange-type=back-lay&odds-type=DECIMAL&include-prices=false&price-depth=3&price-mode=expanded&exclude-mirrored-prices=false"
         res = await self.session.post(url)
         if res.status == 200:
             data = await res.json()

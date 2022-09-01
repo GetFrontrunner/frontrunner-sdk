@@ -39,7 +39,7 @@ res = response.json()
 #    print(sport["name"], sport["id"])
 
 
-url = "https://api.matchbook.com/edge/rest/events?offset=0&per-page=2000&sport-ids=15&states=open%2Cgraded&exchange-type=back-lay&odds-type=DECIMAL&include-prices=false&price-depth=3&price-mode=expanded&include-event-participants=false&exclude-mirrored-prices=false"
+url = "https://api.matchbook.com/edge/rest/events?offset=0&per-page=20000&states=open%2Cgraded&exchange-type=back-lay&odds-type=DECIMAL&include-prices=false&price-depth=3&price-mode=expanded&include-event-participants=false&exclude-mirrored-prices=false"
 response = requests.get(url, headers=headers)
 
 res = response.json()
@@ -52,7 +52,8 @@ in_running_flag_events = [event for event in res["events"] if event["in-running-
 events = Events(res["events"])
 # print(len(events.events))
 for event in events.events:
-    print(event.name, event.id, event.volume, event.meta_tags)
+    # print(event.name, event.id, event.volume, event.meta_tags)
+    print(event.sport_id)
     # print(event.id)
 # print(len(res["events"]))
 # for event in res["events"]:
