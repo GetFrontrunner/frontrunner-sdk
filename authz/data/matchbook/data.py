@@ -12,7 +12,7 @@ from utils.utilities import RedisProducer
 from utils.granter import Granter
 from utils.markets import ActiveMarket, StagingMarket
 from utils.client import create_client, switch_node_recreate_client
-from matchbook.utilities import *
+from data.matchbook.utilities import *
 
 
 class MatchbookData:
@@ -172,3 +172,9 @@ class MatchbookData:
             if not success and n > 0:
                 success = await self._retry(topic=topic, obj=Prices, url=url)
                 n -= 1
+
+    async def close(self):
+        if not self.session.closed:
+            logging.info("closing session")
+            await self.session.close()
+        logging.info("closed session")

@@ -12,17 +12,18 @@ from utils.utilities import RedisProducer
 from utils.granter import Granter
 from utils.markets import ActiveMarket, StagingMarket
 from utils.client import create_client, switch_node_recreate_client
-from matchbook.utilities import *
+from data.matchbook.utilities import *
 
 
 class MatchbookData:
     def __init__(
         self,
-        markets: Union[List[ActiveMarket], List[StagingMarket]],
-        granters: List[Granter],
+        # markets: Union[List[ActiveMarket], List[StagingMarket]],
+        # granters: List[Granter],
         redis_addr: str = "127.0.0.1:6379",
     ):
-        self.markets = markets
+        # self.markets = markets
+        # self.granters = granters
         self.redis = RedisProducer(redis_addr=redis_addr)
         self.url = "https://api.matchbook.com/edge/rest/events/event_id?exchange-type=back-lay&odds-type=DECIMAL&include-prices=false&price-depth=3&price-mode=expanded&include-event-participants=false&exclude-mirrored-prices=false"
         self.headers = {
@@ -172,3 +173,9 @@ class MatchbookData:
             if not success and n > 0:
                 success = await self._retry(topic=topic, obj=Prices, url=url)
                 n -= 1
+
+    async def close(self):
+        if not self.session.closed:
+            logging.info("closing session")
+            await self.session.close()
+        logging.info("closed session")
