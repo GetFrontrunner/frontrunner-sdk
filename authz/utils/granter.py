@@ -48,7 +48,7 @@ class Granter:
     def update_nonce(self):
         self.nonce += 1
 
-    def create_orders(
+    def create_order(
         self,
         price: float,
         quantity: int,
@@ -74,8 +74,6 @@ class Granter:
         is_limit: bool,
         composer: Composer,
     ):
-        # logging.info(f"market id: {self.market.market_id}")
-        # self.update_nonce()
         logging.debug(f"nonce: {self.nonce}")
         logging.info(
             f"subaccount_id: {self.subaccount_id}, inj address: {self.inj_address}"
@@ -94,7 +92,6 @@ class Granter:
                 denom=self.denom,
                 composer=composer,
             )
-            # order.update_orderhash(self.nonce)
             self.limit_bids.add(order)
         else:
             order = Order(
@@ -110,7 +107,6 @@ class Granter:
                 denom=self.denom,
                 composer=composer,
             )
-            # order.update_orderhash(self.nonce)
             self.market_bids.add(order)
 
     def _create_ask_order(
@@ -120,7 +116,6 @@ class Granter:
         is_limit: bool,
         composer: Composer,
     ):
-        # self.update_nonce()
         logging.debug(f"nonce: {self.nonce}")
         logging.debug(
             f"subaccount_id: {self.subaccount_id}, inj address: {self.inj_address}"
@@ -139,7 +134,6 @@ class Granter:
                 denom=self.denom,
                 composer=composer,
             )
-            # order.update_orderhash(self.nonce)
             self.limit_asks.add(order)
         else:
             order = Order(
@@ -155,7 +149,6 @@ class Granter:
                 denom=self.denom,
                 composer=composer,
             )
-            # order.update_orderhash(self.nonce)
             self.market_asks.add(order)
 
     def _cancel_order(

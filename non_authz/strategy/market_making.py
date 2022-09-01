@@ -77,12 +77,13 @@ class Model:
         # load account
         self.priv_key: PrivateKey = PrivateKey.from_hex(private_key)
         self.pub_key: PublicKey = self.priv_key.to_public_key()
-        self.address = self.pub_key.to_address().init_num_seq(self.network.lcd_endpoint)
+        logging.info(f"self.network.lcd_endpoint: {self.lcd_endpoint}")
+        self.address = self.pub_key.to_address().init_num_seq(self.lcd_endpoint)
         self.inj_address = self.address.to_acc_bech32()
         self.subaccount_id = self.address.get_subaccount_id(index=0)
         logging.debug(self.subaccount_id)
 
-        if fee_recipient:
+        if not fee_recipient:
             self.fee_recipient = self.inj_address
         else:
             self.fee_recipient = fee_recipient
@@ -141,12 +142,10 @@ class Model:
         # else:
         #    raise Exception("No config")
 
-    def create_granter(
-        self, inj_address: str, lcd_endpoint: str, market: ActiveMarket
-    ) -> Granter:
+    def _create_granter(self, lcd_endpoint: str, market: ActiveMarket) -> Granter:
         granter = Granter(
             market=market,
-            inj_address=inj_address,
+            inj_address=self.inj_address,
             fee_recipient=self.inj_address,
         )
         granter.get_nonce(lcd_endpoint)
@@ -157,21 +156,21 @@ class Model:
 
     def create_granters(
         self,
-        inj_addresses: List[str],
     ):
         all_active_markets = get_all_active_markets(True)
-        n = len(inj_addresses)
-        if len(inj_addresses) < len(all_active_markets):
-            granters = [
-                self.create_granter(
-                    inj_addresses[idx % n],
-                    lcd_endpoint=self.lcd_endpoint,
-                    market=active_market,
-                )
-                for idx, active_market in enumerate(all_active_markets)
-            ]
-            self.granters = granters[:1]
+        granters = [
+            self._create_granter(
+                lcd_endpoint=self.lcd_endpoint,
+                market=active_market,
+            )
+            for idx, active_market in enumerate(all_active_markets)
+        ]
+        self.granters = granters[:1]
         logging.debug(f"number of granters: {len(self.granters)}")
+
+    def update_granter_nonce(self):
+        for granter in self.granters:
+            granter.get_nonce(self.lcd_endpoint)
 
     def _create_orders_for_granters(
         self,
@@ -368,7 +367,6 @@ class Model:
         is_buy: bool,
         is_market: bool = False,
     ):
-        # _pk = "8b97260c40b7e6bf87729299e7af741b46eed5547aa317ddd6fa9bac673ef5d2"
         _market_id = self.granters[0].market.market_id
         if is_market:
             return await MarketOrder(price, quantity, is_buy, _market_id, pk)
@@ -377,23 +375,24 @@ class Model:
     def get_loop(self):
         return get_event_loop()
 
-    async def run(self, pk: str, t=10):
+    async def run(self, t=10):
         logging.info("getting data")
         logging.info(f"sleep for {t}s")
         await sleep(t)
         logging.info(f"slept {t}s")
+        self.create_granters()
         while True:
             self.update_granters()
             # self.create_limit_orders_for_granters()
-            self.create_market_orders_for_granters()
-            # resp = await self.batch_new_orders()
-            resp = await self.single_new_order(
-                pk, price=0.3, quantity=1, is_buy=True, is_market=False
-            )
-            logging.info(resp)
-            logging.info("will cancell all orders in 5s")
-            await sleep(5)
-            resp = await self.batch_cancel()
-            logging.info(resp)
+            # self.create_market_orders_for_granters()
+            ## resp = await self.batch_new_orders()
+            # resp = await self.single_new_order(
+            #    pk, price=0.3, quantity=1, is_buy=True, is_market=False
+            # )
+            # logging.info(resp)
+            # logging.info("will cancell all orders in 5s")
+            # await sleep(5)
+            # resp = await self.batch_cancel()
+            # logging.info(resp)
             break
         logging.info("finished")
