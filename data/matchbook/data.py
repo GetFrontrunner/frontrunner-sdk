@@ -46,7 +46,7 @@ class MatchbookData:
         else:
             return False
 
-    async def get_sport(self):
+    async def get_sport(self, n: int = 10):
         topic = "Matchbook/sports"
         url = "https://api.matchbook.com/edge/rest/lookups/sports?offset=0&per-page=2000&order=name%20asc&status=active"
         res = await self.session.post(url)
@@ -56,17 +56,18 @@ class MatchbookData:
             self.redis.produce(topic, dumps(sport))
         else:
             success = False
-            n = 3
             logging.info("failed to get sport data from matchbook")
             if not success and n > 0:
                 success = await self._retry(topic=topic, obj=Sport, url=url)
                 n -= 1
 
-    async def get_events(self):
+    async def get_events(self, sport_id: Optional[int], n: int = 10):
         topic = "Matchbook/events"
         # url = "https://api.matchbook.com/edge/rest/events?offset=0&per-page=2000&sport-ids=15&states=open%2Cgraded&exchange-type=back-lay&odds-type=DECIMAL&include-prices=false&price-depth=3&price-mode=expanded&include-event-participants=false&exclude-mirrored-prices=false"
-
-        url = "https://api.matchbook.com/edge/rest/events?offset=0&per-page=20000&states=open%2Csuspended%2Cclosed%2Cgraded&exchange-type=back-lay&odds-type=DECIMAL&include-prices=false&price-depth=3&price-mode=expanded&include-event-participants=false&exclude-mirrored-prices=false"
+        if sport_id:
+            url = f"https://api.matchbook.com/edge/rest/events?offset=0&per-page=20000&sport-ids={sport_id}&states=open%2Csuspended%2Cclosed%2Cgraded&exchange-type=back-lay&odds-type=DECIMAL&include-prices=true&price-depth=3&price-mode=expanded&include-event-participants=false&exclude-mirrored-prices=false"
+        else:
+            url = "https://api.matchbook.com/edge/rest/events?offset=0&per-page=20000&states=open%2Csuspended%2Cclosed%2Cgraded&exchange-type=back-lay&odds-type=DECIMAL&include-prices=truee&price-depth=3&price-mode=expanded&include-event-participants=false&exclude-mirrored-prices=false"
         res = await self.session.post(url)
         if res.status == 200:
             data = await res.json()
@@ -74,15 +75,14 @@ class MatchbookData:
             self.redis.produce(topic, dumps(events))
         else:
             success = False
-            n = 3
             logging.info("failed to get events data from matchbook")
             if not success and n > 0:
                 success = await self._retry(topic=topic, obj=Events, url=url)
                 n -= 1
 
-    async def get_event(self, n=10):
+    async def get_event(self, event_id: int, n=10):
         topic = "Matchbook/event"
-        url = "https://api.matchbook.com/edge/rest/events/event_id?exchange-type=back-lay&odds-type=DECIMAL&include-prices=false&price-depth=3&price-mode=expanded&include-event-participants=false&exclude-mirrored-prices=false"
+        url = f"https://api.matchbook.com/edge/rest/events/{event_id}?exchange-type=back-lay&odds-type=DECIMAL&include-prices=false&price-depth=3&price-mode=expanded&include-event-participants=false&exclude-mirrored-prices=false"
         res = await self.session.post(url)
         if res.status == 200:
             data = await res.json()
@@ -90,15 +90,15 @@ class MatchbookData:
             self.redis.produce(topic, dumps(event))
         else:
             success = False
-            n = 3
+
             logging.info("failed to get event data from matchbook")
             if not success and n > 0:
                 success = await self._retry(topic=topic, obj=Event, url=url)
                 n -= 1
 
-    async def get_markets(self, n=10):
+    async def get_markets(self, event_id: int, n=10):
         topic = "Matchbook/markets"
-        url = "https://api.matchbook.com/edge/rest/events/event_id/markets?offset=0&per-page=20000&states=open%2Csuspended&exchange-type=back-lay&odds-type=DECIMAL&include-prices=false&price-depth=3&price-mode=expanded&exclude-mirrored-prices=false"
+        url = f"https://api.matchbook.com/edge/rest/events/{event_id}/markets?offset=0&per-page=20000&states=open%2Csuspended&exchange-type=back-lay&odds-type=DECIMAL&include-prices=true&price-depth=3&price-mode=expanded&exclude-mirrored-prices=false"
         res = await self.session.post(url)
         if res.status == 200:
             data = await res.json()
@@ -106,15 +106,14 @@ class MatchbookData:
             self.redis.produce(topic, dumps(marekts))
         else:
             success = False
-            n = 3
             logging.info("failed to get markets data from matchbook")
             if not success and n > 0:
                 success = await self._retry(topic=topic, obj=Markets, url=url)
                 n -= 1
 
-    async def get_market(self, n=10):
+    async def get_market(self, event_id: int, market_id: int, n=10):
         topic = "Matchbook/market"
-        url = "https://api.matchbook.com/edge/rest/events/event_id/markets/market_id?exchange-type=back-lay&odds-type=DECIMAL&include-prices=false&price-depth=3&price-mode=expanded&exclude-mirrored-prices=false"
+        url = f"https://api.matchbook.com/edge/rest/events/{event_id}/markets/{market_id}?exchange-type=back-lay&odds-type=DECIMAL&include-prices=true&price-depth=3&price-mode=expanded&exclude-mirrored-prices=false"
         res = await self.session.post(url)
         if res.status == 200:
             data = await res.json()
@@ -122,15 +121,14 @@ class MatchbookData:
             self.redis.produce(topic, dumps(market))
         else:
             success = False
-            n = 3
             logging.info("failed to get market data from matchbook")
             if not success and n > 0:
                 success = await self._retry(topic=topic, obj=Market, url=url)
                 n -= 1
 
-    async def get_runners(self, n=10):
+    async def get_runners(self, event_id: int, market_id: int, n=10):
         topic = "Matchbook/runners"
-        url = "https://api.matchbook.com/edge/rest/events/event_id/markets/market_id/runners?states=open%2Csuspended&include-withdrawn=true&include-prices=true&price-depth=3&price-mode=expanded&exchange-type=back-lay&odds-type=DECIMAL&exclude-mirrored-prices=false"
+        url = f"https://api.matchbook.com/edge/rest/events/{event_id}/markets/{market_id}/runners?states=open%2Csuspended&include-withdrawn=true&include-prices=true&price-depth=3&price-mode=expanded&exchange-type=back-lay&odds-type=DECIMAL&exclude-mirrored-prices=false"
         res = await self.session.post(url)
         if res.status == 200:
             data = await res.json()
@@ -138,15 +136,14 @@ class MatchbookData:
             self.redis.produce(topic, dumps(runners))
         else:
             success = False
-            n = 3
             logging.info("failed to get runners data from matchbook")
             if not success and n > 0:
                 success = await self._retry(topic=topic, obj=Runners, url=url)
                 n -= 1
 
-    async def get_runner(self, n=10):
+    async def get_runner(self, event_id: int, market_id: int, runner_id: int, n=10):
         topic = "Matchbook/runner"
-        url = "https://api.matchbook.com/edge/rest/events/event_id/markets/market_id/runners/runner_id?include-prices=false&price-depth=3&price-mode=expanded&exchange-type=back-lay&odds-type=DECIMAL&exclude-mirrored-prices=false"
+        url = f"https://api.matchbook.com/edge/rest/events/{event_id}/markets/{market_id}/runners/{runner_id}?include-prices=true&price-depth=3&price-mode=expanded&exchange-type=back-lay&odds-type=DECIMAL&exclude-mirrored-prices=false"
         res = await self.session.post(url)
         if res.status == 200:
             data = await res.json()
@@ -154,15 +151,15 @@ class MatchbookData:
             self.redis.produce(topic, dumps(runner))
         else:
             success = False
-            n = 3
+
             logging.info("failed to get runner data from matchbook")
             if not success and n > 0:
                 success = await self._retry(topic=topic, obj=Runner, url=url)
                 n -= 1
 
-    async def get_prices(self, n=10):
+    async def get_prices(self, event_id: int, market_id: int, runner_id: int, n=10):
         topic = "Matchbook/prices"
-        url = "https://api.matchbook.com/edge/rest/events/event_id/markets/market_id/runners/runner_id/prices?exchange-type=back-lay&odds-type=DECIMAL&depth=3&price-mode=expanded&exclude-mirrored-prices=false"
+        url = f"https://api.matchbook.com/edge/rest/events/{event_id}/markets/{market_id}/runners/{runner_id}/prices?exchange-type=back-lay&odds-type=DECIMAL&depth=3&price-mode=expanded&exclude-mirrored-prices=false"
         res = await self.session.post(url)
         if res.status == 200:
             data = await res.json()
@@ -170,7 +167,7 @@ class MatchbookData:
             self.redis.produce(topic, dumps(prices))
         else:
             success = False
-            n = 3
+
             logging.info("failed to get prices data from matchbook")
             if not success and n > 0:
                 success = await self._retry(topic=topic, obj=Prices, url=url)

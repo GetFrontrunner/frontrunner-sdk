@@ -35,7 +35,7 @@ class Price:
         data,
     ):
         self.available_amount = data.get("available-amount", None)
-        self.current = data.get("current", None)
+        self.currency = data.get("currency", None)
         self.odds_type = data.get("odds-type", None)
         self.odds = data.get("odds", None)
         self.decimal_odds = data.get("decimal-odds", None)
