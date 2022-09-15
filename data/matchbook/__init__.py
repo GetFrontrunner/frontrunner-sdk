@@ -4,36 +4,23 @@ from math import log
 import logging
 from aiohttp import ClientTimeout, TCPConnector, ClientSession
 from asyncio import sleep
-
-# from orjson import dumps
 from pickle import dumps
 
 from utils.utilities import RedisProducer
-import requests
 
 # from utils.granter import Granter
 # from utils.markets import ActiveMarket, StagingMarket
 # from utils.client import create_client, switch_node_recreate_client
 from data.matchbook.utilities import *
+from data.data_source_template import Data
 
 
-class MatchbookData:
+class MatchbookData(Data):
     def __init__(
         self,
         redis_addr: str = "127.0.0.1:6379",
     ):
-        self.redis = RedisProducer(redis_addr=redis_addr)
-        # self.url: Optional[str] = None
-        self.headers = {
-            "Accept": "application/json",
-            "User-Agent": "api-doc-test-client",
-        }
-
-        connector = TCPConnector(keepalive_timeout=1000)
-        self.session = ClientSession(
-            timeout=ClientTimeout(total=10), headers=self.headers, connector=connector
-        )
-        self.t = 10
+        super().__init__(redis_addr)
 
     async def _retry(self, topic: str, obj, url: str) -> bool:
         res = await self.session.post(url)
