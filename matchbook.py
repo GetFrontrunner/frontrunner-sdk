@@ -1,4 +1,5 @@
 # import requests
+
 #
 # url = "https://api.matchbook.com/edge/rest/navigation?offset=0&per-page=20"
 #
@@ -22,11 +23,12 @@
 # response = requests.get(url, headers=headers)
 #
 # print(response.json())
-url = "https://api.matchbook.com/edge/rest/events?offset=0&per-page=20&sport-ids=1231&states=open%2Csuspended%2Cclosed%2Cgraded&exchange-type=back-lay&odds-type=DECIMAL&include-prices=false&price-depth=3&price-mode=expanded&include-event-participants=false&exclude-mirrored-prices=false"
+# url = "https://api.matchbook.com/edge/rest/events?offset=0&per-page=20&sport-ids=1231&states=open%2Csuspended%2Cclosed%2Cgraded&exchange-type=back-lay&odds-type=DECIMAL&include-prices=false&price-depth=3&price-mode=expanded&include-event-participants=false&exclude-mirrored-prices=false"
 from typing import Optional, Dict, Any
 
 import requests
 from data.matchbook.utilities import Events, Event
+from sortedcontainers import SortedDict
 
 url = "https://api.matchbook.com/edge/rest/lookups/sports?offset=0&per-page=2000&order=name%20asc&status=active"
 # url = "https://api.matchbook.com/edge/rest/events?offset=0&per-page=2000&states=open%2Cgraded&exchange-type=back-lay&odds-type=DECIMAL&include-prices=false&price-depth=3&price-mode=expanded&include-event-participants=false&exclude-mirrored-prices=false"
@@ -36,12 +38,16 @@ headers = {"Accept": "application/json", "User-Agent": "api-doc-test-client"}
 response = requests.get(url, headers=headers)
 
 res = response.json()
-# for sport in res["sports"]:
-#    print(sport["name"], sport["id"])
+# print(res["sport"])
+# sport_dict = SortedDict(res["sports"])
+for k, v in res["sports"][0].items():
+    print(f"{k}\t {v}")
 
 
-url = "https://api.matchbook.com/edge/rest/events?offset=0&per-page=20000&states=open%2Cgraded&exchange-type=back-lay&odds-type=DECIMAL&include-prices=true&price-depth=3&price-mode=expanded&include-event-participants=false&exclude-mirrored-prices=false"
-response = requests.get(url, headers=headers)
+url1 = "https://api.matchbook.com/edge/rest/events?offset=0&per-page=20000&sport-ids=3&states=open%2Cgraded&exchange-type=back-lay&odds-type=DECIMAL&include-prices=true&price-depth=3&price-mode=expanded&include-event-participants=false&exclude-mirrored-prices=false"
+url2 = "https://api.matchbook.com/edge/rest/events?offset=0&per-page=2000&sport-ids=9&states=open%2Cgraded&exchange-type=back-lay&odds-type=DECIMAL&include-prices=true&price-depth=3&price-mode=expanded&include-event-participants=false&exclude-mirrored-prices=false"
+print(url1 == url2)
+response = requests.get(url1, headers=headers)
 
 res = response.json()
 # print(res["events"][0])
@@ -51,9 +57,12 @@ in_running_flag_events = [event for event in res["events"] if event["in-running-
 #    print(event)
 #    break
 events = Events(res["events"])
+for event in events.events:
+    print(event.name, event.sport_id)
 # print(len(events.events))
 
 
+"""
 def check_false(event_id: int):
     url = f"https://api.matchbook.com/edge/rest/events/{event_id}?exchange-type=back-lay&odds-type=DECIMAL&include-prices=false&price-depth=3&price-mode=expanded&include-event-participants=false&exclude-mirrored-prices=false"
 
@@ -149,3 +158,5 @@ for ((kf, vf), (kt, vt)) in zip(
 
 # print(response_false["markets"][0])
 # print(response_true["markets"][0])
+
+"""

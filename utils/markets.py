@@ -1,5 +1,6 @@
 from datetime import datetime
 from time import time
+import logging
 
 
 def factory(disable_error_msg: bool = False, **kwargs):
@@ -64,7 +65,7 @@ def factory(disable_error_msg: bool = False, **kwargs):
             if disable_error_msg:
                 pass
             else:
-                print("Unknown type of market: ", kwargs.get("ticker"))
+                logging.warn(f"Unknown type of market: {kwargs.get('ticker')}")
             # raise Exception("Unknown type of market")
             return None
     else:

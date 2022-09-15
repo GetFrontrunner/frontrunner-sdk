@@ -1,0 +1,157 @@
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): k8s.testnet.lcd.injective.network:443
+DEBUG:urllib3.connectionpool:https://k8s.testnet.lcd.injective.network:443 "GET /injective/exchange/v1beta1/binary_options/markets HTTP/1.1" 200 None
+WARNING:root:Unknown type of market: SSS-ZHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: DDD-KHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: SSS-KHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: ZAS-ZHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: BBB-KHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: Nillan / Brian / TEST2
+WARNING:root:Unknown type of market: STR-ZHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: N-ZHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: AAA-KHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: CCC-KHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: FT-ZHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: Nillan / Brian / TEST
+WARNING:root:Unknown type of market: F-ZHABIB-TKO-05/30/2023
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): k8s.testnet.lcd.injective.network:443
+DEBUG:urllib3.connectionpool:https://k8s.testnet.lcd.injective.network:443 "GET /injective/exchange/v1beta1/binary_options/markets HTTP/1.1" 200 None
+WARNING:root:Unknown type of market: SSS-ZHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: DDD-KHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: SSS-KHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: ZAS-ZHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: BBB-KHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: Nillan / Brian / TEST2
+WARNING:root:Unknown type of market: STR-ZHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: N-ZHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: AAA-KHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: CCC-KHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: FT-ZHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: Nillan / Brian / TEST
+WARNING:root:Unknown type of market: F-ZHABIB-TKO-05/30/2023
+INFO:root:staging-1662636900-MIN-NYY
+INFO:root:staging-1662944400-EVE-None
+INFO:root:staging-1662944400-None-None
+INFO:root:staging-1662953400-None-NOT_DR
+INFO:root:staging-1662870600-TOT-None
+INFO:root:staging-1662633300-NYM-PIT
+INFO:root:staging-1662639000-TEX-HOU
+INFO:root:staging-1662944400-ARS-NOT_ARS
+INFO:root:staging-1662870600-None-None
+INFO:root:staging-1662861600-LIV-None
+INFO:root:staging-1662944400-EVE-NOT_EVE
+INFO:root:staging-1662639000-CLE-KC
+INFO:root:staging-1662637500-WSH-STL
+INFO:root:staging-1662870600-MNC-None
+INFO:root:staging-1662953400-CRY-None
+INFO:root:staging-1662953400-MNU-NOT_MAN
+INFO:root:staging-1662944400-None-NOT_DR
+INFO:root:staging-1662620700-MIN-NYY
+INFO:root:staging-1662611700-NYM-PIT
+INFO:root:staging-1662944400-ARS-None
+INFO:root:staging-1662953400-CRY-NOT_CRY
+INFO:root:staging-1662852600-FUL-None
+INFO:root:staging-1662953400-MNU-None
+INFO:root:staging-1662852600-None-None
+INFO:root:staging-1662861600-WOL-None
+INFO:root:staging-1662624600-SF-LAD
+INFO:root:staging-1662861600-None-None
+INFO:root:staging-1662852600-CFC-None
+INFO:root:staging-1662953400-None-None
+INFO:root:1662639000-TEX-HOU
+INFO:root:1662620700-MIN-NYY
+INFO:root:1662637500-WSH-STL
+INFO:root:1662639000-CLE-KC
+INFO:root:1662633300-NYM-PIT
+INFO:root:1662611700-NYM-PIT
+INFO:root:1662624600-SF-LAD
+INFO:root:1662633300-MIN-NYY
+DEBUG:root:event:
+DEBUG:root:send event:
+DEBUG:asyncio:Using selector: EpollSelector
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): k8s.testnet.lcd.injective.network:443
+DEBUG:urllib3.connectionpool:https://k8s.testnet.lcd.injective.network:443 "GET /injective/exchange/v1beta1/binary_options/markets HTTP/1.1" 200 None
+WARNING:root:Unknown type of market: SSS-ZHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: DDD-KHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: SSS-KHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: ZAS-ZHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: BBB-KHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: Nillan / Brian / TEST2
+WARNING:root:Unknown type of market: STR-ZHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: N-ZHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: AAA-KHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: CCC-KHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: FT-ZHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: Nillan / Brian / TEST
+WARNING:root:Unknown type of market: F-ZHABIB-TKO-05/30/2023
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): k8s.testnet.lcd.injective.network:443
+DEBUG:urllib3.connectionpool:https://k8s.testnet.lcd.injective.network:443 "GET /injective/exchange/v1beta1/binary_options/markets HTTP/1.1" 200 None
+WARNING:root:Unknown type of market: SSS-ZHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: DDD-KHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: SSS-KHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: ZAS-ZHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: BBB-KHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: Nillan / Brian / TEST2
+WARNING:root:Unknown type of market: STR-ZHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: N-ZHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: AAA-KHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: CCC-KHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: FT-ZHABIB-TKO-05/30/2023
+WARNING:root:Unknown type of market: Nillan / Brian / TEST
+WARNING:root:Unknown type of market: F-ZHABIB-TKO-05/30/2023
+INFO:root:staging-1662636900-MIN-NYY
+INFO:root:staging-1662944400-EVE-None
+INFO:root:staging-1662944400-None-None
+INFO:root:staging-1662953400-None-NOT_DR
+INFO:root:staging-1662870600-TOT-None
+INFO:root:staging-1662633300-NYM-PIT
+INFO:root:staging-1662639000-TEX-HOU
+INFO:root:staging-1662944400-ARS-NOT_ARS
+INFO:root:staging-1662870600-None-None
+INFO:root:staging-1662861600-LIV-None
+INFO:root:staging-1662944400-EVE-NOT_EVE
+INFO:root:staging-1662639000-CLE-KC
+INFO:root:staging-1662637500-WSH-STL
+INFO:root:staging-1662870600-MNC-None
+INFO:root:staging-1662953400-CRY-None
+INFO:root:staging-1662953400-MNU-NOT_MAN
+INFO:root:staging-1662944400-None-NOT_DR
+INFO:root:staging-1662620700-MIN-NYY
+INFO:root:staging-1662611700-NYM-PIT
+INFO:root:staging-1662944400-ARS-None
+INFO:root:staging-1662953400-CRY-NOT_CRY
+INFO:root:staging-1662852600-FUL-None
+INFO:root:staging-1662953400-MNU-None
+INFO:root:staging-1662852600-None-None
+INFO:root:staging-1662861600-WOL-None
+INFO:root:staging-1662624600-SF-LAD
+INFO:root:staging-1662861600-None-None
+INFO:root:staging-1662852600-CFC-None
+INFO:root:staging-1662953400-None-None
+INFO:root:1662639000-TEX-HOU
+INFO:root:1662620700-MIN-NYY
+INFO:root:1662637500-WSH-STL
+INFO:root:1662639000-CLE-KC
+INFO:root:1662633300-NYM-PIT
+INFO:root:1662611700-NYM-PIT
+INFO:root:1662624600-SF-LAD
+INFO:root:1662633300-MIN-NYY
+DEBUG:root:event:
+DEBUG:root:send event:
+INFO:root:sleep: 10
+DEBUG:root:slept: 10
+DEBUG:root:event:
+DEBUG:root:send event:
+INFO:root:sleep: 10
+DEBUG:root:slept: 10
+DEBUG:root:event:
+DEBUG:root:send event:
+INFO:root:sleep: 10
+DEBUG:root:slept: 10
+DEBUG:root:event:
+DEBUG:root:send event:
+INFO:root:sleep: 10
+DEBUG:root:slept: 10
+DEBUG:root:event:
+DEBUG:root:send event:
+INFO:root:sleep: 10

@@ -1,31 +1,29 @@
+from typing import List, Union, Optional
+from time import time_ns
+from math import log
 import logging
 from aiohttp import ClientTimeout, TCPConnector, ClientSession
 from asyncio import sleep
 
-
-from typing import List, Union
-from time import time_ns
-from math import log
-from orjson import dumps
+# from orjson import dumps
+from pickle import dumps
 
 from utils.utilities import RedisProducer
-from utils.granter import Granter
-from utils.markets import ActiveMarket, StagingMarket
-from utils.client import create_client, switch_node_recreate_client
+import requests
+
+# from utils.granter import Granter
+# from utils.markets import ActiveMarket, StagingMarket
+# from utils.client import create_client, switch_node_recreate_client
 from data.matchbook.utilities import *
 
 
-class MatchbookData:
+class BetfairData:
     def __init__(
         self,
-        # markets: Union[List[ActiveMarket], List[StagingMarket]],
-        # granters: List[Granter],
         redis_addr: str = "127.0.0.1:6379",
     ):
-        # self.markets = markets
-        # self.granters = granters
         self.redis = RedisProducer(redis_addr=redis_addr)
-        self.url = "https://api.matchbook.com/edge/rest/events/event_id?exchange-type=back-lay&odds-type=DECIMAL&include-prices=false&price-depth=3&price-mode=expanded&include-event-participants=false&exclude-mirrored-prices=false"
+        # self.url: Optional[str] = None
         self.headers = {
             "Accept": "application/json",
             "User-Agent": "api-doc-test-client",
@@ -35,6 +33,7 @@ class MatchbookData:
         self.session = ClientSession(
             timeout=ClientTimeout(total=10), headers=self.headers, connector=connector
         )
+        self.t = 10
 
     async def _retry(self, topic: str, obj, url: str) -> bool:
         res = await self.session.post(url)
@@ -49,11 +48,15 @@ class MatchbookData:
     async def get_sport(self, n: int = 10):
         topic = "Matchbook/sports"
         url = "https://api.matchbook.com/edge/rest/lookups/sports?offset=0&per-page=2000&order=name%20asc&status=active"
-        res = await self.session.post(url)
+
+        res = await self.session.get(url)
         if res.status == 200:
             data = await res.json()
-            sport = Sport(data)
-            self.redis.produce(topic, dumps(sport))
+            for sport in data["sports"]:
+                print(f"{sport['name']}\t {sport['id']}")
+
+            # sport = Sport(data)
+            # self.redis.produce(topic, dumps(sport))
         else:
             success = False
             logging.info("failed to get sport data from matchbook")
@@ -63,43 +66,52 @@ class MatchbookData:
 
     async def get_events(self, sport_id: Optional[int], n: int = 10):
         topic = "Matchbook/events"
-        # url = "https://api.matchbook.com/edge/rest/events?offset=0&per-page=2000&sport-ids=15&states=open%2Cgraded&exchange-type=back-lay&odds-type=DECIMAL&include-prices=false&price-depth=3&price-mode=expanded&include-event-participants=false&exclude-mirrored-prices=false"
-        if sport_id:
-            url = f"https://api.matchbook.com/edge/rest/events?offset=0&per-page=20000&sport-ids={sport_id}&states=open%2Csuspended%2Cclosed%2Cgraded&exchange-type=back-lay&odds-type=DECIMAL&include-prices=true&price-depth=3&price-mode=expanded&include-event-participants=false&exclude-mirrored-prices=false"
-        else:
-            url = "https://api.matchbook.com/edge/rest/events?offset=0&per-page=20000&states=open%2Csuspended%2Cclosed%2Cgraded&exchange-type=back-lay&odds-type=DECIMAL&include-prices=truee&price-depth=3&price-mode=expanded&include-event-participants=false&exclude-mirrored-prices=false"
-        res = await self.session.post(url)
-        if res.status == 200:
-            data = await res.json()
-            events = Events(data)
-            self.redis.produce(topic, dumps(events))
-        else:
-            success = False
-            logging.info("failed to get events data from matchbook")
-            if not success and n > 0:
-                success = await self._retry(topic=topic, obj=Events, url=url)
-                n -= 1
+        while True:
+            if sport_id:
+                url = f"https://api.matchbook.com/edge/rest/events?offset=0&per-page=20000&sport-ids={sport_id}&states=open%2Csuspended%2Cclosed%2Cgraded&exchange-type=back-lay&odds-type=DECIMAL&include-prices=true&price-depth=3&price-mode=expanded&include-event-participants=false&exclude-mirrored-prices=false"
+            else:
+                url = "https://api.matchbook.com/edge/rest/events?offset=0&per-page=20000&states=open%2Csuspended%2Cclosed%2Cgraded&exchange-type=back-lay&odds-type=DECIMAL&include-prices=truee&price-depth=3&price-mode=expanded&include-event-participants=false&exclude-mirrored-prices=false"
+            res = await self.session.get(url)
+            if res.status == 200:
+                data = await res.json()
+                events = Events(data)
+                logging.debug("event:")
+                self.redis.produce(topic, dumps(events))
+                logging.debug("send event:")
+            else:
+                success = False
+                logging.info("failed to get events data from matchbook")
+                if not success and n > 0:
+                    success = await self._retry(topic=topic, obj=Events, url=url)
+                    n -= 1
+            logging.info(f"sleep: {self.t}")
+            await sleep(self.t)
+            logging.debug(f"slept: {self.t}")
 
     async def get_event(self, event_id: int, n=10):
-        topic = "Matchbook/event"
-        url = f"https://api.matchbook.com/edge/rest/events/{event_id}?exchange-type=back-lay&odds-type=DECIMAL&include-prices=false&price-depth=3&price-mode=expanded&include-event-participants=false&exclude-mirrored-prices=false"
-        res = await self.session.post(url)
-        if res.status == 200:
-            data = await res.json()
-            event = Event(data)
-            self.redis.produce(topic, dumps(event))
-        else:
-            success = False
+        while True:
+            topic = "Matchbook/event"
+            url = f"https://api.matchbook.com/edge/rest/events/{event_id}?exchange-type=back-lay&odds-type=DECIMAL&include-prices=false&price-depth=3&price-mode=expanded&include-event-participants=false&exclude-mirrored-prices=false"
+            res = await self.session.get(url)
+            if res.status == 200:
+                data = await res.json()
+                event = Event(data)
+                self.redis.produce(topic, dumps(event))
+            else:
+                success = False
 
-            logging.info("failed to get event data from matchbook")
-            if not success and n > 0:
-                success = await self._retry(topic=topic, obj=Event, url=url)
-                n -= 1
+                logging.info("failed to get event data from matchbook")
+                if not success and n > 0:
+                    success = await self._retry(topic=topic, obj=Event, url=url)
+                    n -= 1
+            logging.info(f"sleep: {self.t}")
+            await sleep(self.t)
+            logging.debug(f"slept: {self.t}")
 
     async def get_markets(self, event_id: int, n=10):
         topic = "Matchbook/markets"
-        url = f"https://api.matchbook.com/edge/rest/events/{event_id}/markets?offset=0&per-page=20000&states=open%2Csuspended&exchange-type=back-lay&odds-type=DECIMAL&include-prices=true&price-depth=3&price-mode=expanded&exclude-mirrored-prices=false"
-        res = await self.session.post(url)
+        url = f"https://api.matchbook.com/edge/rest/events/{event_id}/markets?offset=0&per-page=20000&states=open%2Csuspended%2Cclosed%2Cgraded&exchange-type=back-lay&odds-type=DECIMAL&include-prices=true&price-depth=3&price-mode=expanded&exclude-mirrored-prices=false"
+        res = await self.session.get(url)
         if res.status == 200:
             data = await res.json()
             marekts = Markets(data)

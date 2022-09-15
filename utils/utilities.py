@@ -22,10 +22,13 @@ from asyncio import (
 )
 from redis import StrictRedis
 from redis import asyncio as aredis
+from pickle import loads
 
 from requests import get
 from sha3 import keccak_256 as sha3_keccak_256
 import asyncio
+
+# from data.matchbook.utilities import Events
 
 # from objects import Order
 
@@ -90,25 +93,41 @@ class RedisConsumer:
         if self.topics:
             await self.redis_consumer.subscribe(*self.topics)
         else:
-            print("No topics to subscribe to")
+            logging.info("No topics to subscribe to")
 
         async for msg in self.redis_consumer.listen():
-            try:
-                # print(msg)
-                payload = msg
-
-                if "tob" in payload["msg_type"]:
-                    await self.on_tob_callback(payload)
-                elif "depth" in payload["msg_type"]:
-                    await self.on_depth_callback(payload)
-                elif "trade" in payload["msg_type"]:
-                    await self.on_trade_callback(payload)
-                elif "position" in payload["msg_type"]:
-                    await self.on_position_callback(payload)
+            if msg["data"] == 1:
+                logging.info(f"first msg topic {msg['channel'].decode('utf-8')}")
+            else:
+                payload = loads(msg["data"])
+                # logging.info(payload.events)
+                if payload.events:
+                    for event in payload.events:
+                        logging.info(event.name, event.sport_id)
                 else:
-                    print("unknown data", payload)
-            except Exception as e:
-                pass
+                    logging.info(f"no events in {msg['channel'].decode('utf-8')}")
+            # try:
+            #    payload = loads(msg)
+            #    for event in payload.events:
+            #        print(event.name, event.sport_id)
+
+            #    # if isinstance(payload, Events):
+            #    #    print(payload)
+            #    # else:
+            #    #    pass
+
+            #    if "tob" in payload["msg_type"]:
+            #        await self.on_tob_callback(payload)
+            #    elif "depth" in payload["msg_type"]:
+            #        await self.on_depth_callback(payload)
+            #    elif "trade" in payload["msg_type"]:
+            #        await self.on_trade_callback(payload)
+            #    elif "position" in payload["msg_type"]:
+            #        await self.on_position_callback(payload)
+            #    else:
+            #        print("unknown data", payload)
+            # except Exception as e:
+            #    pass
 
     async def subscribe(self, topics):
         newsub = set(topics) - self.topics

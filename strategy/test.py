@@ -12,7 +12,9 @@ FORMAT = "[%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s"
 logging.basicConfig(format=FORMAT)
 
 if grantee_private_key and granter_inj_address:
-    model = Model(private_key=grantee_private_key, topics=[], is_testnet=True)
+    model = Model(
+        private_key=grantee_private_key, topics=["Matchbook/events"], is_testnet=True
+    )
     # model.create_granters([granter_inj_address])
     model.create_granters()
     loop = model.get_loop()
