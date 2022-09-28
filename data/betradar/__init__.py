@@ -15,11 +15,16 @@ from data.data_source_template import Data
 class BetRadarData(Data):
     def __init__(
         self,
+        x_access_token: str = "SFtwiihsKUwPqlGIlU",
         redis_addr: str = "127.0.0.1:6379",
     ):
         super().__init__(redis_addr)
-        self.url = f"https://api.betradar.com/v1"
+        self.url = "https://stgapi.betradar.com/v1"
         self.headers.clear
+        self.headers = {
+            "accept": "*/*",
+            "x-access-token": x_access_token,
+        }
 
     async def _retry(self, topic: str, obj, url: str):
         res = await self.session.post(url)
