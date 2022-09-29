@@ -9,60 +9,63 @@ from pickle import dumps
 
 from utils.utilities import RedisProducer
 
-from data.betradar.utilities import *
 
-
-class Data:
+class BetRadarResponseData:
     def __init__(self, data):
         self.data = data
 
 
-class RecoveryOdds(Data):
+class Error(BetRadarResponseData):
+    def __init__(self, error):
+        super().__init__(error)
+
+
+class RecoveryOdds(BetRadarResponseData):
     def __init__(self, data):
         super().__init__(data)
 
 
-class RecoveryEvent(Data):
+class RecoveryEvent(BetRadarResponseData):
     def __init__(self, data):
         super().__init__(data)
 
 
-class RecoveryStateMessage(Data):
+class RecoveryStateMessage(BetRadarResponseData):
     def __init__(self, data):
         super().__init__(data)
 
 
-class BookingCalendar(Data):
+class BookingCalendar(BetRadarResponseData):
     def __init__(self, data):
         super().__init__(data)
 
 
-class Fixture(Data):
+class Fixture(BetRadarResponseData):
     def __init__(self, data):
         super().__init__(data)
 
 
-class Schedules(Data):
+class Schedules(BetRadarResponseData):
     def __init__(self, data):
         super().__init__(data)
 
 
-class FixtureChanges(Data):
+class FixtureChanges(BetRadarResponseData):
     def __init__(self, data):
         super().__init__(data)
 
 
-class Summary(Data):
+class Summary(BetRadarResponseData):
     def __init__(self, data):
         super().__init__(data)
 
 
-class Timeline(Data):
+class Timeline(BetRadarResponseData):
     def __init__(self, data):
         super().__init__(data)
 
 
-class Sports(Data):
+class Sports(BetRadarResponseData):
     def __init__(self, data):
         super().__init__(data)
 
@@ -72,41 +75,41 @@ class Tournaments:
         pass
 
 
-class Tournament(Data):
+class Tournament(BetRadarResponseData):
     def __init__(self, data):
         super().__init__(data)
 
 
-class Seasons(Data):
+class Seasons(BetRadarResponseData):
     def __init__(self, data):
         super().__init__(data)
 
 
-class Players(Data):
+class Players(BetRadarResponseData):
     def __init__(self, data):
         super().__init__(data)
 
 
-class Competitors(Data):
+class Competitors(BetRadarResponseData):
     def __init__(self, data):
         super().__init__(data)
 
 
-class Venues(Data):
+class Venues(BetRadarResponseData):
     def __init__(self, data):
         super().__init__(data)
 
 
-class Description(Data):
+class Description(BetRadarResponseData):
     def __init__(self, data):
         super().__init__(data)
 
 
-class Probabilities(Data):
+class Probabilities(BetRadarResponseData):
     def __init__(self, data):
         super().__init__(data)
 
 
-class User(Data):
+class User(BetRadarResponseData):
     def __init__(self, data):
         super().__init__(data)

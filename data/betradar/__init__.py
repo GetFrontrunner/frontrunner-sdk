@@ -9,7 +9,10 @@ from pickle import dumps
 from utils.utilities import RedisProducer
 
 from data.betradar.utilities import *
+
 from data.data_source_template import Data
+import xmltodict
+import json
 
 
 class BetRadarData(Data):
@@ -26,17 +29,40 @@ class BetRadarData(Data):
             "x-access-token": x_access_token,
         }
 
-    async def _retry(self, topic: str, obj, url: str):
-        res = await self.session.post(url)
+    async def get_retry(self, topic: str, obj, url: str):
+        if "content-type" in self.headers:
+            del self.headers["content-type"]
+
+        res = await self.session.get(url, headers=self.headers)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
             data = obj(data)
             self.redis.produce(topic, dumps(data))
             return True
         else:
             return False
 
-    async def recovery_odds(self, product: str, request_id: int, n: int = 3) -> None:
+    async def post_retry(self, topic: str, obj, url: str):
+        if "content-type" not in self.headers:
+            self.headers["content-type"] = "application/x-www-form-urlencoded"
+
+        res = await self.session.post(url, headers=self.headers)
+        if res.status == 200:
+            data = await res.text()
+            data = obj(data)
+            self.redis.produce(topic, dumps(data))
+            return True
+        else:
+            return False
+
+    async def recovery_odds(
+        self,
+        product: str,
+        request_id: Optional[int] = None,
+        node_id: Optional[int] = None,
+        after: Optional[int] = None,
+        n: int = 3,
+    ) -> None:
         """
         product:
         pre
@@ -55,11 +81,24 @@ class BetRadarData(Data):
         codds
         """
         topic = "BetRadar/recovery_odds"
-        url = f"{self.url}/{product}/recovery/initiate_request?request_id={request_id}"
 
-        res = await self.session.post(url)
+        url = f"{self.url}/{product}/recovery/initiate_request"
+
+        if "content-type" not in self.headers:
+            self.headers["content-type"] = "application/x-www-form-urlencoded"
+        params = {}
+        if request_id:
+            params["request_id"] = request_id
+        if node_id:
+            params["node_id"] = node_id
+        if after:
+            params["after"] = after
+
+        res = await self.session.post(url, headers=self.headers)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
+
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -70,7 +109,13 @@ class BetRadarData(Data):
                 n -= 1
 
     async def recovery_all_odds(
-        self, product: str, urn_type: str, type_id: int, request_id: int, n: int = 3
+        self,
+        product: str,
+        urn_type: str,
+        type_id: int,
+        request_id: Optional[int],
+        nodes: Optional[int],
+        n: int = 3,
     ):
         """
         product:
@@ -106,11 +151,19 @@ class BetRadarData(Data):
         vbi:tournament
         """
         topic = "BetRadar/recovery_all_odds"
-        url = f"{self.url}/{product}/odds/events/{urn_type}:{type_id}/initiate_request?request_id={request_id}"
+        url = f"{self.url}/{product}/odds/events/{urn_type}:{type_id}/initiate_request"
+        if "content-type" not in self.headers:
+            self.headers["content-type"] = "application/x-www-form-urlencoded"
+        params = {}
+        if request_id:
+            params["request_id"] = request_id
+        if nodes:
+            params["nodes"] = nodes
 
-        res = await self.session.post(url)
+        res = await self.session.post(url, headers=self.headers, params=params)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -121,7 +174,13 @@ class BetRadarData(Data):
                 n -= 1
 
     async def recovery_all_statefull_messages(
-        self, product: str, urn_type: str, type_id: int, request_id: int, n: int = 3
+        self,
+        product: str,
+        urn_type: str,
+        type_id: int,
+        request_id: Optional[int],
+        node_id: Optional[int],
+        n: int = 3,
     ):
         """
         product:
@@ -158,11 +217,19 @@ class BetRadarData(Data):
         """
 
         topic = "BetRadar/recovery_statefull_messages"
-        url = f"{self.url}/{product}/stateful_messages/events/{urn_type}:{type_id}/initiate_request?request_id={request_id}"
+        url = f"{self.url}/{product}/stateful_messages/events/{urn_type}:{type_id}/initiate_request"
+        if "content-type" not in self.headers:
+            self.headers["content-type"] = "application/x-www-form-urlencoded"
+        params = {}
+        if request_id:
+            params["request_id"] = request_id
+        if node_id:
+            params["node_id"] = node_id
 
-        res = await self.session.post(url)
+        res = await self.session.post(url, headers=self.headers, params=params)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -175,10 +242,13 @@ class BetRadarData(Data):
     async def get_booking_calendar(self, sport_id: int, n: int = 3):
         topic = "BetRadar/booking_calendar"
         url = f"{self.url}/liveodds/booking-calendar/events/sr:match:{sport_id}/book"
+        if "content-type" not in self.headers:
+            self.headers["content-type"] = "application/x-www-form-urlencoded"
 
-        res = await self.session.post(url)
+        res = await self.session.post(url, headers=self.headers)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -194,7 +264,8 @@ class BetRadarData(Data):
         url = f"{self.url}/custombet/sr:match:{event_id}/available_selections"
         res = await self.session.get(url)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -210,7 +281,8 @@ class BetRadarData(Data):
 
         res = await self.session.post(url)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -225,7 +297,8 @@ class BetRadarData(Data):
         url = f"{self.url}/custombet/calculate_filter"
         res = await self.session.post(url)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -243,7 +316,8 @@ class BetRadarData(Data):
 
         res = await self.session.get(url)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -272,7 +346,8 @@ class BetRadarData(Data):
 
         res = await self.session.get(url)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -289,7 +364,8 @@ class BetRadarData(Data):
 
         res = await self.session.get(url)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -305,7 +381,8 @@ class BetRadarData(Data):
 
         res = await self.session.get(url)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -320,7 +397,8 @@ class BetRadarData(Data):
         url = f"{self.url}/descriptions/betstop_reasons.xml"
         res = await self.session.get(url)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -336,7 +414,8 @@ class BetRadarData(Data):
 
         res = await self.session.get(url)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -352,7 +431,8 @@ class BetRadarData(Data):
 
         res = await self.session.get(url)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -387,7 +467,8 @@ class BetRadarData(Data):
         res = await self.session.get(url)
 
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -402,7 +483,8 @@ class BetRadarData(Data):
         url = f"{self.url}/descriptions/en/variants.xml"
         res = await self.session.get(url)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -423,7 +505,8 @@ class BetRadarData(Data):
         url = f"{self.url}/sports/en/players/sr:player:{player_id}/profile.xml"
         res = await self.session.get(url)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -443,7 +526,8 @@ class BetRadarData(Data):
         url = f"{self.url}/sports/en/competitors/sr:{urn_type}:{competitior_id}/profile.xml"
         res = await self.session.get(url)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -458,7 +542,8 @@ class BetRadarData(Data):
         url = f"{self.url}/sports/en/venues/sr:venue:{venue_id}/profile.xml"
         res = await self.session.get(url)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -498,7 +583,8 @@ class BetRadarData(Data):
         url = f"{self.url}/sports/en/sport_events/{urn_type}:{event_id}/summary.xml"
         res = await self.session.get(url)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -517,7 +603,8 @@ class BetRadarData(Data):
         url = f"{self.url}/sports/en/sport_events/sr:{urn_type}:{event_id}/timeline.xml"
         res = await self.session.get(url)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -532,7 +619,8 @@ class BetRadarData(Data):
         url = f"{self.url}/sports/en/sports/sr:sport:{sport_id}/categories.xml"
         res = await self.session.get(url)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -547,7 +635,8 @@ class BetRadarData(Data):
         url = f"{self.url}/sports/en/sports/sr:sport:{sport_id}/tournaments.xml"
         res = await self.session.get(url)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -562,7 +651,8 @@ class BetRadarData(Data):
         url = f"{self.url}/sports/en/sports.xml"
         res = await self.session.get(url)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -577,7 +667,8 @@ class BetRadarData(Data):
         url = f"{self.url}/sports/en/tournaments.xml"
         res = await self.session.get(url)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -609,7 +700,8 @@ class BetRadarData(Data):
         url = f"{self.url}/sports/en/tournaments/sr:{urn_type}:{tournament_id}/info.xml"
         res = await self.session.get(url)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -629,7 +721,8 @@ class BetRadarData(Data):
         url = f"{self.url}/sports/en/tournaments/sr:{urn_type}:{tournament_id}/seasons.xml"
         res = await self.session.get(url)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -646,7 +739,8 @@ class BetRadarData(Data):
         url = f"{self.url}/sports/en/sport_events/{urn_type}:{event_id}/fixture.xml"
         res = await self.session.get(url)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -661,7 +755,8 @@ class BetRadarData(Data):
         url = f"{self.url}/sports/en/schedules/{date}/schedule.xml"
         res = await self.session.get(url)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -676,7 +771,8 @@ class BetRadarData(Data):
         url = f"{self.url}/sports/en/schedules/live/schedule.xml"
         res = await self.session.get(url)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -696,7 +792,8 @@ class BetRadarData(Data):
         )
         res = await self.session.get(url)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -715,7 +812,8 @@ class BetRadarData(Data):
         )
         res = await self.session.get(url)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -730,7 +828,8 @@ class BetRadarData(Data):
         url = f"{self.url}/sports/en/fixtures/changes.xml"
         res = await self.session.get(url)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
@@ -745,7 +844,8 @@ class BetRadarData(Data):
         url = f"{self.url}/sports/en/results/changes.xml"
         res = await self.session.get(url)
         if res.status == 200:
-            data = await res.json()
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
             # runner = Runner(data)
             # self.redis.produce(topic, dumps(runner))
         else:
