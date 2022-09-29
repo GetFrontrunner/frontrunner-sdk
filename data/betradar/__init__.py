@@ -80,6 +80,25 @@ class BetRadarData(Data):
         vbi
         codds
         """
+        if product not in [
+            "pre",
+            "liveodds",
+            "premium_cricket",
+            "betpal",
+            "vf",
+            "vbl",
+            "vto",
+            "wns",
+            "vdr",
+            "vhc",
+            "vti",
+            "vci",
+            "vbi",
+            "codds",
+        ]:
+            logging.error("Recovery Odds: Invalid product: %s" % product)
+            return
+
         topic = "BetRadar/recovery_odds"
 
         url = f"{self.url}/{product}/recovery/initiate_request"
@@ -99,13 +118,13 @@ class BetRadarData(Data):
             data = await res.text()
             data_dict = xmltodict.parse(data)
 
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            recovery_odds = RecoveryOdds(data_dict)
+            self.redis.produce(topic, dumps(recovery_odds))
         else:
             success = False
             logging.info("failed to get recovery odds data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
                 n -= 1
 
     async def recovery_all_odds(
@@ -119,37 +138,74 @@ class BetRadarData(Data):
     ):
         """
         product:
-        pre
-        liveodds
-        premium_cricket
-        betpal
-        vf
-        vbl
-        vto
-        vdr
-        vhc
-        vti
-        vci
-        vbi
-        codds
+        'pre',
+        'liveodds',
+        'premium_cricket',
+        'betpal',
+        'vf',
+        'vbl',
+        'vto',
+        'vdr',
+        'vhc',
+        'vti',
+        'vci',
+        'vbi',
+        'codds',
 
         urn_type:
-        sr:match
-        sr:stage
-        sr:tournament
-        sr:season
-        vf:match
-        vbl:match
-        vto:match
-        vdr:stage
-        vhc:stage
-        vti:match
-        vci:match
-        vbi:match
-        vti:tournament
-        vci:tournament
-        vbi:tournament
+        'sr:match',
+        'sr:stage',
+        'sr:tournament',
+        'sr:season',
+        'vf:match',
+        'vbl:match',
+        'vto:match',
+        'vdr:stage',
+        'vhc:stage',
+        'vti:match',
+        'vci:match',
+        'vbi:match',
+        'vti:tournament',
+        'vci:tournament',
+        'vbi:tournament',
         """
+        if urn_type not in [
+            "sr:match",
+            "sr:stage",
+            "sr:tournament",
+            "sr:season",
+            "vf:match",
+            "vbl:match",
+            "vto:match",
+            "vdr:stage",
+            "vhc:stage",
+            "vti:match",
+            "vci:match",
+            "vbi:match",
+            "vti:tournament",
+            "vci:tournament",
+            "vbi:tournament",
+        ]:
+            logging.error("Recovery All Odds: Invalid urn_type")
+            return
+
+        if product not in [
+            "pre",
+            "liveodds",
+            "premium_cricket",
+            "betpal",
+            "vf",
+            "vbl",
+            "vto",
+            "vdr",
+            "vhc",
+            "vti",
+            "vci",
+            "vbi",
+            "codds",
+        ]:
+            logging.error("Recovery All Odds: Invalid product")
+            return
         topic = "BetRadar/recovery_all_odds"
         url = f"{self.url}/{product}/odds/events/{urn_type}:{type_id}/initiate_request"
         if "content-type" not in self.headers:
@@ -164,13 +220,13 @@ class BetRadarData(Data):
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            recovery_events = RecoveryEvent(data_dict)
+            self.redis.produce(topic, dumps(recovery_events))
         else:
             success = False
             logging.info("failed to get recovery all odds data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.post_retry(topic=topic, obj=RecoveryEvent, url=url)
                 n -= 1
 
     async def recovery_all_statefull_messages(
@@ -184,37 +240,75 @@ class BetRadarData(Data):
     ):
         """
         product:
-        pre
-        liveodds
-        premium_cricket
-        betpal
-        vf
-        vbl
-        vto
-        vdr
-        vhc
-        vti
-        vci
-        vbi
-        codds
+        'pre',
+        'liveodds',
+        'premium_cricket',
+        'betpal',
+        'vf',
+        'vbl',
+        'vto',
+        'vdr',
+        'vhc',
+        'vti',
+        'vci',
+        'vbi',
+        'codds',
 
         urn_type:
-        sr:match
-        sr:stage
-        sr:tournament
-        sr:season
-        vf:match
-        vbl:match
-        vto:match
-        vdr:stage
-        vhc:stage
-        vti:match
-        vci:match
-        vbi:match
-        vti:tournament
-        vci:tournament
-        vbi:tournament
+        'sr:match',
+        'sr:stage',
+        'sr:tournament',
+        'sr:season',
+        'vf:match',
+        'vbl:match',
+        'vto:match',
+        'vdr:stage',
+        'vhc:stage',
+        'vti:match',
+        'vci:match',
+        'vbi:match',
+        'vti:tournament',
+        'vci:tournament',
+        'vbi:tournament',
         """
+
+        if product not in [
+            "pre",
+            "liveodds",
+            "premium_cricket",
+            "betpal",
+            "vf",
+            "vbl",
+            "vto",
+            "vdr",
+            "vhc",
+            "vti",
+            "vci",
+            "vbi",
+            "codds",
+        ]:
+            logging.error("Recovery All Odds: Invalid product")
+            return
+
+        if urn_type not in [
+            "sr:match",
+            "sr:stage",
+            "sr:tournament",
+            "sr:season",
+            "vf:match",
+            "vbl:match",
+            "vto:match",
+            "vdr:stage",
+            "vhc:stage",
+            "vti:match",
+            "vci:match",
+            "vbi:match",
+            "vti:tournament",
+            "vci:tournament",
+            "vbi:tournament",
+        ]:
+            logging.error("Recovery All Odds: Invalid urn_type")
+            return
 
         topic = "BetRadar/recovery_statefull_messages"
         url = f"{self.url}/{product}/stateful_messages/events/{urn_type}:{type_id}/initiate_request"
@@ -230,13 +324,15 @@ class BetRadarData(Data):
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            recovery_state_msg = RecoveryStateMessage(data_dict)
+            self.redis.produce(topic, dumps(recovery_state_msg))
         else:
             success = False
             logging.info("failed to get all stateful messages data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.post_retry(
+                    topic=topic, obj=RecoveryStateMessage, url=url
+                )
                 n -= 1
 
     async def get_booking_calendar(self, sport_id: int, n: int = 3):
@@ -249,13 +345,15 @@ class BetRadarData(Data):
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            booking_calendar = BookingCalendar(data_dict)
+            self.redis.produce(topic, dumps(booking_calendar))
         else:
             success = False
             logging.info("failed to get booking calendar data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.post_retry(
+                    topic=topic, obj=BookingCalendar, url=url
+                )
                 n -= 1
 
     ################################################################## CustomBet ###################################################################
@@ -266,13 +364,15 @@ class BetRadarData(Data):
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            available_selection = AvailableSelection(data_dict)
+            self.redis.produce(topic, dumps(available_selection))
         else:
             success = False
             logging.info("failed to get custombet data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.get_retry(
+                    topic=topic, obj=AvailableSelection, url=url
+                )
                 n -= 1
 
     async def get_custombet_probability(self, n: int = 3):
@@ -283,13 +383,13 @@ class BetRadarData(Data):
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            probability = Probability(data_dict)
+            self.redis.produce(topic, dumps(probability))
         else:
             success = False
             logging.info("failed to get custombet data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.post_retry(topic=topic, obj=Probability, url=url)
                 n -= 1
 
     async def get_custombet_probability_filter(self, n: int = 3):
@@ -299,13 +399,13 @@ class BetRadarData(Data):
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            probability_filer = Probability(data_dict)
+            self.redis.produce(topic, dumps(probability_filer))
         else:
             success = False
             logging.info("failed to get custombet data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.post_retry(topic=topic, obj=Probability, url=url)
                 n -= 1
 
     ################################################################## User Info ###################################################################
@@ -318,13 +418,13 @@ class BetRadarData(Data):
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            user = User(data_dict)
+            self.redis.produce(topic, dumps(user))
         else:
             success = False
             logging.info("failed to get user information data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.get_retry(topic=topic, obj=User, url=url)
                 n -= 1
 
     ################################################################## Probability ###################################################################
@@ -348,13 +448,13 @@ class BetRadarData(Data):
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            probabilities = Probabilities(data_dict)
+            self.redis.produce(topic, dumps(probabilities))
         else:
             success = False
             logging.info("failed to get probabilities data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.get_retry(topic=topic, obj=Probabilities, url=url)
                 n -= 1
 
     ################################################################## Betting Description ###################################################################
@@ -366,13 +466,13 @@ class BetRadarData(Data):
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            markets = Markets(data_dict)
+            self.redis.produce(topic, dumps(markets))
         else:
             success = False
             logging.info("failed to get probabilities data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.get_retry(topic=topic, obj=Markets, url=url)
                 n -= 1
 
     async def get_void_reasons(self, n: int = 3):
@@ -383,13 +483,13 @@ class BetRadarData(Data):
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            void_reasons = Reasons(data_dict)
+            self.redis.produce(topic, dumps(void_reasons))
         else:
             success = False
             logging.info("failed to get probabilities data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.get_retry(topic=topic, obj=Reasons, url=url)
                 n -= 1
 
     async def get_betstop_reasons(self, n: int = 3):
@@ -399,13 +499,13 @@ class BetRadarData(Data):
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            betstop_reasons = Reasons(data_dict)
+            self.redis.produce(topic, dumps(betstop_reasons))
         else:
             success = False
             logging.info("failed to get probabilities data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.get_retry(topic=topic, obj=Reasons, url=url)
                 n -= 1
 
     async def get_betting_status(self, n: int = 3):
@@ -416,13 +516,13 @@ class BetRadarData(Data):
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            betting_status = Status(data_dict)
+            self.redis.produce(topic, dumps(betting_status))
         else:
             success = False
             logging.info("failed to get probabilities data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.get_retry(topic=topic, obj=Status, url=url)
                 n -= 1
 
     async def get_match_status(self, n: int = 3):
@@ -433,16 +533,16 @@ class BetRadarData(Data):
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            match_status = Status(data_dict)
+            self.redis.produce(topic, dumps(match_status))
         else:
             success = False
             logging.info("failed to get probabilities data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.get_retry(topic=topic, obj=Status, url=url)
                 n -= 1
 
-    async def get_market_variant_(
+    async def get_market_variant(
         self,
         market_id: int,
         variant_urn: str = "sr:exact_games:bestof:5",
@@ -457,6 +557,9 @@ class BetRadarData(Data):
         liveodds
         wns
         """
+        if product not in ["pre", "liveodds", "wns"]:
+            logging.error("Get Market Variant: Invalid product")
+            return
 
         topic = "BetRadar/variant_market"
         if is_direct:
@@ -469,13 +572,13 @@ class BetRadarData(Data):
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            variant = Variant(data_dict)
+            self.redis.produce(topic, dumps(variant))
         else:
             success = False
             logging.info("failed to get probabilities data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.get_retry(topic=topic, obj=Variant, url=url)
                 n -= 1
 
     async def get_all_variants(self, n: int = 3):
@@ -485,13 +588,13 @@ class BetRadarData(Data):
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            all_variants = Variants(data_dict)
+            self.redis.produce(topic, dumps(all_variants))
         else:
             success = False
             logging.info("failed to get probabilities data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.get_retry(topic=topic, obj=Variants, url=url)
                 n -= 1
 
     async def get_all_producers(self, n: int = 3):
@@ -507,13 +610,13 @@ class BetRadarData(Data):
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            player = Player(data_dict)
+            self.redis.produce(topic, dumps(player))
         else:
             success = False
             logging.info("failed to get probabilities data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.get_retry(topic=topic, obj=Player, url=url)
                 n -= 1
 
     async def get_competitor(self, urn_type: str, competitior_id: int, n: int = 3):
@@ -524,17 +627,22 @@ class BetRadarData(Data):
         """
         topic = "BetRadar/competitor"
         url = f"{self.url}/sports/en/competitors/sr:{urn_type}:{competitior_id}/profile.xml"
+        if urn_type not in ["competitor", "simple_team"]:
+            logging.info("Get Competitor: urn_type not supported")
+            return
+
+        logging.error("Get Market Variant: Invalid product")
         res = await self.session.get(url)
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            competitors = Competitors(data_dict)
+            self.redis.produce(topic, dumps(competitors))
         else:
             success = False
             logging.info("failed to get probabilities data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.get_retry(topic=topic, obj=Competitors, url=url)
                 n -= 1
 
     async def get_venue(self, venue_id: int, n: int = 3):
@@ -544,74 +652,105 @@ class BetRadarData(Data):
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            venues = Venues(data_dict)
+            self.redis.produce(topic, dumps(venues))
         else:
             success = False
             logging.info("failed to get probabilities data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.get_retry(topic=topic, obj=Venues, url=url)
                 n -= 1
 
     ########################################################  Sport Event Info  ####################################################################
     async def get_sport_event_summary(self, urn_type: str, event_id: int, n: int = 3):
         """
-        sr:match
-        sr:stage
-        sr:season
-        sr:tournament
-        sr:simple_tournament
-        vf:match
-        vf:season
-        vf:tournament
-        vbl:match
-        vbl:season
-        vbl:tournament
-        vto:season
-        vto:match
-        vto:tournament
-        vdr:stage
-        vhc:stage
-        vti:match
-        vti:tournament
-        vci:match
-        vci:tournament
-        vbi:match
-        vbi:tournament
+        urn_type:
+        'sr:match',
+        'sr:stage',
+        'sr:season',
+        'sr:tournament',
+        'sr:simple_tournament',
+        'vf:match',
+        'vf:season',
+        'vf:tournament',
+        'vbl:match',
+        'vbl:season',
+        'vbl:tournament',
+        'vto:season',
+        'vto:match',
+        'vto:tournament',
+        'vdr:stage',
+        'vhc:stage',
+        'vti:match',
+        'vti:tournament',
+        'vci:match',
+        'vci:tournament',
+        'vbi:match',
+        'vbi:tournament',
         """
         topic = "BetRadar/event_summary"
         url = f"{self.url}/sports/en/sport_events/{urn_type}:{event_id}/summary.xml"
+        if urn_type not in [
+            "sr:match",
+            "sr:stage",
+            "sr:season",
+            "sr:tournament",
+            "sr:simple_tournament",
+            "vf:match",
+            "vf:season",
+            "vf:tournament",
+            "vbl:match",
+            "vbl:season",
+            "vbl:tournament",
+            "vto:season",
+            "vto:match",
+            "vto:tournament",
+            "vdr:stage",
+            "vhc:stage",
+            "vti:match",
+            "vti:tournament",
+            "vci:match",
+            "vci:tournament",
+            "vbi:match",
+            "vbi:tournament",
+        ]:
+            logging.error("Get Sport Event Summary: Invalid urn type")
+            return
         res = await self.session.get(url)
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            summary = Summary(data_dict)
+            self.redis.produce(topic, dumps(summary))
         else:
             success = False
             logging.info("failed to get probabilities data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.get_retry(topic=topic, obj=Summary, url=url)
                 n -= 1
 
     async def get_event_info(self, urn_type: str, event_id: int, n: int = 3):
         """
+        urn_type:
         sr:match
         sr:stage
         """
+        if urn_type not in ["sr:match", "sr:stage"]:
+            logging.error("Get Event Info: Invalid urn type")
+            return
         topic = "BetRadar/event_info"
         url = f"{self.url}/sports/en/sport_events/sr:{urn_type}:{event_id}/timeline.xml"
         res = await self.session.get(url)
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            events = Events(data_dict)
+            self.redis.produce(topic, dumps(events))
         else:
             success = False
             logging.info("failed to get probabilities data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.get_retry(topic=topic, obj=Events, url=url)
                 n -= 1
 
     async def get_all_sport_categories(self, sport_id: int, n: int = 3):
@@ -621,13 +760,13 @@ class BetRadarData(Data):
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            categories = Categories(data_dict)
+            self.redis.produce(topic, dumps(categories))
         else:
             success = False
             logging.info("failed to get probabilities data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.get_retry(topic=topic, obj=Categories, url=url)
                 n -= 1
 
     async def get_all_sport_tournaments(self, sport_id: int, n: int = 3):
@@ -637,13 +776,13 @@ class BetRadarData(Data):
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            all_sport_tournaments = Tournaments(data_dict)
+            self.redis.produce(topic, dumps(all_sport_tournaments))
         else:
             success = False
             logging.info("failed to get probabilities data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.get_retry(topic=topic, obj=Tournaments, url=url)
                 n -= 1
 
     async def get_all_sports(self, n: int = 3):
@@ -653,13 +792,13 @@ class BetRadarData(Data):
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            all_sports = Sports(data_dict)
+            self.redis.produce(topic, dumps(all_sports))
         else:
             success = False
             logging.info("failed to get probabilities data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.get_retry(topic=topic, obj=Sports, url=url)
                 n -= 1
 
     async def get_all_tournaments(self, n: int = 3):
@@ -669,46 +808,66 @@ class BetRadarData(Data):
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            all_tournaments = Tournaments(data_dict)
+            self.redis.produce(topic, dumps(all_tournaments))
         else:
             success = False
             logging.info("failed to get probabilities data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.get_retry(topic=topic, obj=Tournaments, url=url)
                 n -= 1
 
     async def get_info(self, urn_type: str, tournament_id: int, n: int = 3):
         """
-        sr:tournament
-        sr:season
-        sr:stage
-        sr:simple_tournament
-        vf:tournament
-        vf:season
-        vbl:tournament
-        vbl:season
-        vto:tournament
-        vto:season
-        vdr:stage
-        vhc:stage
-        vti:tournament
-        vci:tournament
-        vbi:tournament
+        urn_type:
+        'sr:tournament',
+        'sr:season',
+        'sr:stage',
+        'sr:simple_tournament',
+        'vf:tournament',
+        'vf:season',
+        'vbl:tournament',
+        'vbl:season',
+        'vto:tournament',
+        'vto:season',
+        'vdr:stage',
+        'vhc:stage',
+        'vti:tournament',
+        'vci:tournament',
+        'vbi:tournament',
         """
+        if urn_type in [
+            "sr:tournament",
+            "sr:season",
+            "sr:stage",
+            "sr:simple_tournament",
+            "vf:tournament",
+            "vf:season",
+            "vbl:tournament",
+            "vbl:season",
+            "vto:tournament",
+            "vto:season",
+            "vdr:stage",
+            "vhc:stage",
+            "vti:tournament",
+            "vci:tournament",
+            "vbi:tournament",
+        ]:
+            logging.error("Get Info: Invalid urn_type")
+            return
         topic = "BetRadar/info"
         url = f"{self.url}/sports/en/tournaments/sr:{urn_type}:{tournament_id}/info.xml"
         res = await self.session.get(url)
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            info = Info(data_dict)
+            self.redis.produce(topic, dumps(info))
         else:
             success = False
             logging.info("failed to get probabilities data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.get_retry(topic=topic, obj=Info, url=url)
                 n -= 1
 
     async def get_all_seasons(self, urn_type: str, tournament_id: int, n: int = 3):
@@ -719,17 +878,20 @@ class BetRadarData(Data):
         """
         topic = "BetRadar/seasons"
         url = f"{self.url}/sports/en/tournaments/sr:{urn_type}:{tournament_id}/seasons.xml"
+        if urn_type not in ["season", "tournaments"]:
+            logging.error("Get All Seasons: invalid urn_type")
+            return
         res = await self.session.get(url)
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            seasons = Seasons(data_dict)
+            self.redis.produce(topic, dumps(seasons))
         else:
             success = False
             logging.info("failed to get probabilities data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.get_retry(topic=topic, obj=Seasons, url=url)
                 n -= 1
 
     ####################################################                    ###################################################################
@@ -741,13 +903,13 @@ class BetRadarData(Data):
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            fixtures = Fixture(data_dict)
+            self.redis.produce(topic, dumps(fixtures))
         else:
             success = False
             logging.info("failed to get probabilities data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.get_retry(topic=topic, obj=Fixture, url=url)
                 n -= 1
 
     async def get_sport_schedule(self, date: str, n: int = 3):
@@ -757,13 +919,13 @@ class BetRadarData(Data):
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            sport_schedule = Schedules(data_dict)
+            self.redis.produce(topic, dumps(sport_schedule))
         else:
             success = False
             logging.info("failed to get probabilities data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.get_retry(topic=topic, obj=Schedules, url=url)
                 n -= 1
 
     async def get_live_schedule(self, n: int = 3):
@@ -773,13 +935,13 @@ class BetRadarData(Data):
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            live_schedules = Schedules(data_dict)
+            self.redis.produce(topic, dumps(live_schedules))
         else:
             success = False
             logging.info("failed to get probabilities data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.get_retry(topic=topic, obj=Schedules, url=url)
                 n -= 1
 
     async def get_all_schedules(self, start: int, n: int = 3):
@@ -794,13 +956,13 @@ class BetRadarData(Data):
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            all_schedules = Schedules(data_dict)
+            self.redis.produce(topic, dumps(all_schedules))
         else:
             success = False
             logging.info("failed to get probabilities data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.get_retry(topic=topic, obj=Schedules, url=url)
                 n -= 1
 
     async def get_tournament_schedule(
@@ -814,13 +976,13 @@ class BetRadarData(Data):
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            tournament_schedules = Schedules(data_dict)
+            self.redis.produce(topic, dumps(tournament_schedules))
         else:
             success = False
             logging.info("failed to get probabilities data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.get_retry(topic=topic, obj=Schedules, url=url)
                 n -= 1
 
     async def get_fixture_changes(self, n: int = 3):
@@ -830,13 +992,13 @@ class BetRadarData(Data):
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            fixture_changes = FixtureChanges(data_dict)
+            self.redis.produce(topic, dumps(fixture_changes))
         else:
             success = False
             logging.info("failed to get probabilities data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.get_retry(topic=topic, obj=FixtureChanges, url=url)
                 n -= 1
 
     async def get_all_fixture_changes(self, n: int = 3):
@@ -846,11 +1008,11 @@ class BetRadarData(Data):
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            # runner = Runner(data)
-            # self.redis.produce(topic, dumps(runner))
+            all_fixture_changes = ResultsChanges(data_dict)
+            self.redis.produce(topic, dumps(all_fixture_changes))
         else:
             success = False
             logging.info("failed to get probabilities data from betradar")
             if not success and n > 0:
-                # success = await self._retry(topic=topic, obj=Runner, url=url)
+                success = await self.get_retry(topic=topic, obj=ResultsChanges, url=url)
                 n -= 1

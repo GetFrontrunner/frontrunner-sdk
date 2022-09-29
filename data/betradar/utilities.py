@@ -4,9 +4,7 @@ from math import log
 import logging
 from aiohttp import ClientTimeout, TCPConnector, ClientSession
 from asyncio import sleep
-
 from pickle import dumps
-
 from utils.utilities import RedisProducer
 
 
@@ -18,6 +16,11 @@ class BetRadarResponseData:
 class Error(BetRadarResponseData):
     def __init__(self, error):
         super().__init__(error)
+
+
+class Markets(BetRadarResponseData):
+    def __init__(self, data):
+        super().__init__(data)
 
 
 class RecoveryOdds(BetRadarResponseData):
@@ -55,6 +58,11 @@ class FixtureChanges(BetRadarResponseData):
         super().__init__(data)
 
 
+class ResultsChanges(BetRadarResponseData):
+    def __init__(self, data):
+        super().__init__(data)
+
+
 class Summary(BetRadarResponseData):
     def __init__(self, data):
         super().__init__(data)
@@ -85,7 +93,32 @@ class Seasons(BetRadarResponseData):
         super().__init__(data)
 
 
+class Variants(BetRadarResponseData):
+    def __init__(self, data):
+        super().__init__(data)
+
+
+class Variant(BetRadarResponseData):
+    def __init__(self, data):
+        super().__init__(data)
+
+
+class Status(BetRadarResponseData):
+    def __init__(self, data):
+        super().__init__(data)
+
+
+class Reasons(BetRadarResponseData):
+    def __init__(self, data):
+        super().__init__(data)
+
+
 class Players(BetRadarResponseData):
+    def __init__(self, data):
+        super().__init__(data)
+
+
+class Player(BetRadarResponseData):
     def __init__(self, data):
         super().__init__(data)
 
@@ -105,11 +138,41 @@ class Description(BetRadarResponseData):
         super().__init__(data)
 
 
+class Probability(BetRadarResponseData):
+    def __init__(self, data):
+        super().__init__(data)
+
+
 class Probabilities(BetRadarResponseData):
     def __init__(self, data):
         super().__init__(data)
 
 
+class AvailableSelection(BetRadarResponseData):
+    def __init__(self, data):
+        super().__init__(data)
+
+
 class User(BetRadarResponseData):
+    def __init__(self, data):
+        super().__init__(data)
+
+
+class Info(BetRadarResponseData):
+    def __init__(self, data):
+        super().__init__(data)
+
+
+class Categories(BetRadarResponseData):
+    def __init__(self, data):
+        super().__init__(data)
+
+
+class Events(BetRadarResponseData):
+    def __init__(self, data):
+        super().__init__(data)
+
+
+class Summaries(BetRadarResponseData):
     def __init__(self, data):
         super().__init__(data)
