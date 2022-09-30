@@ -19,9 +19,144 @@ class Error(BetRadarResponseData):
         super().__init__(error)
 
 
-class Markets(BetRadarResponseData):
+class Markets:
     def __init__(self, data):
-        super().__init__(data)
+        if not data:
+            data = {}
+        self.respose_code = data.get("@respose_code", None)
+        self.markets = [Market(market) for market in data.get("market", {})]
+        # super().__init__(data)
+
+
+class Market:
+    def __init__(self, data):
+        if not data:
+            data = {}
+        self.groups = data.get("@groups", None)
+        self.id = data.get("@id", None)
+        self.name = data.get("@name", None)
+        self.variants = data.get("@variants", None)
+        self.mappings = [
+            Mapping(mapping) for mapping in data.get("@mappings", {}).get("mapping", {})
+        ]
+        self.outcomes = [
+            Outcome(outcome) for outcome in data.get("@outcomes", {}).get("outcome", {})
+        ]
+        self.specifiers = [
+            Specifier(specifier)
+            for specifier in data.get("specifiers", {}).get("specifier", {})
+        ]
+
+
+class Mapping:
+    def __init__(self, data):
+        if not data:
+            data = {}
+
+        self.market_id = data.get("@market_id", None)
+        self.product_id = data.get("@product_id", None)
+        self.product_ids = data.get("@product_ids", None)
+        self.sov_template = data.get("@sov_template", None)
+        self.sport_id = data.get("@sport_id", None)
+        self.valid_for = data.get("@valid_for", None)
+        self.Mapping_outcome = [
+            MappingOutcome(mapping_outcome)
+            for mapping_outcome in data.get("mapping_outcome", [])
+        ]
+
+
+class MappingOutcome:
+    def __init__(self, data):
+        if not data:
+            data = {}
+
+        self.outcome_id = data.get("@outcome_id", None)
+        self.product_outcome_id = data.get("@product_outcome_id", None)
+        self.product_outcome_name = data.get("@product_outcome_name", None)
+
+
+class Outcome:
+    def __init__(self, data):
+        if not data:
+            data = {}
+        pass
+
+
+class Specifier:
+    def __init__(self, data):
+        if not data:
+            data = {}
+
+
+class VoidReasons:
+    def __init__(self, data):
+        if not data:
+            data = {}
+        self.response_code = data.get("@response_code", None)
+        self.void_reasons = [Reason(reason) for reason in data.get("void_reasons", [])]
+
+
+class Reason:
+    def __init__(self, data):
+        if not data:
+            data = {}
+        self.description = data.get("@description", None)
+        self.id = data.get("@id", None)
+
+
+class BetStopReasons:
+    def __init__(self, data):
+        if not data:
+            data = {}
+        self.response_code = data.get("@response_code", None)
+
+        self.bet_stop_reasons = [
+            Reason(bet_stop_reason)
+            for bet_stop_reason in data.get("betstop_reason", [])
+        ]
+
+
+class BettingStatus:
+    def __init__(self, data):
+        if not data:
+            data = {}
+
+        self.response_code = data.get("@response_code", None)
+        self.betting_status = [
+            BStatus(betting_status)
+            for betting_status in data.get("betting_status_description", {}).get(
+                "betting_status", []
+            )
+        ]
+
+
+class BStatus:
+    def __init__(self, data):
+        self.description = data.get("@description", None)
+        self.id = data.get("@id", None)
+
+
+class MatchStatus:
+    def __init__(self, data):
+        if not data:
+            data = {}
+        self.response_code = data.get("@response_code", None)
+        self.match_status = [
+            data.get("@match_status_description", {}).get("match_status", {})
+        ]
+
+
+class Mstatus:
+    def __init__(self, data):
+        if not data:
+            data = {}
+        self.description = data.get("@description", None)
+        self.id = data.get("@id", None)
+        self.period_number = data.get("@period_number", None)
+        self.is_all_sports = data.get("@all", None)
+        self.sports = [
+            Sport(sport) for sport in data.get("sports", {}).get("sport", [])
+        ]
 
 
 class RecoveryOdds(BetRadarResponseData):
@@ -110,14 +245,53 @@ class Seasons:
         self.tournament = Tournament(data.get("@tournament", None))
 
 
-class Variants(BetRadarResponseData):
+class Variants:
     def __init__(self, data):
-        super().__init__(data)
+        if not data:
+            data = {}
+        self.response_code = data.get("variant_desciptions", {}).get(
+            "@response_code", None
+        )
+        self.variants = data.get("variant_desciptions", {}).get("variants", [])
 
 
-class Variant(BetRadarResponseData):
+class Variant:
     def __init__(self, data):
-        super().__init__(data)
+        if not data:
+            data = {}
+        self.id = data.get("@id", {})
+        self.outcomes = [
+            Outcome(outcome) for outcome in data.get("outcomes", {}).get("outcome", [])
+        ]
+        self.mappings = [
+            Mapping(mapping) for mapping in data.get("mappings", {}).get("mapping", [])
+        ]
+
+
+class Producers:
+    def __init__(self, data):
+        if not data:
+            data = {}
+        self.producers = [
+            Producer(producer)
+            for producer in data.get("producers", {}).get("producer", [])
+        ]
+
+
+class Producer:
+    def __init__(self, data):
+        if not data:
+            data = {}
+
+        self.id = data.get("@id", None)
+        self.name = data.get("@name", None)
+        self.description = data.get("@description", None)
+        self.api_url = data.get("@api_url", None)
+        self.active = data.get("@active", None)
+        self.scope = data.get("@scope", None)
+        self.stateful_recovery_window_in_minutes = data.get(
+            "@stateful_recovery_window_in_minutes", None
+        )
 
 
 class Status(BetRadarResponseData):
