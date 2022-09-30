@@ -96,8 +96,9 @@ class Tournament:
     def __init__(self, data):
         self.id = data.get("@id", None)
         self.name = data.get("name", None)
-        self.sport = Sport(data["sport"])
-        self.category = Category(data["category"])
+        self.sport = Sport(data.get("sport", None))
+        self.category = Category(data.get("category", None))
+        self.current_season = Season(data.get("current_season", None))
 
 
 class Seasons:
