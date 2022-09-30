@@ -12,7 +12,8 @@ from data.betradar.utilities import *
 
 from data.data_source_template import Data
 import xmltodict
-import json
+
+# import json
 
 
 class BetRadarData(Data):
@@ -729,7 +730,7 @@ class BetRadarData(Data):
                 success = await self.get_retry(topic=topic, obj=Summary, url=url)
                 n -= 1
 
-    async def get_event_info(self, urn_type: str, event_id: int, n: int = 3):
+    async def get_event_timeline(self, urn_type: str, event_id: int, n: int = 3):
         """
         urn_type:
         sr:match
@@ -744,13 +745,13 @@ class BetRadarData(Data):
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            events = Events(data_dict)
-            self.redis.produce(topic, dumps(events))
+            timeline = Timeline(data_dict.get("match_timeline", {}))
+            self.redis.produce(topic, dumps(timeline))
         else:
             success = False
             logging.info("failed to get probabilities data from betradar")
             if not success and n > 0:
-                success = await self.get_retry(topic=topic, obj=Events, url=url)
+                success = await self.get_retry(topic=topic, obj=Timeline, url=url)
                 n -= 1
 
     async def get_all_sport_categories(self, sport_id: int, n: int = 3):
@@ -1015,4 +1016,20 @@ class BetRadarData(Data):
             logging.info("failed to get probabilities data from betradar")
             if not success and n > 0:
                 success = await self.get_retry(topic=topic, obj=ResultsChanges, url=url)
+                n -= 1
+
+    async def get_tournament_info(self, urn_type: str, tournment_id: int, n: int = 3):
+        topic = "BetRadar/tournament_info"
+        url = f"https://stgapi.betradar.com/v1/sports/en/tournaments/{urn_type}:{tournment_id}/info.xml"
+        res = await self.session.get(url)
+        if res.status == 200:
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
+            info = Info(data_dict)
+            self.redis.produce(topic, dumps(info))
+        else:
+            success = False
+            logging.info("failed to get probabilities data from betradar")
+            if not success and n > 0:
+                success = await self.get_retry(topic=topic, obj=Info, url=url)
                 n -= 1

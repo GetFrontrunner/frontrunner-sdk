@@ -6,6 +6,7 @@ from aiohttp import ClientTimeout, TCPConnector, ClientSession
 from asyncio import sleep
 from pickle import dumps
 from utils.utilities import RedisProducer
+from datetime import datetime
 
 
 class BetRadarResponseData:
@@ -63,34 +64,49 @@ class ResultsChanges(BetRadarResponseData):
         super().__init__(data)
 
 
-class Summary(BetRadarResponseData):
-    def __init__(self, data):
-        super().__init__(data)
-
-
-class Timeline(BetRadarResponseData):
-    def __init__(self, data):
-        super().__init__(data)
-
-
 class Sports(BetRadarResponseData):
     def __init__(self, data):
-        super().__init__(data)
+        if data:
+            sports_data = data.get("sports", None)
+            sports = sports_data.get("sport", None) if sports_data else None
+            if sports:
+                self.sports = [Sport(sport) for sport in sports]
+
+
+class Sport:
+    def __init__(self, data):
+        self.sport_id = data["@id"]
+        self.name = data["@name"]
 
 
 class Tournaments:
     def __init__(self, data):
-        pass
+        if not data:
+            data = {}
+        tournaments_data = data.get("sport_tournaments", {})
+        sport_data = tournaments_data.get("sport", None)
+        self.sport = Sport(sport_data)
+
+        tournaments = tournaments_data.get("tournaments", {})
+        tournament = tournaments.get("tournament", [])
+        self.tournaments = [Tournament(t) for t in tournament]
 
 
-class Tournament(BetRadarResponseData):
+class Tournament:
     def __init__(self, data):
-        super().__init__(data)
+        self.id = data.get("@id", None)
+        self.name = data.get("name", None)
+        self.sport = Sport(data["sport"])
+        self.category = Category(data["category"])
 
 
-class Seasons(BetRadarResponseData):
+class Seasons:
     def __init__(self, data):
-        super().__init__(data)
+        if not data:
+            data = {}
+        seasons_data = data.get("seasons", {})
+        self.seasons = [Season(season) for season in seasons_data.get("season", [])]
+        self.tournament = Tournament(data.get("@tournament", None))
 
 
 class Variants(BetRadarResponseData):
@@ -155,17 +171,67 @@ class AvailableSelection(BetRadarResponseData):
 
 class User(BetRadarResponseData):
     def __init__(self, data):
-        super().__init__(data)
+        bookmaker_details = data.get("bookmaker_details", None)
+        if bookmaker_details:
+            expire_at = bookmaker_details.get("@expire_at", None)
+            self.expire_at = (
+                datetime.strptime(expire_at, "%Y-%m-%dT%H:%M:%SZ")
+                if expire_at
+                else None
+            )
+            self.bookmaker_id = int(bookmaker_details.get("@bookmaker_id", None))
+            self.virtual_host = bookmaker_details.get("@virtual_host", None)
 
 
-class Info(BetRadarResponseData):
+class Info:
     def __init__(self, data):
-        super().__init__(data)
+        tournment_info = data.get("tournment_info", {})
+        self.live_coverage = tournment_info.get("coverage_info", {}).get(
+            "@live_coverage", None
+        )
+        self.groups = [
+            Competitor(competitor)
+            for competitor in tournment_info.get("groups", {})
+            .get("group", {})
+            .get("competitor", [])
+        ]
+        self.round = Round(tournment_info.get("round", {}))
+        self.season = Season(tournment_info.get("season", {}))
+        self.tournament = Tournament(tournment_info.get("tournament", {}))
 
 
-class Categories(BetRadarResponseData):
+class Round:
     def __init__(self, data):
-        super().__init__(data)
+        if not data:
+            data = {}
+        self.number = data.get("@number", None)
+        self.type = data.get("@type", None)
+
+
+class Categories:
+    def __init__(self, data):
+        sport_categories_data = data.get("sport_categories", None)
+        self.sport = None
+        self.categories = None
+        if sport_categories_data:
+            if sport_categories_data["sport"]:
+                self.sport = sport_categories_data.get("sport", None)
+            if sport_categories_data.get(
+                "categories", None
+            ) and sport_categories_data.get("categories", None).get("category", None):
+                self.categories = [
+                    Category(category)
+                    for category in sport_categories_data.get("categories", None).get(
+                        "category", None
+                    )
+                ]
+
+
+class Category:
+    def __init__(self, data):
+        self.id = data.get("@id", None)
+        self.name = data.get("@name", None)
+        self.country_code = data.get("@country_code", None)
 
 
 class Events(BetRadarResponseData):
@@ -173,6 +239,149 @@ class Events(BetRadarResponseData):
         super().__init__(data)
 
 
-class Summaries(BetRadarResponseData):
+class Timeline:
     def __init__(self, data):
-        super().__init__(data)
+        if not data:
+            data = {}
+
+        # self.generate_at = datetime.strptime(
+        #    data.get("@generate_at", None), "%Y-%m-%dT%H:%M:%SZ"
+        # )
+        self.sport_event = SportEvent(data.get("sport_event", None))
+        self.sport_event_conditions = data.get("sport_event_conditions", None)
+        self.sport_event_status = SportEventStatus(data.get("sport_event_status", None))
+
+
+class SportEvent:
+    def __init__(self, data):
+        if not data:
+            data = {}
+        self.id = data.get("@id", None)
+        self.scheduled = (
+            datetime.strptime(data.get("@scheduled", None), "%Y-%m-%dT%H:%M:%SZ")
+            if data.get("@scheduled", None)
+            else None
+        )
+        self.start_time_tbd = data.get("@start_time_tbd", None)
+        competitors_data = data.get("competitors", None)
+        if not competitors_data:
+            competitors_data = {}
+
+        self.competitors = [
+            Competitor(competitor)
+            for competitor in competitors_data.get("competitor", [])
+        ]
+
+        self.season = Season(data.get("@season", None))
+
+        self.tournament = Tournament(data.get("@tournament", None))
+
+        self.tournament_round = TournamentRound(data.get("@tournament_round", None))
+
+
+class Competitor:
+    def __init__(self, data):
+        if not data:
+            data = {}
+        self.abbreviation = data.get("@abbreviation", None)
+        self.country = data.get("@country", None)
+        self.country_code = data.get("@country_code", None)
+        self.gender = data.get("@gender", None)
+        self.id = data.get("@id", None)
+        self.name = data.get("@name", None)
+        self.qualifier = data.get("@qualifier", None)
+        self.reference_ids = ReferenceId(data.get("@reference_ids", None))
+
+
+class ReferenceId:
+    def __init__(self, data: Optional[dict]):
+        if not data:
+            data = {}
+        self.name = data.get("@name", None)
+        self.value = data.get("@value", None)
+
+
+class Season:
+    def __init__(self, data):
+        if not data:
+            data = {}
+        self.end_date = data.get("@end_date", None)
+        self.id = data.get("@id", None)
+        self.name = data.get("@name", None)
+        self.start_date = data.get("start_date", None)
+        self.tournament_id = data.get("tournament_id", None)
+        self.year = data.get("@year", None)
+
+
+class TournamentRound:
+    def __init__(self, data):
+        if not data:
+            data = {}
+        self.betradar_id = data.get("@betradar_id", None)
+        self.betradar_name = data.get("@betradar_name", None)
+        self.group_long_name = data.get("@group_long_name", None)
+        self.number = data.get("@number", None)
+        self.type = data.get("@type", None)
+
+
+class SportEventStatus:
+    def __init__(self, data):
+        if not data:
+            data = {}
+        self.away_score = data.get("@away_score", None)
+        self.home_score = data.get("@home_score", None)
+        self.match_status = data.get("@match_status", None)
+        self.match_status_code = data.get("@match_status_code", None)
+        self.status = data.get("@status", None)
+        self.status_code = data.get("@status_code", None)
+
+        period_scores_data = data.get("period_scores", None)
+        if not period_scores_data:
+            period_scores_data = {}
+        self.period_scores = [
+            PeriodScore(period_score)
+            for period_score in period_scores_data.get("period_score", [])
+        ]
+
+        results_data = data.get("results", None)
+        if not results_data:
+            results_data = {}
+        self.results = [Result(result) for result in results_data.get("result", [])]
+
+
+class PeriodScore:
+    def __init__(self, data):
+        if not data:
+            data = {}
+        self.away_score = data.get("@away_score", None)
+        self.home_score = data.get("@home_score", None)
+        self.match_status_code = data.get("@match_status_code", None)
+        self.number = data.get("@number", None)
+        self.type = data.get("@type", None)
+        pass
+
+
+class Result:
+    def __init__(self, data):
+        if not data:
+            data = {}
+        self.away_score = data.get("@away_score", None)
+        self.home_score = data.get("@home_score", None)
+        self.match_status = data.get("@match_status", None)
+
+
+class Summary:
+    def __init__(self, data):
+        if not data:
+            data = {}
+        # self.generate_at = datetime.strptime(
+        #    data.get("@generate_at", None), "%Y-%m-%dT%H:%M:%SZ"
+        # )
+        self.sport_event = SportEvent(data.get("sport_event", None))
+        self.sport_event_conditions = data.get("sport_event_conditions", None)
+        self.sport_event_status = SportEventStatus(data.get("sport_event_status", None))
+
+
+class Summaries:
+    def __init__(self, data):
+        pass
