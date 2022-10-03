@@ -56,6 +56,7 @@ class BetRadarData(Data):
         else:
             return False
 
+    ############################################### Odds recovery #############################################################
     async def recovery_odds(
         self,
         product: str,
@@ -336,6 +337,7 @@ class BetRadarData(Data):
                 )
                 n -= 1
 
+    ########################################################## book #############################################################
     async def get_booking_calendar(self, sport_id: int, n: int = 3):
         topic = "BetRadar/booking_calendar"
         url = f"{self.url}/liveodds/booking-calendar/events/sr:match:{sport_id}/book"
@@ -895,7 +897,7 @@ class BetRadarData(Data):
                 success = await self.get_retry(topic=topic, obj=Seasons, url=url)
                 n -= 1
 
-    ####################################################                    ###################################################################
+    #################################################### Static sport event info ###################################################################
 
     async def get_sport_fixture(self, urn_type: str, event_id: int, n: int = 3):
         topic = "BetRadar/sport_fixture"
@@ -1018,18 +1020,18 @@ class BetRadarData(Data):
                 success = await self.get_retry(topic=topic, obj=ResultsChanges, url=url)
                 n -= 1
 
-    async def get_tournament_info(self, urn_type: str, tournment_id: int, n: int = 3):
-        topic = "BetRadar/tournament_info"
-        url = f"https://stgapi.betradar.com/v1/sports/en/tournaments/{urn_type}:{tournment_id}/info.xml"
-        res = await self.session.get(url)
-        if res.status == 200:
-            data = await res.text()
-            data_dict = xmltodict.parse(data)
-            info = Info(data_dict)
-            self.redis.produce(topic, dumps(info))
-        else:
-            success = False
-            logging.info("failed to get probabilities data from betradar")
-            if not success and n > 0:
-                success = await self.get_retry(topic=topic, obj=Info, url=url)
-                n -= 1
+    # async def get_tournament_info(self, urn_type: str, tournment_id: int, n: int = 3):
+    #    topic = "BetRadar/tournament_info"
+    #    url = f"https://stgapi.betradar.com/v1/sports/en/tournaments/{urn_type}:{tournment_id}/info.xml"
+    #    res = await self.session.get(url)
+    #    if res.status == 200:
+    #        data = await res.text()
+    #        data_dict = xmltodict.parse(data)
+    #        info = Info(data_dict)
+    #        self.redis.produce(topic, dumps(info))
+    #    else:
+    #        success = False
+    #        logging.info("failed to get probabilities data from betradar")
+    #        if not success and n > 0:
+    #            success = await self.get_retry(topic=topic, obj=Info, url=url)
+    #            n -= 1

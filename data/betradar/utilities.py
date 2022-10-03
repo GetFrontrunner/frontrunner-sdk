@@ -1,11 +1,4 @@
 from typing import List, Union, Optional
-from time import time_ns
-from math import log
-import logging
-from aiohttp import ClientTimeout, TCPConnector, ClientSession
-from asyncio import sleep
-from pickle import dumps
-from utils.utilities import RedisProducer
 from datetime import datetime
 
 
@@ -59,7 +52,7 @@ class Mapping:
         self.sov_template = data.get("@sov_template", None)
         self.sport_id = data.get("@sport_id", None)
         self.valid_for = data.get("@valid_for", None)
-        self.Mapping_outcome = [
+        self.mapping_outcome = [
             MappingOutcome(mapping_outcome)
             for mapping_outcome in data.get("mapping_outcome", [])
         ]
