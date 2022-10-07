@@ -1011,13 +1011,15 @@ class BetRadarData(Data):
         if res.status == 200:
             data = await res.text()
             data_dict = xmltodict.parse(data)
-            all_fixture_changes = ResultsChanges(data_dict)
+            all_fixture_changes = AllFixtureChanges(data_dict)
             self.redis.produce(topic, dumps(all_fixture_changes))
         else:
             success = False
             logging.info("failed to get probabilities data from betradar")
             if not success and n > 0:
-                success = await self.get_retry(topic=topic, obj=ResultsChanges, url=url)
+                success = await self.get_retry(
+                    topic=topic, obj=AllFixtureChanges, url=url
+                )
                 n -= 1
 
     # async def get_tournament_info(self, urn_type: str, tournment_id: int, n: int = 3):

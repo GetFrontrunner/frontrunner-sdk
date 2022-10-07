@@ -172,14 +172,43 @@ class BookingCalendar(BetRadarResponseData):
         super().__init__(data)
 
 
-class Fixture(BetRadarResponseData):
+class Fixture:
     def __init__(self, data):
-        super().__init__(data)
+        self.id = data.get("@id", None)
+        self.next_live_time = data.get("@next_live_time", None)
+        self.scheduled = Schedules(data)
+        self.start_time = data.get("@start_time", None)
+        self.start_time_confimed = data.get("@start_time_confimed", None)
+        self.start_time_tbd = data.get("@start_time_tbd", None)
+        self.status = data.get("@status", None)
+        self.competitors = [
+            Competitor(competitor) for competitor in data.get("competitors", {})
+        ]
+        self.extra_info = [
+            ExtraInfo(extra_info)
+            for extra_info in data.get("extra_info", {}).get("info", [])
+        ]
+        self.product_info = data.get("product_info", None)
+        self.reference_ids = [
+            ReferenceId(reference_id)
+            for reference_id in data.get("reference_ids", {}).get("reference_id", {})
+        ]
+        self.season = Season(data.get("season", {}))
+        self.tournament = Tournament(data.get("@tournament", {}))
+        self.tournament_round = TournamentRound(data.get("@tournament_round", {}))
+        self.tv_channels = data.get("@tv_channels", None)
 
 
-class Schedules(BetRadarResponseData):
+class ExtraInfo:
     def __init__(self, data):
-        super().__init__(data)
+        self.key = data.get("@key")
+        self.value = data.get("@value")
+
+
+class Schedules:
+    def __init__(self, data):
+        if data:
+            self.time = datetime.strptime(data, "%Y-%m-%dT%H:%M:%S%z")
 
 
 class FixtureChanges(BetRadarResponseData):
@@ -187,7 +216,7 @@ class FixtureChanges(BetRadarResponseData):
         super().__init__(data)
 
 
-class ResultsChanges(BetRadarResponseData):
+class AllFixtureChanges(BetRadarResponseData):
     def __init__(self, data):
         super().__init__(data)
 
@@ -227,6 +256,8 @@ class Tournament:
         self.sport = Sport(data.get("sport", None))
         self.category = Category(data.get("category", None))
         self.current_season = Season(data.get("current_season", None))
+        self.scheduled = Schedules(data.get("@scheduled", None))
+        self.scheduled_end = Schedules(data.get("@scheduled_end", None))
 
 
 class Seasons:
