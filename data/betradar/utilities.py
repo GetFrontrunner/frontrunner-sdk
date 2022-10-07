@@ -72,7 +72,10 @@ class Outcome:
     def __init__(self, data):
         if not data:
             data = {}
-        pass
+        self.id = data.get("id")
+        self.odds = data.get("odds")
+        self.probabilities = data.get("probabilities")
+        self.active = data.get("active")
 
 
 class Specifier:
@@ -160,16 +163,19 @@ class RecoveryOdds(BetRadarResponseData):
 class RecoveryEvent(BetRadarResponseData):
     def __init__(self, data):
         super().__init__(data)
+        pass
 
 
 class RecoveryStateMessage(BetRadarResponseData):
     def __init__(self, data):
         super().__init__(data)
+        pass
 
 
 class BookingCalendar(BetRadarResponseData):
     def __init__(self, data):
         super().__init__(data)
+        pass
 
 
 class Fixture:

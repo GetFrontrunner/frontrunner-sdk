@@ -440,25 +440,29 @@ class BetRadarData(Data):
         n: int = 3,
     ):
         topic = "BetRadar/probabilities"
-        if market_id is None and specifier is None:
-            url = f"{self.url}/v1/probabilities/{urn_type}:{type_id}"
-        elif specifier is None:
-            url = f"{self.url}/v1/probabilities/{urn_type}:{type_id}/{market_id}"
-        else:
-            url = f"{self.url}/v1/probabilities/{urn_type}:{type_id}/{market_id}/{specifier}"
+        while True:
+            if market_id is None and specifier is None:
+                url = f"{self.url}/v1/probabilities/{urn_type}:{type_id}"
+            elif specifier is None:
+                url = f"{self.url}/v1/probabilities/{urn_type}:{type_id}/{market_id}"
+            else:
+                url = f"{self.url}/v1/probabilities/{urn_type}:{type_id}/{market_id}/{specifier}"
 
-        res = await self.session.get(url)
-        if res.status == 200:
-            data = await res.text()
-            data_dict = xmltodict.parse(data)
-            probabilities = Probabilities(data_dict)
-            self.redis.produce(topic, dumps(probabilities))
-        else:
-            success = False
-            logging.info("failed to get probabilities data from betradar")
-            if not success and n > 0:
-                success = await self.get_retry(topic=topic, obj=Probabilities, url=url)
-                n -= 1
+            res = await self.session.get(url)
+            if res.status == 200:
+                data = await res.text()
+                data_dict = xmltodict.parse(data)
+                probabilities = Probabilities(data_dict)
+                self.redis.produce(topic, dumps(probabilities))
+            else:
+                success = False
+                logging.info("failed to get probabilities data from betradar")
+                if not success and n > 0:
+                    success = await self.get_retry(
+                        topic=topic, obj=Probabilities, url=url
+                    )
+                    n -= 1
+            await sleep(10)
 
     ################################################################## Betting Description ###################################################################
     async def get_markets(self, include_mappings: bool = False, n: int = 3):
