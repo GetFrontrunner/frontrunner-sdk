@@ -367,8 +367,11 @@ class Model:
             msg=msg,
         )
 
-    async def batch_cancel(self):
-        msg = self._build_batch_cancel_all_orders_msg()
+    async def batch_cancel(self, cancel_current_open_orders=False):
+        if cancel_current_open_orders:
+            msg = self._build_cancel_all_current_open_orders()
+        else:
+            msg = self._build_batch_cancel_all_orders_msg()
         msg = self.composer.MsgExec(grantee=self.inj_address, msgs=[msg])
         return await execute(
             pub_key=self.pub_key,
@@ -473,8 +476,19 @@ class Model:
         )
         return msg
 
-    def _build_cancel_all_existing_orders(self):
-        pass
+    def _build_cancel_all_current_open_orders(self):
+        binary_options_market_ids_to_cancel_all = []
+        for granter in self.granters:
+            # print(f"marekt id: {granter.market.market_id}")
+            binary_options_market_ids_to_cancel_all.append(granter.market.market_id)
+
+        logging.info(f"Canceling {binary_options_market_ids_to_cancel_all}")
+        msg = self.composer.MsgBatchUpdateOrders(
+            sender=self.inj_address,
+            subaccount_id=self.subaccount_id,
+            binary_options_market_ids_to_cancel_all=binary_options_market_ids_to_cancel_all,
+        )
+        return msg
 
     # async def single_new_order(
     #    self,
@@ -493,8 +507,9 @@ class Model:
         return get_event_loop()
 
     async def run(self, t=10):
-        logging.info("cancel current orders")
-        resp = await self.batch_cancel()
+        logging.info("cancel all current open orders")
+        resp = await self.batch_cancel(cancel_current_open_orders=True)
+        logging.info(resp)
         logging.info("getting data")
         logging.info(f"sleep for {t}s")
         await sleep(t)
@@ -513,6 +528,6 @@ class Model:
             logging.info("will cancell all orders in 5s")
             await sleep(5)
             resp = await self.batch_cancel()
-            # logging.info(resp)
+            logging.info(resp)
             await sleep(200)
         logging.info("finished")
