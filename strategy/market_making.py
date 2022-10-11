@@ -325,10 +325,11 @@ class Model:
             for granter in self.granters:
                 logging.info(f"granter.market.ticker: {granter.market.ticker}")
                 event_1_bid_price = round(0.32 * event_1.probabilities, 2)
-                event_1_bid_quantity = round(10 * event_1.probabilities, 1)
-                event_2_bid_price = round(0.39 * event_2.probabilities, 2)
-                event_2_bid_quantity = round(10 * event_2.probabilities, 1)
-
+                event_1_bid_quantity = int(10 * event_1.probabilities) + 1
+                event_2_bid_price = round(0.39 * (1 + event_2.probabilities), 2)
+                event_2_bid_quantity = int(10 * event_2.probabilities) + 1
+                logging.info(f"event 1 :{event_1_bid_price} {event_1_bid_quantity}")
+                logging.info(f"event 2 :{event_2_bid_price} {event_2_bid_quantity}")
                 self._create_orders_for_granters(
                     granter,
                     event_1_bid_price=event_1_bid_price,
@@ -396,6 +397,13 @@ class Model:
                 + [ask_order.msg for (orderhash, ask_order) in granter.market_asks]
                 + [bid_order.msg for (orderhash, bid_order) in granter.market_bids]
             )
+
+            # tmp = (
+            #    [ask_order.msg for (orderhash, ask_order) in granter.limit_asks]
+            #    + [bid_order.msg for (orderhash, bid_order) in granter.limit_bids]
+            #    + [ask_order.msg for (orderhash, ask_order) in granter.market_asks]
+            #    + [bid_order.msg for (orderhash, bid_order) in granter.market_bids]
+            # )
             binary_options_orders_to_create.extend(tmp)
 
         binary_options_market_ids_to_cancel_all = list(
@@ -525,9 +533,9 @@ class Model:
             #    pk, price=0.3, quantity=1, is_buy=True, is_market=False
             # )
             # logging.info(resp)
-            logging.info("will cancell all orders in 5s")
-            await sleep(5)
+            await sleep(200)
+            logging.info("will cancell all orders in 200s")
+            # await sleep(5)
             resp = await self.batch_cancel()
             logging.info(resp)
-            await sleep(200)
         logging.info("finished")

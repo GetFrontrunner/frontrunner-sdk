@@ -59,9 +59,9 @@ class Granter:
         logging.info(f"market id: {self.market.market_id}")
         self.update_nonce()
         logging.debug(f"nonce: {self.nonce}")
-        logging.info(
-            f"subaccount_id: {self.subaccount_id}, inj address: {self.inj_address}"
-        )
+        # logging.info(
+        #    f"subaccount_id: {self.subaccount_id}, inj address: {self.inj_address}"
+        # )
         if is_bid:
             self._create_bid_order(price, quantity, is_limit, composer)
         else:
@@ -80,6 +80,8 @@ class Granter:
         logging.info(
             f"subaccount_id: {self.subaccount_id}, inj address: {self.inj_address}"
         )
+        self.limit_asks.list.clear()
+        self.limit_bids.list.clear()
         if is_limit:
             order = Order(
                 nonce=self.nonce,
