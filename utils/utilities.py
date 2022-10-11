@@ -24,6 +24,8 @@ from redis import StrictRedis
 from redis import asyncio as aredis
 from pickle import loads
 
+# from data.betradar.utilities import Probabilities
+
 from requests import get
 from sha3 import keccak_256 as sha3_keccak_256
 import asyncio
@@ -63,6 +65,7 @@ class RedisConsumer:
         "on_trade_callback",
         "on_depth_callback",
         "on_position_callback",
+        "on_probabilities_callback",
     ]
 
     def __init__(
@@ -73,6 +76,7 @@ class RedisConsumer:
         on_trade,
         on_depth,
         on_position,
+        on_probabilities,
     ):
         ip, port = redis_addr.split(":")
         port = int(port)
@@ -84,6 +88,7 @@ class RedisConsumer:
         self.on_tob_callback = on_tob
         self.on_depth_callback = on_depth
         self.on_trade_callback = on_trade
+        self.on_probabilities_callback = on_probabilities
 
         loop = asyncio.get_event_loop()
         loop.create_task(self.aconsume())
@@ -96,16 +101,14 @@ class RedisConsumer:
             logging.info("No topics to subscribe to")
 
         async for msg in self.redis_consumer.listen():
+            # print(msg)
             if msg["data"] == 1:
                 logging.info(f"first msg topic {msg['channel'].decode('utf-8')}")
             else:
                 payload = loads(msg["data"])
                 # logging.info(payload.events)
-                if payload.events:
-                    for event in payload.events:
-                        logging.info(event.name, event.sport_id)
-                else:
-                    logging.info(f"no events in {msg['channel'].decode('utf-8')}")
+                await self.on_probabilities_callback(payload)
+
             # try:
             #    payload = loads(msg)
             #    for event in payload.events:

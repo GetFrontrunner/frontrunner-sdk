@@ -11,7 +11,7 @@ from utils.utilities import RedisProducer
 # from utils.granter import Granter
 # from utils.markets import ActiveMarket, StagingMarket
 # from utils.client import create_client, switch_node_recreate_client
-from data.matchbook.utilities import *
+# from data.matchbook.utilities import *
 
 
 class Data:

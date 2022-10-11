@@ -1,5 +1,6 @@
 from typing import List, Union, Optional
 from datetime import datetime
+import numpy as np
 
 
 class BetRadarResponseData:
@@ -364,11 +365,27 @@ class Probability(BetRadarResponseData):
         super().__init__(data)
 
 
-class Probabilities(BetRadarResponseData):
-    def __init__(self, data):
-        super().__init__(data)
+class Probabilities:
+    def __init__(self, data, n):
+        if not data:
+            prob = np.random.random()
+            odds = prob / (1 - prob)
+            event_1 = {"id": n, "odds": odds, "probabilities": prob, "active": 1}
+
+            prob = 1 - prob
+            odds = prob / (1 - prob)
+            event_2 = {"id": n, "odds": odds, "probabilities": prob, "active": 1}
+
+            self.outcomes = [Outcome(event_1), Outcome(event_2)]
 
 
+# <odds>
+#    <market status="0" id="16" specifiers="hcp=-1" extended_specifiers="hcp_for_the_rest=-1"/>
+#    <market status="0" id="16" specifiers="hcp=0.75" extended_specifiers="hcp_for_the_rest=0.75"/>
+#    <market status="1" id="18" specifiers="total=3.5" extended_specifiers="total_for_the_rest=3.5">
+#      <outcome id="12" odds="3.55" probabilities="0.2319363847" active="1"/>
+#      <outcome id="13" odds="1.22" probabilities="0.7680636153" active="1"/>
+#
 class AvailableSelection(BetRadarResponseData):
     def __init__(self, data):
         super().__init__(data)

@@ -12,6 +12,7 @@ from data.betradar.utilities import *
 
 from data.data_source_template import Data
 import xmltodict
+import random
 
 # import json
 
@@ -23,8 +24,8 @@ class BetRadarData(Data):
         redis_addr: str = "127.0.0.1:6379",
     ):
         super().__init__(redis_addr)
+        self.headers.clear()
         self.url = "https://stgapi.betradar.com/v1"
-        self.headers.clear
         self.headers = {
             "accept": "*/*",
             "x-access-token": x_access_token,
@@ -463,6 +464,28 @@ class BetRadarData(Data):
                     )
                     n -= 1
             await sleep(10)
+
+    async def get_probabilities_dummy(
+        self,
+    ):
+        topic = "BetRadar/probabilities"
+        data = {}
+        n = 1
+        while True:
+            probabilities = Probabilities(data, n)
+            self.redis.produce(topic, dumps(probabilities))
+            logging.info("sent msg, ")
+            event_1 = probabilities.outcomes[0]
+            event_2 = probabilities.outcomes[1]
+            logging.info(
+                f"outcome 1  Prob: {round(event_1.probabilities,4)}, odds: {round(event_1.odds,4)}"
+            )
+            logging.info(
+                f"outcome 2  Prob: {round(event_2.probabilities,4)}, odds: {round(event_2.odds,4)}"
+            )
+            n += 1
+
+            await sleep(random.random() * 50)
 
     ################################################################## Betting Description ###################################################################
     async def get_markets(self, include_mappings: bool = False, n: int = 3):

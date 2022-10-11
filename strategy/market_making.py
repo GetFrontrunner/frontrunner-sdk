@@ -105,6 +105,23 @@ class Model:
     async def on_position(self, data):
         self.position = data
 
+    async def on_probabilities(self, probabilities):
+        if probabilities.outcomes:
+            event_1 = probabilities.outcomes[0]
+            event_2 = probabilities.outcomes[1]
+            logging.info(
+                f"outcome 1: id: {event_1.id}, Prob: {round(event_1.probabilities,4)}, odds: {round(event_1.odds,4)}"
+            )
+            logging.info(
+                f"outcome 2: id: {event_2.id}, Prob: {round(event_2.probabilities,4)}, odds: {round(event_2.odds,4)}"
+            )
+            self.create_limit_orders_for_granters(event_1, event_2)
+            resp = await self.batch_new_orders()
+            logging.info(resp)
+
+        else:
+            logging.info("no events in {msg['channel'].decode('utf-8')}")
+
     def get_consumer(self, redis_addr: str, topics: List[str]):
         return RedisConsumer(
             redis_addr,
@@ -113,6 +130,7 @@ class Model:
             on_trade=self.on_trade,
             on_depth=self.on_depth,
             on_position=self.on_position,
+            on_probabilities=self.on_probabilities,
         )
 
     async def get_granters_portfolio(self):
@@ -158,74 +176,165 @@ class Model:
         self,
     ):
         all_active_markets = get_all_active_markets(True)
-        granters = [
-            self._create_granter(
-                lcd_endpoint=self.lcd_endpoint,
-                market=active_market,
-            )
-            for idx, active_market in enumerate(all_active_markets)
-        ]
-        self.granters = granters[:1]
-        logging.debug(f"number of granters: {len(self.granters)}")
+        granters = []
+        for idx, active_markets in enumerate(all_active_markets.values()):
+            if idx == 1:
+                for active_market in active_markets:
+                    granters.append(
+                        self._create_granter(
+                            lcd_endpoint=self.lcd_endpoint,
+                            market=active_market,
+                        )
+                    )
+
+        self.granters = granters
+        for granter in self.granters:
+            logging.info(f"market ticker: {granter.market.ticker}")
+        # logging.info(f"number of granters: {len(self.granters)}")
 
     def update_granter_nonce(self):
         for granter in self.granters:
             granter.get_nonce(self.lcd_endpoint)
 
-    def _create_orders_for_granters(
+    def _create_orders_for_granters_3_markets(
         self,
         granter: Granter,
-        bid_price: float,
-        bid_quantity: int,
-        ask_price: float,
-        ask_quantity: int,
+        event_1_bid_price: float,
+        event_1_bid_quantity: int,
+        event_2_bid_price: float,
+        event_2_bid_quantity: int,
+        event_3_bid_price: float,
+        event_3_bid_quantity: int,
         is_limit: bool,
     ):
         granter.create_orders(
-            price=bid_price,
-            quantity=bid_quantity,
+            price=event_1_bid_price,
+            quantity=event_1_bid_quantity,
             is_limit=is_limit,
             is_bid=True,
             composer=self.composer,
         )
+
         granter.create_orders(
-            price=ask_price,
-            quantity=ask_quantity,
+            price=event_2_bid_price,
+            quantity=event_2_bid_quantity,
+            is_limit=is_limit,
+            is_bid=True,
+            composer=self.composer,
+        )
+
+        granter.create_orders(
+            price=event_3_bid_price,
+            quantity=event_3_bid_quantity,
+            is_limit=is_limit,
+            is_bid=True,
+            composer=self.composer,
+        )
+
+    def _create_orders_for_granters(
+        self,
+        granter: Granter,
+        event_1_bid_price: float,
+        event_1_bid_quantity: int,
+        event_2_bid_price: float,
+        event_2_bid_quantity: int,
+        is_limit: bool,
+    ):
+        granter.create_orders(
+            price=event_1_bid_price,
+            quantity=event_1_bid_quantity,
+            is_limit=is_limit,
+            is_bid=True,
+            composer=self.composer,
+        )
+
+        granter.create_orders(
+            price=event_2_bid_price,
+            quantity=event_2_bid_quantity,
             is_limit=is_limit,
             is_bid=False,
             composer=self.composer,
         )
 
-    def create_market_orders_for_granters(self):
+    def create_market_orders_for_granters(self, event_1, event_2):
         if self.granters:
             for granter in self.granters:
-                bid_price = 0.51
-                bid_quantity = 1
-                ask_price = 0.51
-                ask_quantity = 1
+                event_1_bid_price = 0.32
+                event_1_bid_quantity = 12
+                event_2_bid_price = 0.40
+                event_2_bid_quantity = 1
+
                 self._create_orders_for_granters(
                     granter,
-                    bid_price=bid_price,
-                    bid_quantity=bid_quantity,
-                    ask_price=ask_price,
-                    ask_quantity=ask_quantity,
+                    event_1_bid_price=event_1_bid_price,
+                    event_1_bid_quantity=event_1_bid_quantity,
+                    event_2_bid_price=event_2_bid_price,
+                    event_2_bid_quantity=event_2_bid_quantity,
                     is_limit=False,
                 )
 
-    def create_limit_orders_for_granters(self):
+    def create_limit_orders_for_granters_3_markets(
+        self, event_1=None, event_2=None, event_3=None
+    ):
         if self.granters:
             for granter in self.granters:
                 logging.info(f"granter.market.ticker: {granter.market.ticker}")
-                bid_price = 0.1
-                bid_quantity = 1
-                ask_price = 0.49
-                ask_quantity = 1
+                event_1_bid_price = 0.66
+                event_1_bid_quantity = 10
+                event_2_bid_price = 0.1
+                event_2_bid_quantity = 1
+                event_3_bid_price = 0.1
+                event_3_bid_quantity = 1
+
+                self._create_orders_for_granters_3_markets(
+                    granter,
+                    event_1_bid_price=event_1_bid_price,
+                    event_1_bid_quantity=event_1_bid_quantity,
+                    event_2_bid_price=event_2_bid_price,
+                    event_2_bid_quantity=event_2_bid_quantity,
+                    event_3_bid_price=event_3_bid_price,
+                    event_3_bid_quantity=event_3_bid_quantity,
+                    is_limit=True,
+                )
+
+    def create_market_orders_for_granters_3_markets(
+        self, event_1=None, event_2=None, event_3=None
+    ):
+        if self.granters:
+            for granter in self.granters:
+                event_1_bid_price = 0.1
+                event_1_bid_quantity = 1
+                event_2_bid_price = 0.1
+                event_2_bid_quantity = 1
+                event_3_bid_price = 0.1
+                event_3_bid_quantity = 1
+
+                self._create_orders_for_granters_3_markets(
+                    granter,
+                    event_1_bid_price=event_1_bid_price,
+                    event_1_bid_quantity=event_1_bid_quantity,
+                    event_2_bid_price=event_2_bid_price,
+                    event_2_bid_quantity=event_2_bid_quantity,
+                    event_3_bid_price=event_3_bid_price,
+                    event_3_bid_quantity=event_3_bid_quantity,
+                    is_limit=False,
+                )
+
+    def create_limit_orders_for_granters(self, event_1, event_2):
+        if self.granters:
+            for granter in self.granters:
+                logging.info(f"granter.market.ticker: {granter.market.ticker}")
+                event_1_bid_price = round(0.32 * event_1.probabilities, 2)
+                event_1_bid_quantity = round(10 * event_1.probabilities, 1)
+                event_2_bid_price = round(0.39 * event_2.probabilities, 2)
+                event_2_bid_quantity = round(10 * event_2.probabilities, 1)
+
                 self._create_orders_for_granters(
                     granter,
-                    bid_price=bid_price,
-                    bid_quantity=bid_quantity,
-                    ask_price=ask_price,
-                    ask_quantity=ask_quantity,
+                    event_1_bid_price=event_1_bid_price,
+                    event_1_bid_quantity=event_1_bid_quantity,
+                    event_2_bid_price=event_2_bid_price,
+                    event_2_bid_quantity=event_2_bid_quantity,
                     is_limit=True,
                 )
 
@@ -245,7 +354,7 @@ class Model:
 
     async def batch_new_orders(self):
         msg = self._build_batch_new_orders_msg()
-        logging.info(f"msg: {msg}")
+        logging.debug(f"msg: {msg}")
         msg = self.composer.MsgExec(grantee=self.inj_address, msgs=[msg])
         return await execute(
             pub_key=self.pub_key,
@@ -325,7 +434,7 @@ class Model:
         return msg
 
     def _build_batch_cancel_all_orders_msg(self):
-        binary_options_market_ids_to_cancel_all = []
+        tmp_binary_options_market_ids_to_cancel_all = []
 
         for granter in self.granters:
             tmp = (
@@ -346,11 +455,16 @@ class Model:
                     for (orderhash, bid_order) in granter.market_bids
                 ]
             )
-            binary_options_market_ids_to_cancel_all.extend(set(tmp))
+            tmp_binary_options_market_ids_to_cancel_all.extend(set(tmp))
 
         binary_options_market_ids_to_cancel_all = list(
-            set(binary_options_market_ids_to_cancel_all)
+            set(tmp_binary_options_market_ids_to_cancel_all)
         )
+        if not binary_options_market_ids_to_cancel_all:
+            for granter in self.granters:
+                # print(f"marekt id: {granter.market.market_id}")
+                binary_options_market_ids_to_cancel_all.append(granter.market.market_id)
+
         logging.info(f"Canceling {binary_options_market_ids_to_cancel_all}")
         msg = self.composer.MsgBatchUpdateOrders(
             sender=self.inj_address,
@@ -358,6 +472,9 @@ class Model:
             binary_options_market_ids_to_cancel_all=binary_options_market_ids_to_cancel_all,
         )
         return msg
+
+    def _build_cancel_all_existing_orders(self):
+        pass
 
     # async def single_new_order(
     #    self,
@@ -376,13 +493,16 @@ class Model:
         return get_event_loop()
 
     async def run(self, t=10):
+        logging.info("cancel current orders")
+        resp = await self.batch_cancel()
         logging.info("getting data")
         logging.info(f"sleep for {t}s")
         await sleep(t)
         logging.info(f"slept {t}s")
         self.create_granters()
+
         while True:
-            self.update_granters()
+            # self.update_granters()
             # self.create_limit_orders_for_granters()
             # self.create_market_orders_for_granters()
             ## resp = await self.batch_new_orders()
@@ -390,9 +510,9 @@ class Model:
             #    pk, price=0.3, quantity=1, is_buy=True, is_market=False
             # )
             # logging.info(resp)
-            # logging.info("will cancell all orders in 5s")
-            # await sleep(5)
-            # resp = await self.batch_cancel()
+            logging.info("will cancell all orders in 5s")
+            await sleep(5)
+            resp = await self.batch_cancel()
             # logging.info(resp)
-            await sleep(11)
+            await sleep(200)
         logging.info("finished")
