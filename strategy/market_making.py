@@ -326,7 +326,7 @@ class Model:
                 logging.info(f"granter.market.ticker: {granter.market.ticker}")
                 event_1_bid_price = round(0.32 * event_1.probabilities, 2)
                 event_1_bid_quantity = int(10 * event_1.probabilities) + 1
-                event_2_bid_price = round(0.39 * (1 + event_2.probabilities), 2)
+                event_2_bid_price = round(0.69 * (1 + event_2.probabilities), 2)
                 event_2_bid_quantity = int(10 * event_2.probabilities) + 1
                 logging.info(f"event 1 :{event_1_bid_price} {event_1_bid_quantity}")
                 logging.info(f"event 2 :{event_2_bid_price} {event_2_bid_quantity}")
