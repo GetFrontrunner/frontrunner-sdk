@@ -52,8 +52,7 @@ class SportsDataIOData(Data):
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
-            data = await res.text()
-            data_dict = xmltodict.parse(data)
+            data = await res.json()
 
             # recovery_odds = RecoveryOdds(data_dict)
             # self.redis.produce(topic, dumps(recovery_odds))

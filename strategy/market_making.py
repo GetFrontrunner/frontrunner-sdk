@@ -201,10 +201,13 @@ class Model:
         granter: Granter,
         event_1_bid_price: float,
         event_1_bid_quantity: int,
+        event_1_bid_for: bool,
         event_2_bid_price: float,
         event_2_bid_quantity: int,
+        event_2_bid_for: bool,
         event_3_bid_price: float,
         event_3_bid_quantity: int,
+        event_3_bid_for: bool,
         is_limit: bool,
     ):
         granter.create_orders(
@@ -212,6 +215,7 @@ class Model:
             quantity=event_1_bid_quantity,
             is_limit=is_limit,
             is_bid=True,
+            is_for=event_1_bid_for,
             composer=self.composer,
         )
 
@@ -220,6 +224,7 @@ class Model:
             quantity=event_2_bid_quantity,
             is_limit=is_limit,
             is_bid=True,
+            is_for=event_2_bid_for,
             composer=self.composer,
         )
 
@@ -228,6 +233,7 @@ class Model:
             quantity=event_3_bid_quantity,
             is_limit=is_limit,
             is_bid=True,
+            is_for=event_3_bid_for,
             composer=self.composer,
         )
 
@@ -236,8 +242,10 @@ class Model:
         granter: Granter,
         event_1_bid_price: float,
         event_1_bid_quantity: int,
+        event_1_bid_for: bool,
         event_2_bid_price: float,
         event_2_bid_quantity: int,
+        event_2_bid_for: bool,
         is_limit: bool,
     ):
         granter.create_orders(
@@ -245,6 +253,7 @@ class Model:
             quantity=event_1_bid_quantity,
             is_limit=is_limit,
             is_bid=True,
+            is_for=event_1_bid_for,
             composer=self.composer,
         )
 
@@ -253,6 +262,7 @@ class Model:
             quantity=event_2_bid_quantity,
             is_limit=is_limit,
             is_bid=False,
+            is_for=event_2_bid_for,
             composer=self.composer,
         )
 
@@ -261,15 +271,19 @@ class Model:
             for granter in self.granters:
                 event_1_bid_price = 0.32
                 event_1_bid_quantity = 12
+                event_1_bid_for = True
                 event_2_bid_price = 0.40
                 event_2_bid_quantity = 1
+                event_2_bid_for = False
 
                 self._create_orders_for_granters(
                     granter,
                     event_1_bid_price=event_1_bid_price,
                     event_1_bid_quantity=event_1_bid_quantity,
+                    event_1_bid_for=event_1_bid_for,
                     event_2_bid_price=event_2_bid_price,
                     event_2_bid_quantity=event_2_bid_quantity,
+                    event_2_bid_for=event_2_bid_for,
                     is_limit=False,
                 )
 
@@ -281,19 +295,25 @@ class Model:
                 logging.info(f"granter.market.ticker: {granter.market.ticker}")
                 event_1_bid_price = 0.66
                 event_1_bid_quantity = 10
+                event_1_bid_for = False
                 event_2_bid_price = 0.1
+                event_2_bid_for = False
                 event_2_bid_quantity = 1
                 event_3_bid_price = 0.1
                 event_3_bid_quantity = 1
+                event_3_bid_for = False
 
                 self._create_orders_for_granters_3_markets(
                     granter,
                     event_1_bid_price=event_1_bid_price,
                     event_1_bid_quantity=event_1_bid_quantity,
+                    event_1_bid_for=event_1_bid_for,
                     event_2_bid_price=event_2_bid_price,
                     event_2_bid_quantity=event_2_bid_quantity,
+                    event_2_bid_for=event_2_bid_for,
                     event_3_bid_price=event_3_bid_price,
                     event_3_bid_quantity=event_3_bid_quantity,
+                    event_3_bid_for=event_3_bid_for,
                     is_limit=True,
                 )
 
@@ -304,19 +324,25 @@ class Model:
             for granter in self.granters:
                 event_1_bid_price = 0.1
                 event_1_bid_quantity = 1
+                event_1_bid_for = True
                 event_2_bid_price = 0.1
                 event_2_bid_quantity = 1
+                event_2_bid_for = True
                 event_3_bid_price = 0.1
                 event_3_bid_quantity = 1
+                event_3_bid_for = True
 
                 self._create_orders_for_granters_3_markets(
                     granter,
                     event_1_bid_price=event_1_bid_price,
                     event_1_bid_quantity=event_1_bid_quantity,
+                    event_1_bid_for=event_1_bid_for,
                     event_2_bid_price=event_2_bid_price,
                     event_2_bid_quantity=event_2_bid_quantity,
+                    event_2_bid_for=event_2_bid_for,
                     event_3_bid_price=event_3_bid_price,
                     event_3_bid_quantity=event_3_bid_quantity,
+                    event_3_bid_for=event_3_bid_for,
                     is_limit=False,
                 )
 
@@ -326,16 +352,20 @@ class Model:
                 logging.info(f"granter.market.ticker: {granter.market.ticker}")
                 event_1_bid_price = round(0.32 * event_1.probabilities, 2)
                 event_1_bid_quantity = int(10 * event_1.probabilities) + 1
+                event_1_bid_for = True
                 event_2_bid_price = round(0.69 * (1 + event_2.probabilities), 2)
                 event_2_bid_quantity = int(10 * event_2.probabilities) + 1
+                event_2_bid_for = True
                 logging.info(f"event 1 :{event_1_bid_price} {event_1_bid_quantity}")
                 logging.info(f"event 2 :{event_2_bid_price} {event_2_bid_quantity}")
                 self._create_orders_for_granters(
                     granter,
                     event_1_bid_price=event_1_bid_price,
                     event_1_bid_quantity=event_1_bid_quantity,
+                    event_1_bid_for=event_1_bid_for,
                     event_2_bid_price=event_2_bid_price,
                     event_2_bid_quantity=event_2_bid_quantity,
+                    event_2_bid_for=event_2_bid_for,
                     is_limit=True,
                 )
 

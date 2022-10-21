@@ -24,6 +24,7 @@ class Order:
         fee_recipient: str,
         inj_address: str,
         is_buy: bool,
+        is_for: bool,
         market: Market,
         denom: Denom,
         composer: Composer,
@@ -37,11 +38,23 @@ class Order:
         self.market = market
         self.msg = (
             self._create_market_order_msg(
-                subaccount_id, fee_recipient, inj_address, market, composer, denom
+                subaccount_id,
+                fee_recipient,
+                inj_address,
+                is_for,
+                market,
+                composer,
+                denom,
             )
             if self.order_type == "market"
             else self._create_limit_order_msg(
-                subaccount_id, fee_recipient, inj_address, market, composer, denom
+                subaccount_id,
+                fee_recipient,
+                inj_address,
+                is_for,
+                market,
+                composer,
+                denom,
             )
         )
         self.update_orderhash(nonce)
@@ -66,6 +79,7 @@ class Order:
         subaccount_id: str,
         fee_recipient: str,
         inj_address: str,
+        is_for: bool,
         market: Market,
         composer: Composer,
         denom: Denom,
@@ -79,7 +93,7 @@ class Order:
                 price=self.price,
                 quantity=self.quantity,
                 is_buy=self.is_buy,
-                is_reduce_only=False,
+                is_reduce_only=is_for,
                 denom=denom,
             )
         else:
@@ -90,6 +104,7 @@ class Order:
         subaccount_id: str,
         fee_recipient: str,
         inj_address: str,
+        is_for: bool,
         market: Market,
         composer: Composer,
         denom: Denom,
@@ -108,7 +123,7 @@ class Order:
                 price=price,
                 quantity=self.quantity,
                 is_buy=self.is_buy,
-                is_reduce_only=False,
+                is_reduce_only=is_for,
                 denom=denom,
             )
         else:

@@ -54,6 +54,8 @@ class Granter:
         quantity: int,
         is_limit: bool,
         is_bid: bool,
+        is_for: bool,
+        # is_bid: bool,
         composer: Composer,
     ):
         logging.info(f"market id: {self.market.market_id}")
@@ -62,16 +64,28 @@ class Granter:
         # logging.info(
         #    f"subaccount_id: {self.subaccount_id}, inj address: {self.inj_address}"
         # )
+        # Injective order params:
+        # * BUY_FOR: is_buy = True is_reduce = False
+        # * BUY_AGAINST: is_buy = False and is_reduce = False
+        # * SELL_AGAINST: is_buy = True and is_reduce = True
+        # * SELL_FOR: is_buy = False and is_reduce = True
         if is_bid:
-            self._create_bid_order(price, quantity, is_limit, composer)
+            if is_for:
+                self._create_bid_order(price, quantity, is_limit, is_for, composer)
+            else:
+                pass
         else:
-            self._create_ask_order(price, quantity, is_limit, composer)
+            if is_for:
+                self._create_ask_order(price, quantity, is_limit, is_for, composer)
+            else:
+                pass
 
     def _create_bid_order(
         self,
         price: float,
         quantity: int,
         is_limit: bool,
+        is_for: bool,
         composer: Composer,
     ):
         # logging.info(f"market id: {self.market.market_id}")
@@ -92,6 +106,7 @@ class Granter:
                 fee_recipient=self.fee_recipient,
                 inj_address=self.inj_address,
                 is_buy=True,
+                is_for=is_for,
                 market=self.market,
                 denom=self.denom,
                 composer=composer,
@@ -107,6 +122,7 @@ class Granter:
                 fee_recipient=self.fee_recipient,
                 inj_address=self.inj_address,
                 is_buy=True,
+                is_for=is_for,
                 market=self.market,
                 denom=self.denom,
                 composer=composer,
@@ -118,6 +134,7 @@ class Granter:
         price: float,
         quantity: int,
         is_limit: bool,
+        is_for: bool,
         composer: Composer,
     ):
         # self.update_nonce()
@@ -135,6 +152,7 @@ class Granter:
                 fee_recipient=self.fee_recipient,
                 inj_address=self.inj_address,
                 is_buy=False,
+                is_for=is_for,
                 market=self.market,
                 denom=self.denom,
                 composer=composer,
@@ -150,6 +168,7 @@ class Granter:
                 fee_recipient=self.fee_recipient,
                 inj_address=self.inj_address,
                 is_buy=False,
+                is_for=is_for,
                 market=self.market,
                 denom=self.denom,
                 composer=composer,
