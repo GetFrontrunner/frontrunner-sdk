@@ -103,7 +103,7 @@ class SportsDataIOData(Data):
                 # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
                 n -= 1
 
-    async def betting_events_by_season(self, game, season):
+    async def betting_events_by_season(self, game: str, season: str, n=3):
         url = f"{self.url}/{game}/odds/json/BettingEvents/{season}"
         topic = ""
 
@@ -122,7 +122,7 @@ class SportsDataIOData(Data):
                 n -= 1
         pass
 
-    async def betting_futures_by_season(self, game, season):
+    async def betting_futures_by_season(self, game: str, season: str, n=3):
         url = f"{self.url}/{game}/odds/json/BettingFuturesBySeason/{season}"
         topic = ""
 
@@ -141,7 +141,7 @@ class SportsDataIOData(Data):
                 n -= 1
         pass
 
-    async def betting_markets(self, game, market_id):
+    async def betting_markets(self, game: str, market_id: str, n=3):
         url = f"{self.url}/{game}/odds/json/BettingMarket{market_id}"
         topic = ""
 
@@ -160,58 +160,267 @@ class SportsDataIOData(Data):
                 n -= 1
         pass
 
-    async def betting_markets_by_event(self, game, event_id):
+    async def betting_markets_by_event(self, game: str, event_id: str, n=3):
         url = f"{self.url}/{game}/odds/json/BettingMarkets{event_id}"
+        topic = ""
+
+        res = await self.session.get(url, heads=self.headers)
+        if res.status == 200:
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
+
+            # recovery_odds = RecoveryOdds(data_dict)
+            # self.redis.produce(topic, dumps(recovery_odds))
+        else:
+            success = False
+            logging.info("failed to get recovery odds data from betradar")
+            if not success and n > 0:
+                # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
+                n -= 1
+
         pass
 
-    async def betting_markets_by_game_id(self, game, game_id):
+    async def betting_markets_by_game_id(self, game: str, game_id: str, n=3):
         url = f"{self.url}/{game}/odds/json/BettingMarketsByGameID/{game_id}"
+        topic = ""
+
+        res = await self.session.get(url, heads=self.headers)
+        if res.status == 200:
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
+
+            # recovery_odds = RecoveryOdds(data_dict)
+            # self.redis.produce(topic, dumps(recovery_odds))
+        else:
+            success = False
+            logging.info("failed to get recovery odds data from betradar")
+            if not success and n > 0:
+                # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
+                n -= 1
+
         pass
 
-    async def betting_marekts_by_market_type(self, game, event_id, marekt_type_id):
+    async def betting_marekts_by_market_type(
+        self, game: str, event_id: str, marekt_type_id: str, n=3
+    ):
         url = f"{self.url}/{game}/odds/json/BettingMarketsByMarketType/{event_id}/{marekt_type_id}"
+        topic = ""
+
+        res = await self.session.get(url, heads=self.headers)
+        if res.status == 200:
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
+
+            # recovery_odds = RecoveryOdds(data_dict)
+            # self.redis.produce(topic, dumps(recovery_odds))
+        else:
+            success = False
+            logging.info("failed to get recovery odds data from betradar")
+            if not success and n > 0:
+                # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
+                n -= 1
+
         pass
 
-    async def betting_player_props_by_gameid(self, game, game_id):
+    async def betting_player_props_by_gameid(self, game: str, game_id: str, n=3):
         url = f"{self.url}/{game}/odds/json/BettingPlayerPropsByGameID/{game_id}"
+        topic = ""
+
+        res = await self.session.get(url, heads=self.headers)
+        if res.status == 200:
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
+
+            # recovery_odds = RecoveryOdds(data_dict)
+            # self.redis.produce(topic, dumps(recovery_odds))
+        else:
+            success = False
+            logging.info("failed to get recovery odds data from betradar")
+            if not success and n > 0:
+                # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
+                n -= 1
+
         pass
 
     # async def betting_results_by_market(self, game, date):
-    async def in_game_odds_by_date(self, game, date):
+    async def in_game_odds_by_date(self, game: str, date: str, n=3):
         url = f"{self.url}/{game}/odds/json/LiveGameOddsByDate/{date}"
+        topic = ""
+
+        res = await self.session.get(url, heads=self.headers)
+        if res.status == 200:
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
+
+            # recovery_odds = RecoveryOdds(data_dict)
+            # self.redis.produce(topic, dumps(recovery_odds))
+        else:
+            success = False
+            logging.info("failed to get recovery odds data from betradar")
+            if not success and n > 0:
+                # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
+                n -= 1
+
         pass
 
-    async def in_game_odds_line_movement(self, game, game_id):
+    async def in_game_odds_line_movement(self, game: str, game_id: str, n=3):
         url = f"{self.url}/{game}/odds/json/LiveGameOddsLineMovement/{game_id}"
+        topic = ""
 
-    async def period_game_odds_by_date(self, game, date):
+        res = await self.session.get(url, heads=self.headers)
+        if res.status == 200:
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
+
+            # recovery_odds = RecoveryOdds(data_dict)
+            # self.redis.produce(topic, dumps(recovery_odds))
+        else:
+            success = False
+            logging.info("failed to get recovery odds data from betradar")
+            if not success and n > 0:
+                # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
+                n -= 1
+
+    async def period_game_odds_by_date(self, game: str, date: str, n=3):
         url = f"{self.url}/{game}/odds/json/AlternateMarketGameOddsByDate/{date}"
+        topic = ""
+
+        res = await self.session.get(url, heads=self.headers)
+        if res.status == 200:
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
+
+            # recovery_odds = RecoveryOdds(data_dict)
+            # self.redis.produce(topic, dumps(recovery_odds))
+        else:
+            success = False
+            logging.info("failed to get recovery odds data from betradar")
+            if not success and n > 0:
+                # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
+                n -= 1
+
         pass
 
-    async def period_game_odds_line_movement(self, game, game_id):
+    async def period_game_odds_line_movement(self, game: str, game_id: str, n=3):
         url = (
             f"{self.url}/{game}/odds/json/AlternateMarketGameOddsLineMovement/{game_id}"
         )
+        topic = ""
+
+        res = await self.session.get(url, heads=self.headers)
+        if res.status == 200:
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
+
+            # recovery_odds = RecoveryOdds(data_dict)
+            # self.redis.produce(topic, dumps(recovery_odds))
+        else:
+            success = False
+            logging.info("failed to get recovery odds data from betradar")
+            if not success and n > 0:
+                # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
+                n -= 1
+
         pass
 
-    async def pre_game_odds_by_date(self, game, date):
+    async def pre_game_odds_by_date(self, game: str, date: str, n=3):
         url = f"{self.url}/{game}/odds/json/GameOddsByDate/{date}"
+        topic = ""
+
+        res = await self.session.get(url, heads=self.headers)
+        if res.status == 200:
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
+
+            # recovery_odds = RecoveryOdds(data_dict)
+            # self.redis.produce(topic, dumps(recovery_odds))
+        else:
+            success = False
+            logging.info("failed to get recovery odds data from betradar")
+            if not success and n > 0:
+                # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
+                n -= 1
+
         pass
 
-    async def pre_game_odds_line_movement(self, game, game_id):
+    async def pre_game_odds_line_movement(self, game: str, game_id: str, n=3):
         url = f"{self.url}/{game}/odds/json/GameOddsLineMovement/{game_id}"
+        topic = ""
+
+        res = await self.session.get(url, heads=self.headers)
+        if res.status == 200:
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
+
+            # recovery_odds = RecoveryOdds(data_dict)
+            # self.redis.produce(topic, dumps(recovery_odds))
+        else:
+            success = False
+            logging.info("failed to get recovery odds data from betradar")
+            if not success and n > 0:
+                # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
+                n -= 1
+
         pass
 
-    async def betting_trends_by_matchup(self, game):
+    async def betting_trends_by_matchup(self, game: str, n=3):
         url = f"{self.url}/{game}/odds/json/"
+        topic = ""
+
+        res = await self.session.get(url, heads=self.headers)
+        if res.status == 200:
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
+
+            # recovery_odds = RecoveryOdds(data_dict)
+            # self.redis.produce(topic, dumps(recovery_odds))
+        else:
+            success = False
+            logging.info("failed to get recovery odds data from betradar")
+            if not success and n > 0:
+                # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
+                n -= 1
+
         pass
 
-    async def sportbooks(self, game):
+    async def sportbooks(self, game: str, n=3):
         url = f"{self.url}/{game}/odds/json/"
+        topic = ""
+
+        res = await self.session.get(url, heads=self.headers)
+        if res.status == 200:
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
+
+            # recovery_odds = RecoveryOdds(data_dict)
+            # self.redis.produce(topic, dumps(recovery_odds))
+        else:
+            success = False
+            logging.info("failed to get recovery odds data from betradar")
+            if not success and n > 0:
+                # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
+                n -= 1
+
         pass
 
-    async def betting_trends_by_team(self, game):
+    async def betting_trends_by_team(self, game: str, n=3):
         url = f"{self.url}/{game}/odds/json/ActiveSportsbooks"
+        topic = ""
+
+        res = await self.session.get(url, heads=self.headers)
+        if res.status == 200:
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
+
+            # recovery_odds = RecoveryOdds(data_dict)
+            # self.redis.produce(topic, dumps(recovery_odds))
+        else:
+            success = False
+            logging.info("failed to get recovery odds data from betradar")
+            if not success and n > 0:
+                # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
+                n -= 1
+
         pass
 
     # async def betting_metadata(self):
@@ -233,7 +442,256 @@ class SportsDataIOData(Data):
     #    pass
 
     ############################################################### Fantasy Data #####################################################################
+    async def dfs_slates_by_date(self, date: str, n=3):
+        url = f"{self.url}/mlb/projections/json/DfsSlatesByDate/{date}"
+        topic = ""
+
+        res = await self.session.get(url, heads=self.headers)
+        if res.status == 200:
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
+
+            # recovery_odds = RecoveryOdds(data_dict)
+            # self.redis.produce(topic, dumps(recovery_odds))
+        else:
+            success = False
+            logging.info("failed to get recovery odds data from betradar")
+            if not success and n > 0:
+                # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
+                n -= 1
+
+    async def projected_player_games_stats_by_date(self, date: str, n=3):
+        url = f"{self.url}/mlb/projections/json/PlayerGameProjectionStatsByDate/{date} "
+        topic = ""
+
+        res = await self.session.get(url, heads=self.headers)
+        if res.status == 200:
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
+
+            # recovery_odds = RecoveryOdds(data_dict)
+            # self.redis.produce(topic, dumps(recovery_odds))
+        else:
+            success = False
+            logging.info("failed to get recovery odds data from betradar")
+            if not success and n > 0:
+                # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
+                n -= 1
+
+    async def projected_player_season_stats(self, season: str, n=3):
+        url = f"{self.url}/mlb/projections/json/PlayerSeasonProjectionStats/{season} "
+        topic = ""
+
+        res = await self.session.get(url, heads=self.headers)
+        if res.status == 200:
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
+
+            # recovery_odds = RecoveryOdds(data_dict)
+            # self.redis.produce(topic, dumps(recovery_odds))
+        else:
+            success = False
+            logging.info("failed to get recovery odds data from betradar")
+            if not success and n > 0:
+                # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
+                n -= 1
+
+    async def starting_lineups_by_date(self, date: str, n=3):
+        url = f"{self.url}/mlb/projections/json/StartingLineupsByDate/{date}"
+        topic = ""
+
+        res = await self.session.get(url, heads=self.headers)
+        if res.status == 200:
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
+
+            # recovery_odds = RecoveryOdds(data_dict)
+            # self.redis.produce(topic, dumps(recovery_odds))
+        else:
+            success = False
+            logging.info("failed to get recovery odds data from betradar")
+            if not success and n > 0:
+                # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
+                n -= 1
+
+    async def depth_charts(self, n=3):
+        url = f"{self.url}/mlb/projections/json/DepthCharts "
+        topic = ""
+
+        res = await self.session.get(url, heads=self.headers)
+        if res.status == 200:
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
+
+            # recovery_odds = RecoveryOdds(data_dict)
+            # self.redis.produce(topic, dumps(recovery_odds))
+        else:
+            success = False
+            logging.info("failed to get recovery odds data from betradar")
+            if not success and n > 0:
+                # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
+                n -= 1
 
     ############################################################### News & Images Data #####################################################################
+    async def premium_news(self, n=3):
+        url = f"{self.url}/mlb/news-rotoballer/json/RotoBallerPremiumNews"
+        topic = ""
+
+        res = await self.session.get(url, heads=self.headers)
+        if res.status == 200:
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
+
+            # recovery_odds = RecoveryOdds(data_dict)
+            # self.redis.produce(topic, dumps(recovery_odds))
+        else:
+            success = False
+            logging.info("failed to get recovery odds data from betradar")
+            if not success and n > 0:
+                # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
+                n -= 1
+
+    async def premium_news_by_date(self, date: str, n=3):
+        url = f"{self.url}/mlb/news-rotoballer/json/RotoBallerPremiumNewsByDate/{date}"
+        topic = ""
+
+        res = await self.session.get(url, heads=self.headers)
+        if res.status == 200:
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
+
+            # recovery_odds = RecoveryOdds(data_dict)
+            # self.redis.produce(topic, dumps(recovery_odds))
+        else:
+            success = False
+            logging.info("failed to get recovery odds data from betradar")
+            if not success and n > 0:
+                # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
+                n -= 1
+
+    async def premium_news_by_player(self, playerid: int, n=3):
+        url = f"{self.url}/mlb/news-rotoballer/json/RotoBallerPremiumNewsByPlayerID/{playerid}"
+        topic = ""
+
+        res = await self.session.get(url, heads=self.headers)
+        if res.status == 200:
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
+
+            # recovery_odds = RecoveryOdds(data_dict)
+            # self.redis.produce(topic, dumps(recovery_odds))
+        else:
+            success = False
+            logging.info("failed to get recovery odds data from betradar")
+            if not success and n > 0:
+                # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
+                n -= 1
+
+    async def rotoworld_player_news_recent(self, n=3):
+        url = f"{self.url}/mlb/rotoworld/json/RotoworldPlayerNews"
+        topic = ""
+
+        res = await self.session.get(url, heads=self.headers)
+        if res.status == 200:
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
+
+            # recovery_odds = RecoveryOdds(data_dict)
+            # self.redis.produce(topic, dumps(recovery_odds))
+        else:
+            success = False
+            logging.info("failed to get recovery odds data from betradar")
+            if not success and n > 0:
+                # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
+                n -= 1
+
+    async def rotoworld_player_news_by_date(self, date: str, n=3):
+        url = f"{self.url}/mlb/rotoworld/json/RotoworldPlayerNewsByDate/{date}"
+        topic = ""
+
+        res = await self.session.get(url, heads=self.headers)
+        if res.status == 200:
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
+
+            # recovery_odds = RecoveryOdds(data_dict)
+            # self.redis.produce(topic, dumps(recovery_odds))
+        else:
+            success = False
+            logging.info("failed to get recovery odds data from betradar")
+            if not success and n > 0:
+                # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
+                n -= 1
+
+    async def headshots(self, n=3):
+        url = f"{self.url}/mlb/headshots/json/Headshots"
+        topic = ""
+
+        res = await self.session.get(url, heads=self.headers)
+        if res.status == 200:
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
+
+            # recovery_odds = RecoveryOdds(data_dict)
+            # self.redis.produce(topic, dumps(recovery_odds))
+        else:
+            success = False
+            logging.info("failed to get recovery odds data from betradar")
+            if not success and n > 0:
+                # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
+                n -= 1
 
     ############################################################### Miscellaneous Data #####################################################################
+    async def new(self, n=3):
+        url = f"{self.url}/mlb/scores/json/News"
+        topic = ""
+
+        res = await self.session.get(url, heads=self.headers)
+        if res.status == 200:
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
+
+            # recovery_odds = RecoveryOdds(data_dict)
+            # self.redis.produce(topic, dumps(recovery_odds))
+        else:
+            success = False
+            logging.info("failed to get recovery odds data from betradar")
+            if not success and n > 0:
+                # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
+                n -= 1
+
+    async def news_by_date(self, date: str, n=3):
+        url = f"{self.url}/mlb/scores/json/NewsByDate/{date}"
+        topic = ""
+
+        res = await self.session.get(url, heads=self.headers)
+        if res.status == 200:
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
+
+            # recovery_odds = RecoveryOdds(data_dict)
+            # self.redis.produce(topic, dumps(recovery_odds))
+        else:
+            success = False
+            logging.info("failed to get recovery odds data from betradar")
+            if not success and n > 0:
+                # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
+                n -= 1
+
+    async def news_by_player(self, playerid: int, n=3):
+        url = f"{self.url}/mlb/scores/json/NewsByPlayerID/{playerid}"
+        topic = ""
+
+        res = await self.session.get(url, heads=self.headers)
+        if res.status == 200:
+            data = await res.text()
+            data_dict = xmltodict.parse(data)
+
+            # recovery_odds = RecoveryOdds(data_dict)
+            # self.redis.produce(topic, dumps(recovery_odds))
+        else:
+            success = False
+            logging.info("failed to get recovery odds data from betradar")
+            if not success and n > 0:
+                # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
+                n -= 1
