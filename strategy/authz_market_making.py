@@ -21,7 +21,7 @@ from pyinjective.orderhash import build_eip712_msg, domain_separator
 from sha3 import keccak_256 as sha3_keccak_256
 
 
-from utils.objects import Order, OrderList
+from utils.objects import Order, Orders
 from utils.markets import factory  # , Market, ActiveMarket, StagingMarket
 from utils.client import create_client, switch_node_recreate_client
 from utils.granter import Granter

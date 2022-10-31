@@ -11,6 +11,132 @@ from utils.utilities import compute_orderhash
 from utils.markets import Market  # , ActiveMarket, StagingMarket
 
 #### Market specific objects
+class LimitBuyForOrder:
+    def __init__(
+        self,
+        nonce: int,
+        price: float,
+        quantity: float,
+        subaccount_id: str,
+        fee_recipient: str,
+        inj_address: str,
+        market: Market,
+        denom: Denom,
+        composer: Composer,
+    ):
+        pass
+
+
+class LimitBuyAgainstOrder:
+    def __init__(
+        self,
+        nonce: int,
+        price: float,
+        quantity: float,
+        subaccount_id: str,
+        fee_recipient: str,
+        inj_address: str,
+        market: Market,
+        denom: Denom,
+        composer: Composer,
+    ):
+        pass
+
+
+class LimitSellForOrder:
+    def __init__(
+        self,
+        nonce: int,
+        price: float,
+        quantity: float,
+        subaccount_id: str,
+        fee_recipient: str,
+        inj_address: str,
+        market: Market,
+        denom: Denom,
+        composer: Composer,
+    ):
+        pass
+
+
+class LimitSellAgainstOrder:
+    def __init__(
+        self,
+        nonce: int,
+        price: float,
+        quantity: float,
+        subaccount_id: str,
+        fee_recipient: str,
+        inj_address: str,
+        market: Market,
+        denom: Denom,
+        composer: Composer,
+    ):
+        pass
+
+
+class MarketBuyForOrder:
+    def __init__(
+        self,
+        nonce: int,
+        price: float,
+        quantity: float,
+        subaccount_id: str,
+        fee_recipient: str,
+        inj_address: str,
+        market: Market,
+        denom: Denom,
+        composer: Composer,
+    ):
+        pass
+
+
+class MarketBuyAgainstOrder:
+    def __init__(
+        self,
+        nonce: int,
+        price: float,
+        quantity: float,
+        subaccount_id: str,
+        fee_recipient: str,
+        inj_address: str,
+        market: Market,
+        denom: Denom,
+        composer: Composer,
+    ):
+        pass
+
+
+class MarketSellForOrder:
+    def __init__(
+        self,
+        nonce: int,
+        price: float,
+        quantity: float,
+        subaccount_id: str,
+        fee_recipient: str,
+        inj_address: str,
+        market: Market,
+        denom: Denom,
+        composer: Composer,
+    ):
+        pass
+
+
+class MarketSellAgainstOrder:
+    def __init__(
+        self,
+        nonce: int,
+        price: float,
+        quantity: float,
+        subaccount_id: str,
+        fee_recipient: str,
+        inj_address: str,
+        market: Market,
+        denom: Denom,
+        composer: Composer,
+    ):
+        pass
 
 
 class Order:
@@ -136,7 +262,7 @@ class Order:
             raise Exception("missing subaccount id")
 
 
-class OrderList:
+class Orders:
     def __init__(self):
         self.list: Dict[str, Order] = {}
 

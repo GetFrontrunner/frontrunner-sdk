@@ -4,7 +4,7 @@ from pyinjective.constant import Denom
 import logging
 from typing import List, Tuple
 
-from utils.objects import OrderList, Order
+from utils.objects import Orders, Order
 from utils.markets import Market
 from utils.utilities import get_nonce
 
@@ -18,10 +18,10 @@ logging.basicConfig(
 class Granter:
     def __init__(self, market: Market, inj_address: str, fee_recipient: str):
         self.market = market
-        self.limit_bids = OrderList()
-        self.limit_asks = OrderList()
-        self.market_bids = OrderList()
-        self.market_asks = OrderList()
+        self.limit_bids = Orders()
+        self.limit_asks = Orders()
+        self.market_bids = Orders()
+        self.market_asks = Orders()
         self.fee_recipient = fee_recipient
         self.inj_address = inj_address
         self.granter_address = Address.from_acc_bech32(inj_address)
