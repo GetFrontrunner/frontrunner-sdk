@@ -73,12 +73,12 @@ class Granter:
             if is_for:
                 self._create_bid_order(price, quantity, is_limit, is_for, composer)
             else:
-                pass
+                self._create_bid_order(price, quantity, is_limit, is_for, composer)
         else:
             if is_for:
                 self._create_ask_order(price, quantity, is_limit, is_for, composer)
             else:
-                pass
+                self._create_ask_order(price, quantity, is_limit, is_for, composer)
 
     def _create_bid_order(
         self,

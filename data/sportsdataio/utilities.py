@@ -56,9 +56,8 @@ class PlayerGameLogsBySeason:
 class PlayerGameStatsByDate:
     def __init__(self):
         pass
-    
+
+
 class PlayerSeasonStats:
     def __init__(self):
         pass
-    
-
