@@ -1,0 +1,9 @@
+what can you do with sdk
+1. Supported data sources
+2. Functions and what do they do
+3. Update granter balance
+4. Better data structure
+
+Plan:
+1. go over the repo, and try to simplify the structure (verify the Authz)
+2. Make it easier to use, drop the local orderhash computation.
