@@ -8,7 +8,7 @@ from pickle import dumps
 
 from utils.utilities import RedisProducer
 
-from data.sportsdataio.utilities import *
+from data.sportsdataio.utilities.betting_data import *
 
 from data.data_source_template import Data
 import xmltodict

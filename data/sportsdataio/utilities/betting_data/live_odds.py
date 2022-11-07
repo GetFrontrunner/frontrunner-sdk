@@ -186,35 +186,42 @@ class BettingEventsByDate:
 
 
 class InGameOddsByDate:
-    def __init__(self):
-        pass
+    def __init__(self, data):
+        self.odds = [Odds(odds) for odds in data]
 
 
 class InGameOddsLineMovement:
-    def __init__(self):
+    def __init__(self, data):
+        self.odds = [Odds(odds) for odds in data]
         pass
 
 
 class PeriodGameOddsByDate:
-    def __init__(self):
+    def __init__(self,data):
         pass
 
 
 class PeriodGameOddsLineMovement:
-    def __init__(self):
+    def __init__(self,data):
         pass
 
 
 class PreGameOddsByDate:
-    def __init__(self):
+    def __init__(self,data):
+        self.odds = [Odds(odds) for odds in data]
         pass
 
 
 class PreGameOddsLineMovement:
-    def __init__(self):
+    def __init__(self,data):
+        self.odds = [Odds(odds) for odds in data]
         pass
 
 
 class SportsBooks:
-    def __init__(self):
+    def __init__(self, data):
+        pass
+    
+class SportBooks:
+    def __init__(self,data):
         pass
