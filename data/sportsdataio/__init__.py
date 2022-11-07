@@ -48,7 +48,7 @@ class SportsDataIOData(Data):
     ############################################################### Sports Data #####################################################################
     async def are_games_in_progress(self, game: str, n=3):
         url = f"{self.url}/{game}/scores/json/AreAnyGamesInProgress"
-        topic = ""
+        topic = f"{game}/are_games_in_progress"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -66,7 +66,7 @@ class SportsDataIOData(Data):
     ############################################################### Betting Data #####################################################################
     async def betting_metadata(self, game: str, n=3):
         url = f"{self.url}/{game}/odds/json/BettingMetadata"
-        topic = ""
+        topic = f"{game}/betting_metadata"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -87,7 +87,7 @@ class SportsDataIOData(Data):
         date = '2020-08-23'
         """
         url = f"{self.url}/{game}/odds/json/BettingEventsByDate/{date}"
-        topic = ""
+        topic = f"{game}/betting_events_by_date"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -105,7 +105,7 @@ class SportsDataIOData(Data):
 
     async def betting_events_by_season(self, game: str, season: str, n=3):
         url = f"{self.url}/{game}/odds/json/BettingEvents/{season}"
-        topic = ""
+        topic = f"{game}/betting_events_by_season"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -124,7 +124,7 @@ class SportsDataIOData(Data):
 
     async def betting_futures_by_season(self, game: str, season: str, n=3):
         url = f"{self.url}/{game}/odds/json/BettingFuturesBySeason/{season}"
-        topic = ""
+        topic = f"{game}/betting_futures_by_season"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -143,7 +143,7 @@ class SportsDataIOData(Data):
 
     async def betting_markets(self, game: str, market_id: str, n=3):
         url = f"{self.url}/{game}/odds/json/BettingMarket{market_id}"
-        topic = ""
+        topic = f"{game}/betting_markets"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -162,7 +162,7 @@ class SportsDataIOData(Data):
 
     async def betting_markets_by_event(self, game: str, event_id: str, n=3):
         url = f"{self.url}/{game}/odds/json/BettingMarkets{event_id}"
-        topic = ""
+        topic = f"{game}/betting_markets_by_event"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -182,7 +182,7 @@ class SportsDataIOData(Data):
 
     async def betting_markets_by_game_id(self, game: str, game_id: str, n=3):
         url = f"{self.url}/{game}/odds/json/BettingMarketsByGameID/{game_id}"
-        topic = ""
+        topic = f"{game}/betting_markets_by_game_id"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -204,7 +204,7 @@ class SportsDataIOData(Data):
         self, game: str, event_id: str, marekt_type_id: str, n=3
     ):
         url = f"{self.url}/{game}/odds/json/BettingMarketsByMarketType/{event_id}/{marekt_type_id}"
-        topic = ""
+        topic = f"{game}/betting_markets_by_market_type"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -224,7 +224,7 @@ class SportsDataIOData(Data):
 
     async def betting_player_props_by_gameid(self, game: str, game_id: str, n=3):
         url = f"{self.url}/{game}/odds/json/BettingPlayerPropsByGameID/{game_id}"
-        topic = ""
+        topic = f"{game}/betting_player_props_by_gameid"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -245,7 +245,7 @@ class SportsDataIOData(Data):
     # async def betting_results_by_market(self, game, date):
     async def in_game_odds_by_date(self, game: str, date: str, n=3):
         url = f"{self.url}/{game}/odds/json/LiveGameOddsByDate/{date}"
-        topic = ""
+        topic = f"{game}/in_game_odds_by_date"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -265,7 +265,7 @@ class SportsDataIOData(Data):
 
     async def in_game_odds_line_movement(self, game: str, game_id: str, n=3):
         url = f"{self.url}/{game}/odds/json/LiveGameOddsLineMovement/{game_id}"
-        topic = ""
+        topic = f"{game}/in_game_odds_line_movement"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -283,7 +283,7 @@ class SportsDataIOData(Data):
 
     async def period_game_odds_by_date(self, game: str, date: str, n=3):
         url = f"{self.url}/{game}/odds/json/AlternateMarketGameOddsByDate/{date}"
-        topic = ""
+        topic = f"{game}/period_game_odds_by_date"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -305,7 +305,7 @@ class SportsDataIOData(Data):
         url = (
             f"{self.url}/{game}/odds/json/AlternateMarketGameOddsLineMovement/{game_id}"
         )
-        topic = ""
+        topic = f"{game}/period_game_odds_line_movement"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -325,7 +325,7 @@ class SportsDataIOData(Data):
 
     async def pre_game_odds_by_date(self, game: str, date: str, n=3):
         url = f"{self.url}/{game}/odds/json/GameOddsByDate/{date}"
-        topic = ""
+        topic = f"{game}/pre_game_odds_by_date"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -345,7 +345,7 @@ class SportsDataIOData(Data):
 
     async def pre_game_odds_line_movement(self, game: str, game_id: str, n=3):
         url = f"{self.url}/{game}/odds/json/GameOddsLineMovement/{game_id}"
-        topic = ""
+        topic = f"{game}/pre_game_odds_line_movement"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -365,7 +365,7 @@ class SportsDataIOData(Data):
 
     async def betting_trends_by_matchup(self, game: str, n=3):
         url = f"{self.url}/{game}/odds/json/"
-        topic = ""
+        topic = f"{game}/betting_trends_by_matchup"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -385,7 +385,7 @@ class SportsDataIOData(Data):
 
     async def sportbooks(self, game: str, n=3):
         url = f"{self.url}/{game}/odds/json/"
-        topic = ""
+        topic = f"{game}/sportbooks"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -405,7 +405,7 @@ class SportsDataIOData(Data):
 
     async def betting_trends_by_team(self, game: str, n=3):
         url = f"{self.url}/{game}/odds/json/ActiveSportsbooks"
-        topic = ""
+        topic = f"{game}/betting_trends_by_team"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -444,7 +444,7 @@ class SportsDataIOData(Data):
     ############################################################### Fantasy Data #####################################################################
     async def dfs_slates_by_date(self, game:str,date: str, n=3):
         url = f"{self.url}/{game}/projections/json/DfsSlatesByDate/{date}"
-        topic = ""
+        topic = f"{game}/dfs_slates_by_date"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -462,7 +462,7 @@ class SportsDataIOData(Data):
 
     async def projected_player_games_stats_by_date(self, game:str,date: str, n=3):
         url = f"{self.url}/{game}/projections/json/PlayerGameProjectionStatsByDate/{date} "
-        topic = ""
+        topic = f"{game}/projected_player_games_stats_by_date"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -480,7 +480,7 @@ class SportsDataIOData(Data):
 
     async def projected_player_season_stats(self, game:str,season: str, n=3):
         url = f"{self.url}/{game}/projections/json/PlayerSeasonProjectionStats/{season} "
-        topic = ""
+        topic = f"{game}/projected_player_season_stats"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -498,7 +498,7 @@ class SportsDataIOData(Data):
 
     async def starting_lineups_by_date(self, game:str,date: str, n=3):
         url = f"{self.url}/{game}/projections/json/StartingLineupsByDate/{date}"
-        topic = ""
+        topic = f"{game}/starting_lineups_by_date"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -516,7 +516,7 @@ class SportsDataIOData(Data):
 
     async def depth_charts(self,game:str, n=3):
         url = f"{self.url}/{game}/projections/json/DepthCharts "
-        topic = ""
+        topic = f"{game}/depth_charts"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -535,7 +535,7 @@ class SportsDataIOData(Data):
     ############################################################### News & Images Data #####################################################################
     async def premium_news(self,game:str, n=3):
         url = f"{self.url}/{game}/news-rotoballer/json/RotoBallerPremiumNews"
-        topic = ""
+        topic = f"{game}/premium_news"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -553,7 +553,7 @@ class SportsDataIOData(Data):
 
     async def premium_news_by_date(self, game:str,date: str, n=3):
         url = f"{self.url}/{game}/news-rotoballer/json/RotoBallerPremiumNewsByDate/{date}"
-        topic = ""
+        topic = f"{game}/premium_news_by_date"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -571,7 +571,7 @@ class SportsDataIOData(Data):
 
     async def premium_news_by_player(self,game:str, playerid: int, n=3):
         url = f"{self.url}/{game}/news-rotoballer/json/RotoBallerPremiumNewsByPlayerID/{playerid}"
-        topic = ""
+        topic = f"{game}/premium_news_by_player"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -589,7 +589,7 @@ class SportsDataIOData(Data):
 
     async def rotoworld_player_news_recent(self, game:str,n=3):
         url = f"{self.url}/{game}/rotoworld/json/RotoworldPlayerNews"
-        topic = ""
+        topic = f"{game}/rotoworld_player_news_recent"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -607,7 +607,7 @@ class SportsDataIOData(Data):
 
     async def rotoworld_player_news_by_date(self, game:str,date: str, n=3):
         url = f"{self.url}/{game}/rotoworld/json/RotoworldPlayerNewsByDate/{date}"
-        topic = ""
+        topic = f"{game}/rotoworld_player_news_by_date"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -625,7 +625,7 @@ class SportsDataIOData(Data):
 
     async def headshots(self,game:str, n=3):
         url = f"{self.url}/{game}/headshots/json/Headshots"
-        topic = ""
+        topic = f"{game}/headshots"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -642,9 +642,9 @@ class SportsDataIOData(Data):
                 n -= 1
 
     ############################################################### Miscellaneous Data #####################################################################
-    async def new(self, game:str, n=3):
+    async def news(self, game:str, n=3):
         url = f"{self.url}/{game}/scores/json/News"
-        topic = ""
+        topic = f"{game}/news"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -662,7 +662,7 @@ class SportsDataIOData(Data):
 
     async def news_by_date(self, game:str,date: str, n=3):
         url = f"{self.url}/{game}/scores/json/NewsByDate/{date}"
-        topic = ""
+        topic = f"{game}/news_by_date"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
@@ -680,7 +680,7 @@ class SportsDataIOData(Data):
 
     async def news_by_player(self, game:str,playerid: int, n=3):
         url = f"{self.url}/{game}/scores/json/NewsByPlayerID/{playerid}"
-        topic = ""
+        topic = f"{game}/news_by_player"
 
         res = await self.session.get(url, heads=self.headers)
         if res.status == 200:
