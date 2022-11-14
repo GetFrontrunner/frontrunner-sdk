@@ -5,7 +5,8 @@ import logging
 
 def factory(disable_error_msg: bool = False, **kwargs):
     if kwargs.get("ticker"):
-        if len(kwargs.get("ticker").split("-")) == 3:
+        ticker = kwargs["ticker"]
+        if len(ticker.split("-")) == 3:
             return ActiveMarket(
                 ticker=kwargs.get("ticker"),  # "staging-1659438300-NYM-WSH"
                 oracle_symbol=kwargs.get("oracle_symbol"),  # "Frontrunner"
@@ -14,12 +15,8 @@ def factory(disable_error_msg: bool = False, **kwargs):
                 oracle_scale_factor=kwargs.get("oracle_scale_factor"),  # 6
                 expiration_timestamp=kwargs.get("expiration_timestamp"),  # "1659438300"
                 settlement_timestamp=kwargs.get("settlement_timestamp"),  # "1659481500"
-                admin=kwargs.get(
-                    "admin"
-                ),  # "inj1v0txc0ep93a3xsxlcf36ctwh3uhxzjackcctp3"
-                quote_denom=kwargs.get(
-                    "quote_denom"
-                ),  # "peggy0x87aB3B4C8661e07D6372361211B96ed4Dc36B1B5"
+                admin=kwargs.get("admin"),  # "inj1v0txc0ep93a3xsxlcf36ctwh3uhxzjackcctp3"
+                quote_denom=kwargs.get("quote_denom"),  # "peggy0x87aB3B4C8661e07D6372361211B96ed4Dc36B1B5"
                 market_type=kwargs.get("market_type"),
                 market_id=kwargs.get("market_id"),
                 maker_fee_rate=kwargs.get("maker_fee_rate"),  # "0.000000000000000000"
@@ -33,7 +30,7 @@ def factory(disable_error_msg: bool = False, **kwargs):
                 # "1.000000000000000000"
                 settlement_price=kwargs.get("settlement_price"),  # None
             )
-        elif "staging" in kwargs.get("ticker"):
+        elif "staging" in ticker:
             return StagingMarket(
                 ticker=kwargs.get("ticker"),  # "staging-1659438300-NYM-WSH"
                 oracle_symbol=kwargs.get("oracle_symbol"),  # "Frontrunner"
@@ -42,12 +39,8 @@ def factory(disable_error_msg: bool = False, **kwargs):
                 oracle_scale_factor=kwargs.get("oracle_scale_factor"),  # 6
                 expiration_timestamp=kwargs.get("expiration_timestamp"),  # "1659438300"
                 settlement_timestamp=kwargs.get("settlement_timestamp"),  # "1659481500"
-                admin=kwargs.get(
-                    "admin"
-                ),  # "inj1v0txc0ep93a3xsxlcf36ctwh3uhxzjackcctp3"
-                quote_denom=kwargs.get(
-                    "quote_denom"
-                ),  # "peggy0x87aB3B4C8661e07D6372361211B96ed4Dc36B1B5"
+                admin=kwargs.get("admin"),  # "inj1v0txc0ep93a3xsxlcf36ctwh3uhxzjackcctp3"
+                quote_denom=kwargs.get("quote_denom"),  # "peggy0x87aB3B4C8661e07D6372361211B96ed4Dc36B1B5"
                 market_type=kwargs.get("market_type"),
                 market_id=kwargs.get("market_id"),
                 maker_fee_rate=kwargs.get("maker_fee_rate"),  # "0.000000000000000000"

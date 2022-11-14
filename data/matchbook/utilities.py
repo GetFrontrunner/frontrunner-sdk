@@ -96,9 +96,7 @@ class Event:
         self.name: Optional[str] = data.get("name", None)
         self.sport_id: Optional[int] = data.get("sport-id", None)
         if data.get("start", None):
-            self.start: Optional[datetime] = datetime.strptime(
-                data.get("start", None), "%Y-%m-%dT%H:%M:%S.%fZ"
-            )
+            self.start: Optional[datetime] = datetime.strptime(data.get("start", None), "%Y-%m-%dT%H:%M:%S.%fZ")
         else:
             self.start = None
 
@@ -121,8 +119,6 @@ class Event:
 class Events:
     def __init__(self, events: Dict[str, Any], in_running_flag: bool = True):
         if in_running_flag:
-            self.events: List[Event] = [
-                Event(event) for event in events["events"] if event["in-running-flag"]
-            ]
+            self.events: List[Event] = [Event(event) for event in events["events"] if event["in-running-flag"]]
         else:
             self.events: List[Event] = [Event(event) for event in events]

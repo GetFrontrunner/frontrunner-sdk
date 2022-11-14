@@ -3,9 +3,7 @@ from pyinjective.constant import Network  # , Denom
 from pyinjective.composer import Composer
 
 
-def create_client(
-    node_idx=3, nodes=["sentry0", "sentry1", "sentry3", "k8s"], is_testnet: bool = False
-):
+def create_client(node_idx=3, nodes=["sentry0", "sentry1", "sentry3", "k8s"], is_testnet: bool = False):
     if is_testnet:
         network = Network.testnet()
         composer = Composer(network=network.string())
@@ -20,9 +18,7 @@ def create_client(
     return node_idx, network, composer, client, lcd_endpoint
 
 
-def switch_node_recreate_client(
-    node_idx=3, nodes=["sentry0", "sentry1", "sentry3", "k8s"], is_testnet: bool = False
-):
+def switch_node_recreate_client(node_idx=3, nodes=["sentry0", "sentry1", "sentry3", "k8s"], is_testnet: bool = False):
     if is_testnet:
         node_idx += 1
         node_idx %= len(nodes)

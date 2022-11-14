@@ -2,6 +2,7 @@ import logging
 
 from typing import Any
 from dataclasses import dataclass
+from __future__ import annotations
 
 from typing import Any, Optional, Dict, List
 from pyinjective.composer import Composer
@@ -9,134 +10,6 @@ from pyinjective.constant import Denom
 
 from utils.utilities import compute_orderhash
 from utils.markets import Market  # , ActiveMarket, StagingMarket
-
-#### Market specific objects
-class LimitBuyForOrder:
-    def __init__(
-        self,
-        nonce: int,
-        price: float,
-        quantity: float,
-        subaccount_id: str,
-        fee_recipient: str,
-        inj_address: str,
-        market: Market,
-        denom: Denom,
-        composer: Composer,
-    ):
-        pass
-
-
-class LimitBuyAgainstOrder:
-    def __init__(
-        self,
-        nonce: int,
-        price: float,
-        quantity: float,
-        subaccount_id: str,
-        fee_recipient: str,
-        inj_address: str,
-        market: Market,
-        denom: Denom,
-        composer: Composer,
-    ):
-        pass
-
-
-class LimitSellForOrder:
-    def __init__(
-        self,
-        nonce: int,
-        price: float,
-        quantity: float,
-        subaccount_id: str,
-        fee_recipient: str,
-        inj_address: str,
-        market: Market,
-        denom: Denom,
-        composer: Composer,
-    ):
-        pass
-
-
-class LimitSellAgainstOrder:
-    def __init__(
-        self,
-        nonce: int,
-        price: float,
-        quantity: float,
-        subaccount_id: str,
-        fee_recipient: str,
-        inj_address: str,
-        market: Market,
-        denom: Denom,
-        composer: Composer,
-    ):
-        pass
-
-
-class MarketBuyForOrder:
-    def __init__(
-        self,
-        nonce: int,
-        price: float,
-        quantity: float,
-        subaccount_id: str,
-        fee_recipient: str,
-        inj_address: str,
-        market: Market,
-        denom: Denom,
-        composer: Composer,
-    ):
-        pass
-
-
-class MarketBuyAgainstOrder:
-    def __init__(
-        self,
-        nonce: int,
-        price: float,
-        quantity: float,
-        subaccount_id: str,
-        fee_recipient: str,
-        inj_address: str,
-        market: Market,
-        denom: Denom,
-        composer: Composer,
-    ):
-        pass
-
-
-class MarketSellForOrder:
-    def __init__(
-        self,
-        nonce: int,
-        price: float,
-        quantity: float,
-        subaccount_id: str,
-        fee_recipient: str,
-        inj_address: str,
-        market: Market,
-        denom: Denom,
-        composer: Composer,
-    ):
-        pass
-
-
-class MarketSellAgainstOrder:
-    def __init__(
-        self,
-        nonce: int,
-        price: float,
-        quantity: float,
-        subaccount_id: str,
-        fee_recipient: str,
-        inj_address: str,
-        market: Market,
-        denom: Denom,
-        composer: Composer,
-    ):
-        pass
 
 
 class Order:
@@ -167,6 +40,9 @@ class Order:
                 subaccount_id,
                 fee_recipient,
                 inj_address,
+                price,
+                quantity,
+                is_buy,
                 is_for,
                 market,
                 composer,
@@ -177,6 +53,9 @@ class Order:
                 subaccount_id,
                 fee_recipient,
                 inj_address,
+                price,
+                quantity,
+                is_buy,
                 is_for,
                 market,
                 composer,
@@ -205,6 +84,9 @@ class Order:
         subaccount_id: str,
         fee_recipient: str,
         inj_address: str,
+        price: float,
+        quantity: float,
+        is_buy: bool,
         is_for: bool,
         market: Market,
         composer: Composer,
@@ -216,9 +98,9 @@ class Order:
                 market_id=market.market_id,
                 subaccount_id=subaccount_id,
                 fee_recipient=fee_recipient,
-                price=self.price,
-                quantity=self.quantity,
-                is_buy=self.is_buy,
+                price=price,
+                quantity=quantity,
+                is_buy=is_buy,
                 is_reduce_only=is_for,
                 denom=denom,
             )
@@ -230,25 +112,24 @@ class Order:
         subaccount_id: str,
         fee_recipient: str,
         inj_address: str,
+        price: float,
+        quantity: float,
+        is_buy: bool,
         is_for: bool,
         market: Market,
         composer: Composer,
         denom: Denom,
     ):
         if market.market_id:
-            price = (
-                round(self.price * 1.05, 2)
-                if self.is_buy
-                else round(self.price * 0.95, 2)
-            )
+            price = round(price * 1.05, 2) if is_buy else round(price * 0.95, 2)
             return composer.BinaryOptionsOrder(
                 sender=inj_address,
                 market_id=market.market_id,
                 subaccount_id=subaccount_id,
                 fee_recipient=fee_recipient,
                 price=price,
-                quantity=self.quantity,
-                is_buy=self.is_buy,
+                quantity=quantity,
+                is_buy=is_buy,
                 is_reduce_only=is_for,
                 denom=denom,
             )
@@ -260,6 +141,293 @@ class Order:
             compute_orderhash(self, nounce)
         else:
             raise Exception("missing subaccount id")
+
+
+class LimitOrder(Order):
+    def __init__(
+        self,
+        nonce: int,
+        price: float,
+        quantity: float,
+        is_buy: bool,
+        is_for: bool,
+        subaccount_id: str,
+        fee_recipient: str,
+        inj_address: str,
+        market: Market,
+        denom: Denom,
+        composer: Composer,
+    ):
+        super().__init__(
+            nonce,
+            price,
+            quantity,
+            "limit",
+            subaccount_id,
+            fee_recipient,
+            inj_address,
+            is_buy,
+            is_for,
+            market,
+            denom,
+            composer,
+        )
+
+
+class MarketOrder(Order):
+    def __init__(
+        self,
+        nonce: int,
+        price: float,
+        quantity: float,
+        is_buy: bool,
+        is_for: bool,
+        subaccount_id: str,
+        fee_recipient: str,
+        inj_address: str,
+        market: Market,
+        denom: Denom,
+        composer: Composer,
+    ):
+        super().__init__(
+            nonce,
+            price,
+            quantity,
+            "market",
+            subaccount_id,
+            fee_recipient,
+            inj_address,
+            is_buy,
+            is_for,
+            market,
+            denom,
+            composer,
+        )
+
+
+#### Market specific objects
+class LimitBuyForOrder(LimitOrder):
+    def __init__(
+        self,
+        nonce: int,
+        price: float,
+        quantity: float,
+        subaccount_id: str,
+        fee_recipient: str,
+        inj_address: str,
+        market: Market,
+        denom: Denom,
+        composer: Composer,
+    ):
+        super().__init__(
+            nonce=nonce,
+            price=price,
+            quantity=quantity,
+            is_buy=True,
+            is_for=False,
+            subaccount_id=subaccount_id,
+            fee_recipient=fee_recipient,
+            inj_address=inj_address,
+            market=market,
+            denom=denom,
+            composer=composer,
+        )
+
+
+class LimitBuyAgainstOrder(LimitOrder):
+    def __init__(
+        self,
+        nonce: int,
+        price: float,
+        quantity: float,
+        subaccount_id: str,
+        fee_recipient: str,
+        inj_address: str,
+        market: Market,
+        denom: Denom,
+        composer: Composer,
+    ):
+        super().__init__(
+            nonce=nonce,
+            price=price,
+            quantity=quantity,
+            is_buy=False,
+            is_for=False,
+            subaccount_id=subaccount_id,
+            fee_recipient=fee_recipient,
+            inj_address=inj_address,
+            market=market,
+            denom=denom,
+            composer=composer,
+        )
+
+
+class LimitSellForOrder(LimitOrder):
+    def __init__(
+        self,
+        nonce: int,
+        price: float,
+        quantity: float,
+        subaccount_id: str,
+        fee_recipient: str,
+        inj_address: str,
+        market: Market,
+        denom: Denom,
+        composer: Composer,
+    ):
+        super().__init__(
+            nonce=nonce,
+            price=price,
+            quantity=quantity,
+            is_buy=False,
+            is_for=True,
+            subaccount_id=subaccount_id,
+            fee_recipient=fee_recipient,
+            inj_address=inj_address,
+            market=market,
+            denom=denom,
+            composer=composer,
+        )
+
+
+class LimitSellAgainstOrder(LimitOrder):
+    def __init__(
+        self,
+        nonce: int,
+        price: float,
+        quantity: float,
+        subaccount_id: str,
+        fee_recipient: str,
+        inj_address: str,
+        market: Market,
+        denom: Denom,
+        composer: Composer,
+    ):
+        super().__init__(
+            nonce=nonce,
+            price=price,
+            quantity=quantity,
+            is_buy=True,
+            is_for=True,
+            subaccount_id=subaccount_id,
+            fee_recipient=fee_recipient,
+            inj_address=inj_address,
+            market=market,
+            denom=denom,
+            composer=composer,
+        )
+
+
+class MarketBuyForOrder(MarketOrder):
+    def __init__(
+        self,
+        nonce: int,
+        price: float,
+        quantity: float,
+        subaccount_id: str,
+        fee_recipient: str,
+        inj_address: str,
+        market: Market,
+        denom: Denom,
+        composer: Composer,
+    ):
+        super().__init__(
+            nonce=nonce,
+            price=price,
+            quantity=quantity,
+            is_buy=True,
+            is_for=False,
+            subaccount_id=subaccount_id,
+            fee_recipient=fee_recipient,
+            inj_address=inj_address,
+            market=market,
+            denom=denom,
+            composer=composer,
+        )
+
+
+class MarketBuyAgainstOrder(MarketOrder):
+    def __init__(
+        self,
+        nonce: int,
+        price: float,
+        quantity: float,
+        subaccount_id: str,
+        fee_recipient: str,
+        inj_address: str,
+        market: Market,
+        denom: Denom,
+        composer: Composer,
+    ):
+        super().__init__(
+            nonce=nonce,
+            price=price,
+            quantity=quantity,
+            is_buy=False,
+            is_for=False,
+            subaccount_id=subaccount_id,
+            fee_recipient=fee_recipient,
+            inj_address=inj_address,
+            market=market,
+            denom=denom,
+            composer=composer,
+        )
+
+
+class MarketSellForOrder(MarketOrder):
+    def __init__(
+        self,
+        nonce: int,
+        price: float,
+        quantity: float,
+        subaccount_id: str,
+        fee_recipient: str,
+        inj_address: str,
+        market: Market,
+        denom: Denom,
+        composer: Composer,
+    ):
+        super().__init__(
+            nonce=nonce,
+            price=price,
+            quantity=quantity,
+            is_buy=False,
+            is_for=True,
+            subaccount_id=subaccount_id,
+            fee_recipient=fee_recipient,
+            inj_address=inj_address,
+            market=market,
+            denom=denom,
+            composer=composer,
+        )
+
+
+class MarketSellAgainstOrder(MarketOrder):
+    def __init__(
+        self,
+        nonce: int,
+        price: float,
+        quantity: float,
+        subaccount_id: str,
+        fee_recipient: str,
+        inj_address: str,
+        market: Market,
+        denom: Denom,
+        composer: Composer,
+    ):
+        super().__init__(
+            nonce=nonce,
+            price=price,
+            quantity=quantity,
+            is_buy=True,
+            is_for=True,
+            subaccount_id=subaccount_id,
+            fee_recipient=fee_recipient,
+            inj_address=inj_address,
+            market=market,
+            denom=denom,
+            composer=composer,
+        )
 
 
 class Orders:
@@ -423,8 +591,7 @@ class Position:
         elif trade_direction == self.trade_direction:
             tmp = self.trade_net_quantity + trade_quantity
             self.trade_entry_price = (
-                self.trade_entry_price * self.trade_net_quantity
-                + trade_price * trade_quantity
+                self.trade_entry_price * self.trade_net_quantity + trade_price * trade_quantity
             ) / tmp
             self.trade_net_quantity = tmp
 
@@ -436,11 +603,7 @@ class Position:
                 self.trade_direction = trade_direction
             elif tmp > 1e-4:
                 self.trade_entry_price = max(
-                    (
-                        self.trade_entry_price * self.trade_net_quantity
-                        - trade_price * trade_quantity
-                    )
-                    / tmp,
+                    (self.trade_entry_price * self.trade_net_quantity - trade_price * trade_quantity) / tmp,
                     0.0,  # FIXME THIS is not correct
                 )
                 self.trade_net_quantity = tmp

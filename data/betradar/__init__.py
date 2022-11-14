@@ -333,9 +333,7 @@ class BetRadarData(Data):
             success = False
             logging.info("failed to get all stateful messages data from betradar")
             if not success and n > 0:
-                success = await self.post_retry(
-                    topic=topic, obj=RecoveryStateMessage, url=url
-                )
+                success = await self.post_retry(topic=topic, obj=RecoveryStateMessage, url=url)
                 n -= 1
 
     ########################################################## book #############################################################
@@ -355,9 +353,7 @@ class BetRadarData(Data):
             success = False
             logging.info("failed to get booking calendar data from betradar")
             if not success and n > 0:
-                success = await self.post_retry(
-                    topic=topic, obj=BookingCalendar, url=url
-                )
+                success = await self.post_retry(topic=topic, obj=BookingCalendar, url=url)
                 n -= 1
 
     ################################################################## CustomBet ###################################################################
@@ -374,9 +370,7 @@ class BetRadarData(Data):
             success = False
             logging.info("failed to get custombet data from betradar")
             if not success and n > 0:
-                success = await self.get_retry(
-                    topic=topic, obj=AvailableSelection, url=url
-                )
+                success = await self.get_retry(topic=topic, obj=AvailableSelection, url=url)
                 n -= 1
 
     async def get_custombet_probability(self, n: int = 3):
@@ -459,9 +453,7 @@ class BetRadarData(Data):
                 success = False
                 logging.info("failed to get probabilities data from betradar")
                 if not success and n > 0:
-                    success = await self.get_retry(
-                        topic=topic, obj=Probabilities, url=url
-                    )
+                    success = await self.get_retry(topic=topic, obj=Probabilities, url=url)
                     n -= 1
             await sleep(10)
 
@@ -477,12 +469,8 @@ class BetRadarData(Data):
             logging.info("sent msg, ")
             event_1 = probabilities.outcomes[0]
             event_2 = probabilities.outcomes[1]
-            logging.info(
-                f"outcome 1  Prob: {round(event_1.probabilities,4)}, odds: {round(event_1.odds,4)}"
-            )
-            logging.info(
-                f"outcome 2  Prob: {round(event_2.probabilities,4)}, odds: {round(event_2.odds,4)}"
-            )
+            logging.info(f"outcome 1  Prob: {round(event_1.probabilities,4)}, odds: {round(event_1.odds,4)}")
+            logging.info(f"outcome 2  Prob: {round(event_2.probabilities,4)}, odds: {round(event_2.odds,4)}")
             n += 1
 
             await sleep(random.random() * 50)
@@ -979,9 +967,7 @@ class BetRadarData(Data):
         Lists almost all events we are offering prematch odds for. This endpoint can be used during early startup to obtain almost all fixtures. This endpoint is one of the few that uses pagination. xml schema
         """
         topic = "BetRadar/all_schedules"
-        url = (
-            f"{self.url}/sports/en/schedules/pre/schedule.xml?start={start}&limit=1000"
-        )
+        url = f"{self.url}/sports/en/schedules/pre/schedule.xml?start={start}&limit=1000"
         res = await self.session.get(url)
         if res.status == 200:
             data = await res.text()
@@ -995,13 +981,9 @@ class BetRadarData(Data):
                 success = await self.get_retry(topic=topic, obj=Schedules, url=url)
                 n -= 1
 
-    async def get_tournament_schedule(
-        self, urn_type: str, tournament_id: int, n: int = 3
-    ):
+    async def get_tournament_schedule(self, urn_type: str, tournament_id: int, n: int = 3):
         topic = "BetRadar/tournament_schedule"
-        url = (
-            f"{self.url}/sports/en/tournaments/{urn_type}:{tournament_id}/schedule.xml"
-        )
+        url = f"{self.url}/sports/en/tournaments/{urn_type}:{tournament_id}/schedule.xml"
         res = await self.session.get(url)
         if res.status == 200:
             data = await res.text()
@@ -1044,9 +1026,7 @@ class BetRadarData(Data):
             success = False
             logging.info("failed to get probabilities data from betradar")
             if not success and n > 0:
-                success = await self.get_retry(
-                    topic=topic, obj=AllFixtureChanges, url=url
-                )
+                success = await self.get_retry(topic=topic, obj=AllFixtureChanges, url=url)
                 n -= 1
 
     # async def get_tournament_info(self, urn_type: str, tournment_id: int, n: int = 3):

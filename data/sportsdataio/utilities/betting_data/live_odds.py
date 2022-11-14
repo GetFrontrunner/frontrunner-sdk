@@ -21,33 +21,24 @@ class BettingMarketMetaData:
 
 class BettingMetaData:
     def __init__(self, data: Dict[str, List[Dict[str, str]]]):
-        self.betting_bet_types = [
-            BettingType(betting_bet_type)
-            for betting_bet_type in data.get("BettingBetTypes", [])
-        ]
+        self.betting_bet_types = [BettingType(betting_bet_type) for betting_bet_type in data.get("BettingBetTypes", [])]
         self.betting_market_types = [
-            BettingType(betting_market_type)
-            for betting_market_type in data.get("BettingMarketTypes", [])
+            BettingType(betting_market_type) for betting_market_type in data.get("BettingMarketTypes", [])
         ]
         self.betting_bet_types = [
-            BettingType(betting_period_type)
-            for betting_period_type in data.get("BettingPeriodTypes", [])
+            BettingType(betting_period_type) for betting_period_type in data.get("BettingPeriodTypes", [])
         ]
         self.betting_bet_types = [
-            BettingType(betting_event_type)
-            for betting_event_type in data.get("BettingEventTypes", [])
+            BettingType(betting_event_type) for betting_event_type in data.get("BettingEventTypes", [])
         ]
         self.betting_bet_types = [
-            BettingType(betting_outcome_type)
-            for betting_outcome_type in data.get("BettingOutcomeTypes", [])
+            BettingType(betting_outcome_type) for betting_outcome_type in data.get("BettingOutcomeTypes", [])
         ]
         self.betting_bet_types = [
-            BettingType(betting_result_type)
-            for betting_result_type in data.get("BettingResultTypes", [])
+            BettingType(betting_result_type) for betting_result_type in data.get("BettingResultTypes", [])
         ]
         self.betting_bet_types = [
-            BettingType(market_meta_data)
-            for market_meta_data in data.get("ResultedMarketMetaData", [])
+            BettingType(market_meta_data) for market_meta_data in data.get("ResultedMarketMetaData", [])
         ]
 
 
@@ -98,9 +89,7 @@ class BettingMarket:
         self.created = data.get("Created")
         self.updated = data.get("Updated")
         self.any_bets_available = data.get("AnyBetsAvailable")
-        self.available_sportsbooks = [
-            SportBook(sportbook) for sportbook in data.get("AvailableSportsbooks", [])
-        ]
+        self.available_sportsbooks = [SportBook(sportbook) for sportbook in data.get("AvailableSportsbooks", [])]
         self.betting_outcomes = data.get("BettingOutcomes")
         self.consensus_outcomes = data.get("ConsensusOutcomes")
 
@@ -131,10 +120,7 @@ class BettingFuture:
         self.away_rotation_number = data.get("AwayRotationNumber")
         self.home_rotation_number = data.get("HomeRotationNumber")
         self.game_start_time = data.get("GameStartTime")
-        self.betting_markets = [
-            BettingMarket(betting_market)
-            for betting_market in data.get("BettingMarkets")
-        ]
+        self.betting_markets = [BettingMarket(betting_market) for betting_market in data.get("BettingMarkets")]
 
 
 class SportBook:
@@ -145,9 +131,7 @@ class SportBook:
 
 class BettingFuturesBySeason:
     def __init__(self, data):
-        self.betting_futures = [
-            BettingFuture(betting_future) for betting_future in data
-        ]
+        self.betting_futures = [BettingFuture(betting_future) for betting_future in data]
 
 
 class Odds:
@@ -197,23 +181,23 @@ class InGameOddsLineMovement:
 
 
 class PeriodGameOddsByDate:
-    def __init__(self,data):
+    def __init__(self, data):
         pass
 
 
 class PeriodGameOddsLineMovement:
-    def __init__(self,data):
+    def __init__(self, data):
         pass
 
 
 class PreGameOddsByDate:
-    def __init__(self,data):
+    def __init__(self, data):
         self.odds = [Odds(odds) for odds in data]
         pass
 
 
 class PreGameOddsLineMovement:
-    def __init__(self,data):
+    def __init__(self, data):
         self.odds = [Odds(odds) for odds in data]
         pass
 
@@ -221,7 +205,8 @@ class PreGameOddsLineMovement:
 class SportsBooks:
     def __init__(self, data):
         pass
-    
+
+
 class SportBooks:
-    def __init__(self,data):
+    def __init__(self, data):
         pass

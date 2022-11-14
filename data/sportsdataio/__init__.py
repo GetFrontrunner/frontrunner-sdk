@@ -200,9 +200,7 @@ class SportsDataIOData(Data):
 
         pass
 
-    async def betting_marekts_by_market_type(
-        self, game: str, event_id: str, marekt_type_id: str, n=3
-    ):
+    async def betting_marekts_by_market_type(self, game: str, event_id: str, marekt_type_id: str, n=3):
         url = f"{self.url}/{game}/odds/json/BettingMarketsByMarketType/{event_id}/{marekt_type_id}"
         topic = f"{game}/betting_markets_by_market_type"
 
@@ -302,9 +300,7 @@ class SportsDataIOData(Data):
         pass
 
     async def period_game_odds_line_movement(self, game: str, game_id: str, n=3):
-        url = (
-            f"{self.url}/{game}/odds/json/AlternateMarketGameOddsLineMovement/{game_id}"
-        )
+        url = f"{self.url}/{game}/odds/json/AlternateMarketGameOddsLineMovement/{game_id}"
         topic = f"{game}/period_game_odds_line_movement"
 
         res = await self.session.get(url, heads=self.headers)
@@ -442,7 +438,7 @@ class SportsDataIOData(Data):
     #    pass
 
     ############################################################### Fantasy Data #####################################################################
-    async def dfs_slates_by_date(self, game:str,date: str, n=3):
+    async def dfs_slates_by_date(self, game: str, date: str, n=3):
         url = f"{self.url}/{game}/projections/json/DfsSlatesByDate/{date}"
         topic = f"{game}/dfs_slates_by_date"
 
@@ -460,7 +456,7 @@ class SportsDataIOData(Data):
                 # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
                 n -= 1
 
-    async def projected_player_games_stats_by_date(self, game:str,date: str, n=3):
+    async def projected_player_games_stats_by_date(self, game: str, date: str, n=3):
         url = f"{self.url}/{game}/projections/json/PlayerGameProjectionStatsByDate/{date} "
         topic = f"{game}/projected_player_games_stats_by_date"
 
@@ -478,7 +474,7 @@ class SportsDataIOData(Data):
                 # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
                 n -= 1
 
-    async def projected_player_season_stats(self, game:str,season: str, n=3):
+    async def projected_player_season_stats(self, game: str, season: str, n=3):
         url = f"{self.url}/{game}/projections/json/PlayerSeasonProjectionStats/{season} "
         topic = f"{game}/projected_player_season_stats"
 
@@ -496,7 +492,7 @@ class SportsDataIOData(Data):
                 # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
                 n -= 1
 
-    async def starting_lineups_by_date(self, game:str,date: str, n=3):
+    async def starting_lineups_by_date(self, game: str, date: str, n=3):
         url = f"{self.url}/{game}/projections/json/StartingLineupsByDate/{date}"
         topic = f"{game}/starting_lineups_by_date"
 
@@ -514,7 +510,7 @@ class SportsDataIOData(Data):
                 # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
                 n -= 1
 
-    async def depth_charts(self,game:str, n=3):
+    async def depth_charts(self, game: str, n=3):
         url = f"{self.url}/{game}/projections/json/DepthCharts "
         topic = f"{game}/depth_charts"
 
@@ -533,7 +529,7 @@ class SportsDataIOData(Data):
                 n -= 1
 
     ############################################################### News & Images Data #####################################################################
-    async def premium_news(self,game:str, n=3):
+    async def premium_news(self, game: str, n=3):
         url = f"{self.url}/{game}/news-rotoballer/json/RotoBallerPremiumNews"
         topic = f"{game}/premium_news"
 
@@ -551,7 +547,7 @@ class SportsDataIOData(Data):
                 # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
                 n -= 1
 
-    async def premium_news_by_date(self, game:str,date: str, n=3):
+    async def premium_news_by_date(self, game: str, date: str, n=3):
         url = f"{self.url}/{game}/news-rotoballer/json/RotoBallerPremiumNewsByDate/{date}"
         topic = f"{game}/premium_news_by_date"
 
@@ -569,7 +565,7 @@ class SportsDataIOData(Data):
                 # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
                 n -= 1
 
-    async def premium_news_by_player(self,game:str, playerid: int, n=3):
+    async def premium_news_by_player(self, game: str, playerid: int, n=3):
         url = f"{self.url}/{game}/news-rotoballer/json/RotoBallerPremiumNewsByPlayerID/{playerid}"
         topic = f"{game}/premium_news_by_player"
 
@@ -587,7 +583,7 @@ class SportsDataIOData(Data):
                 # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
                 n -= 1
 
-    async def rotoworld_player_news_recent(self, game:str,n=3):
+    async def rotoworld_player_news_recent(self, game: str, n=3):
         url = f"{self.url}/{game}/rotoworld/json/RotoworldPlayerNews"
         topic = f"{game}/rotoworld_player_news_recent"
 
@@ -605,7 +601,7 @@ class SportsDataIOData(Data):
                 # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
                 n -= 1
 
-    async def rotoworld_player_news_by_date(self, game:str,date: str, n=3):
+    async def rotoworld_player_news_by_date(self, game: str, date: str, n=3):
         url = f"{self.url}/{game}/rotoworld/json/RotoworldPlayerNewsByDate/{date}"
         topic = f"{game}/rotoworld_player_news_by_date"
 
@@ -623,7 +619,7 @@ class SportsDataIOData(Data):
                 # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
                 n -= 1
 
-    async def headshots(self,game:str, n=3):
+    async def headshots(self, game: str, n=3):
         url = f"{self.url}/{game}/headshots/json/Headshots"
         topic = f"{game}/headshots"
 
@@ -642,7 +638,7 @@ class SportsDataIOData(Data):
                 n -= 1
 
     ############################################################### Miscellaneous Data #####################################################################
-    async def news(self, game:str, n=3):
+    async def news(self, game: str, n=3):
         url = f"{self.url}/{game}/scores/json/News"
         topic = f"{game}/news"
 
@@ -660,7 +656,7 @@ class SportsDataIOData(Data):
                 # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
                 n -= 1
 
-    async def news_by_date(self, game:str,date: str, n=3):
+    async def news_by_date(self, game: str, date: str, n=3):
         url = f"{self.url}/{game}/scores/json/NewsByDate/{date}"
         topic = f"{game}/news_by_date"
 
@@ -678,7 +674,7 @@ class SportsDataIOData(Data):
                 # success = await self.post_retry(topic=topic, obj=RecoveryOdds, url=url)
                 n -= 1
 
-    async def news_by_player(self, game:str,playerid: int, n=3):
+    async def news_by_player(self, game: str, playerid: int, n=3):
         url = f"{self.url}/{game}/scores/json/NewsByPlayerID/{playerid}"
         topic = f"{game}/news_by_player"
 

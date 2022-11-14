@@ -30,9 +30,7 @@ class MatchbookData:
         }
 
         connector = TCPConnector(keepalive_timeout=1000)
-        self.session = ClientSession(
-            timeout=ClientTimeout(total=10), headers=self.headers, connector=connector
-        )
+        self.session = ClientSession(timeout=ClientTimeout(total=10), headers=self.headers, connector=connector)
 
     async def _retry(self, topic: str, obj, url: str) -> bool:
         res = await self.session.post(url)

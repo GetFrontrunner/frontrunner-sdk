@@ -23,13 +23,12 @@ from sha3 import keccak_256 as sha3_keccak_256
 
 # from utils.objects import Order, OrderList
 from utils.markets import factory  # , Market, ActiveMarket, StagingMarket
-from utils.client import create_client, switch_node_recreate_client
 from utils.granter import Granter
 from utils.get_markets import get_all_active_markets, get_all_staging_markets
 from utils.utilities import RedisConsumer, compute_orderhash, get_nonce
 from utils.markets import Market, ActiveMarket, StagingMarket
 from chain.execution import execute
-from chain.utilities_old import CancelOrder, LimitOrder, MarketOrder, CancelAll
+from chain.client import create_client, switch_node_recreate_client
 import logging
 
 
@@ -137,12 +136,8 @@ class Model:
         if self.granters:
             for granter in self.granters:
                 portfolio = await self.client.get_portfolio(granter.inj_address)
-                granter.available_balance = float(
-                    portfolio.portfolio.subaccounts[0].available_balance
-                )
-                granter.locked_balance = float(
-                    portfolio.portfolio.subaccounts[0].locked_balance
-                )
+                granter.available_balance = float(portfolio.portfolio.subaccounts[0].available_balance)
+                granter.locked_balance = float(portfolio.portfolio.subaccounts[0].locked_balance)
                 logging.debug(
                     f"granter: {granter.inj_address}, market: {granter.market.ticker}, market id: {granter.market.market_id}"
                 )
@@ -287,9 +282,7 @@ class Model:
                     is_limit=False,
                 )
 
-    def create_limit_orders_for_granters_3_markets(
-        self, event_1=None, event_2=None, event_3=None
-    ):
+    def create_limit_orders_for_granters_3_markets(self, event_1=None, event_2=None, event_3=None):
         if self.granters:
             for granter in self.granters:
                 logging.info(f"granter.market.ticker: {granter.market.ticker}")
@@ -317,9 +310,7 @@ class Model:
                     is_limit=True,
                 )
 
-    def create_market_orders_for_granters_3_markets(
-        self, event_1=None, event_2=None, event_3=None
-    ):
+    def create_market_orders_for_granters_3_markets(self, event_1=None, event_2=None, event_3=None):
         if self.granters:
             for granter in self.granters:
                 event_1_bid_price = 0.1
@@ -479,28 +470,14 @@ class Model:
 
         for granter in self.granters:
             tmp = (
-                [
-                    ask_order.market.market_id
-                    for (orderhash, ask_order) in granter.limit_asks
-                ]
-                + [
-                    bid_order.market.market_id
-                    for (orderhash, bid_order) in granter.limit_bids
-                ]
-                + [
-                    ask_order.market.market_id
-                    for (orderhash, ask_order) in granter.market_asks
-                ]
-                + [
-                    bid_order.market.market_id
-                    for (orderhash, bid_order) in granter.market_bids
-                ]
+                [ask_order.market.market_id for (orderhash, ask_order) in granter.limit_asks]
+                + [bid_order.market.market_id for (orderhash, bid_order) in granter.limit_bids]
+                + [ask_order.market.market_id for (orderhash, ask_order) in granter.market_asks]
+                + [bid_order.market.market_id for (orderhash, bid_order) in granter.market_bids]
             )
             tmp_binary_options_market_ids_to_cancel_all.extend(set(tmp))
 
-        binary_options_market_ids_to_cancel_all = list(
-            set(tmp_binary_options_market_ids_to_cancel_all)
-        )
+        binary_options_market_ids_to_cancel_all = list(set(tmp_binary_options_market_ids_to_cancel_all))
         if not binary_options_market_ids_to_cancel_all:
             for granter in self.granters:
                 # print(f"marekt id: {granter.market.market_id}")

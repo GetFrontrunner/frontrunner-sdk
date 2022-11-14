@@ -26,9 +26,7 @@ class Granter:
         self.inj_address = inj_address
         self.granter_address = Address.from_acc_bech32(inj_address)
         self.subaccount_id = self.granter_address.get_subaccount_id(index=0)
-        logging.debug(
-            f"granter: inj address: {self.inj_address}, subaccount id: {self.subaccount_id}"
-        )
+        logging.debug(f"granter: inj address: {self.inj_address}, subaccount id: {self.subaccount_id}")
         self.denom = Denom(
             description="desc",
             base=0,
@@ -41,9 +39,7 @@ class Granter:
         self.nonce = 0
 
     def get_nonce(self, lcd_endpoint: str):
-        self.nonce = get_nonce(
-            lcd_endpoint=lcd_endpoint, subaccount_id=self.subaccount_id
-        )
+        self.nonce = get_nonce(lcd_endpoint=lcd_endpoint, subaccount_id=self.subaccount_id)
 
     def update_nonce(self):
         self.nonce += 1
@@ -91,9 +87,7 @@ class Granter:
         # logging.info(f"market id: {self.market.market_id}")
         # self.update_nonce()
         logging.debug(f"nonce: {self.nonce}")
-        logging.info(
-            f"subaccount_id: {self.subaccount_id}, inj address: {self.inj_address}"
-        )
+        logging.info(f"subaccount_id: {self.subaccount_id}, inj address: {self.inj_address}")
         self.limit_asks.list.clear()
         self.limit_bids.list.clear()
         if is_limit:
@@ -139,9 +133,7 @@ class Granter:
     ):
         # self.update_nonce()
         logging.debug(f"nonce: {self.nonce}")
-        logging.debug(
-            f"subaccount_id: {self.subaccount_id}, inj address: {self.inj_address}"
-        )
+        logging.debug(f"subaccount_id: {self.subaccount_id}, inj address: {self.inj_address}")
         if is_limit:
             order = Order(
                 nonce=self.nonce,
@@ -193,9 +185,7 @@ class Granter:
             )
         raise Exception("Market id is missing")
 
-    def batch_update_orders(
-        self, price_quantity: List[Tuple[float, int]], composer: Composer
-    ):
+    def batch_update_orders(self, price_quantity: List[Tuple[float, int]], composer: Composer):
         pass
 
     def pop_filled_orders(self, orderhash: str):

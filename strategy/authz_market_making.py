@@ -118,12 +118,8 @@ class Model:
         if self.granters:
             for granter in self.granters:
                 portfolio = await self.client.get_portfolio(granter.inj_address)
-                granter.available_balance = float(
-                    portfolio.portfolio.subaccounts[0].available_balance
-                )
-                granter.locked_balance = float(
-                    portfolio.portfolio.subaccounts[0].locked_balance
-                )
+                granter.available_balance = float(portfolio.portfolio.subaccounts[0].available_balance)
+                granter.locked_balance = float(portfolio.portfolio.subaccounts[0].locked_balance)
                 logging.debug(
                     f"granter: {granter.inj_address}, market: {granter.market.ticker}, market id: {granter.market.market_id}"
                 )
@@ -141,9 +137,7 @@ class Model:
         # else:
         #    raise Exception("No config")
 
-    def create_granter(
-        self, inj_address: str, lcd_endpoint: str, market: ActiveMarket
-    ) -> Granter:
+    def create_granter(self, inj_address: str, lcd_endpoint: str, market: ActiveMarket) -> Granter:
         granter = Granter(
             market=market,
             inj_address=inj_address,
@@ -330,28 +324,14 @@ class Model:
 
         for granter in self.granters:
             tmp = (
-                [
-                    ask_order.market.market_id
-                    for (orderhash, ask_order) in granter.limit_asks
-                ]
-                + [
-                    bid_order.market.market_id
-                    for (orderhash, bid_order) in granter.limit_bids
-                ]
-                + [
-                    ask_order.market.market_id
-                    for (orderhash, ask_order) in granter.market_asks
-                ]
-                + [
-                    bid_order.market.market_id
-                    for (orderhash, bid_order) in granter.market_bids
-                ]
+                [ask_order.market.market_id for (orderhash, ask_order) in granter.limit_asks]
+                + [bid_order.market.market_id for (orderhash, bid_order) in granter.limit_bids]
+                + [ask_order.market.market_id for (orderhash, ask_order) in granter.market_asks]
+                + [bid_order.market.market_id for (orderhash, bid_order) in granter.market_bids]
             )
             binary_options_market_ids_to_cancel_all.extend(set(tmp))
 
-        binary_options_market_ids_to_cancel_all = list(
-            set(binary_options_market_ids_to_cancel_all)
-        )
+        binary_options_market_ids_to_cancel_all = list(set(binary_options_market_ids_to_cancel_all))
         logging.info(f"Canceling {binary_options_market_ids_to_cancel_all}")
         msg = self.composer.MsgBatchUpdateOrders(
             sender=self.inj_address,
@@ -386,9 +366,7 @@ class Model:
             # self.create_limit_orders_for_granters()
             self.create_market_orders_for_granters()
             # resp = await self.batch_new_orders()
-            resp = await self.single_new_order(
-                pk, price=0.3, quantity=1, is_buy=True, is_market=False
-            )
+            resp = await self.single_new_order(pk, price=0.3, quantity=1, is_buy=True, is_market=False)
             logging.info(resp)
             logging.info("will cancell all orders in 5s")
             await sleep(5)

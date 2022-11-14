@@ -109,29 +109,6 @@ class RedisConsumer:
                 # logging.info(payload.events)
                 await self.on_probabilities_callback(payload)
 
-            # try:
-            #    payload = loads(msg)
-            #    for event in payload.events:
-            #        print(event.name, event.sport_id)
-
-            #    # if isinstance(payload, Events):
-            #    #    print(payload)
-            #    # else:
-            #    #    pass
-
-            #    if "tob" in payload["msg_type"]:
-            #        await self.on_tob_callback(payload)
-            #    elif "depth" in payload["msg_type"]:
-            #        await self.on_depth_callback(payload)
-            #    elif "trade" in payload["msg_type"]:
-            #        await self.on_trade_callback(payload)
-            #    elif "position" in payload["msg_type"]:
-            #        await self.on_position_callback(payload)
-            #    else:
-            #        print("unknown data", payload)
-            # except Exception as e:
-            #    pass
-
     async def subscribe(self, topics):
         newsub = set(topics) - self.topics
         #  print(f"before {self.topics=}")
@@ -184,9 +161,7 @@ class MarketConfig:
     market infos
     """
 
-    def __init__(
-        self, base_ticker: str, quote_ticker: str, market_type: str, node: str = "k8s"
-    ):
+    def __init__(self, base_ticker: str, quote_ticker: str, market_type: str, node: str = "k8s"):
         self.base_ticker = base_ticker
         self.quote_ticker = quote_ticker
         self.market_type = market_type.title()
@@ -200,19 +175,14 @@ class MarketConfig:
         if market_type == "spot":
             self.base_peggy, self.base_decimals = Denom.load_peggy_denom(
                 self.network.env,
-                f"W{base_ticker.upper()}"
-                if self.base_ticker in ["btc", "eth"]
-                else self.base_ticker.upper(),
+                f"W{base_ticker.upper()}" if self.base_ticker in ["btc", "eth"] else self.base_ticker.upper(),
             )
-        self.quote_peggy, self.quote_decimals = Denom.load_peggy_denom(
-            self.network.env, quote_ticker.upper()
-        )
+        self.quote_peggy, self.quote_decimals = Denom.load_peggy_denom(self.network.env, quote_ticker.upper())
         for section in self.config.sections():
             if len(section) == 66:
-                if (
-                    f"{base_ticker.upper()}/{quote_ticker.upper()}"
-                    in self.config.get(section, "description")
-                ) and (self.market_type in self.config.get(section, "description")):
+                if (f"{base_ticker.upper()}/{quote_ticker.upper()}" in self.config.get(section, "description")) and (
+                    self.market_type in self.config.get(section, "description")
+                ):
                     self.market_id = section
 
         self.market_denom = Denom.load_market(self.network.env, self.market_id)

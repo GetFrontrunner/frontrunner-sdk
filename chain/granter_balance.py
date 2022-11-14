@@ -19,8 +19,6 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     granter_inj_address = os.getenv("granter_inj_address")  # None
     if granter_inj_address is not None:
-        asyncio.get_event_loop().run_until_complete(
-            check_portfolio(granter_inj_address)
-        )
+        asyncio.get_event_loop().run_until_complete(check_portfolio(granter_inj_address))
     else:
         logging.info(f"granter address not None")

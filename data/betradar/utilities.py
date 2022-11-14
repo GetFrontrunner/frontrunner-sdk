@@ -30,16 +30,9 @@ class Market:
         self.id = data.get("@id", None)
         self.name = data.get("@name", None)
         self.variants = data.get("@variants", None)
-        self.mappings = [
-            Mapping(mapping) for mapping in data.get("@mappings", {}).get("mapping", {})
-        ]
-        self.outcomes = [
-            Outcome(outcome) for outcome in data.get("@outcomes", {}).get("outcome", {})
-        ]
-        self.specifiers = [
-            Specifier(specifier)
-            for specifier in data.get("specifiers", {}).get("specifier", {})
-        ]
+        self.mappings = [Mapping(mapping) for mapping in data.get("@mappings", {}).get("mapping", {})]
+        self.outcomes = [Outcome(outcome) for outcome in data.get("@outcomes", {}).get("outcome", {})]
+        self.specifiers = [Specifier(specifier) for specifier in data.get("specifiers", {}).get("specifier", {})]
 
 
 class Mapping:
@@ -53,10 +46,7 @@ class Mapping:
         self.sov_template = data.get("@sov_template", None)
         self.sport_id = data.get("@sport_id", None)
         self.valid_for = data.get("@valid_for", None)
-        self.mapping_outcome = [
-            MappingOutcome(mapping_outcome)
-            for mapping_outcome in data.get("mapping_outcome", [])
-        ]
+        self.mapping_outcome = [MappingOutcome(mapping_outcome) for mapping_outcome in data.get("mapping_outcome", [])]
 
 
 class MappingOutcome:
@@ -107,10 +97,7 @@ class BetStopReasons:
             data = {}
         self.response_code = data.get("@response_code", None)
 
-        self.bet_stop_reasons = [
-            Reason(bet_stop_reason)
-            for bet_stop_reason in data.get("betstop_reason", [])
-        ]
+        self.bet_stop_reasons = [Reason(bet_stop_reason) for bet_stop_reason in data.get("betstop_reason", [])]
 
 
 class BettingStatus:
@@ -121,9 +108,7 @@ class BettingStatus:
         self.response_code = data.get("@response_code", None)
         self.betting_status = [
             BStatus(betting_status)
-            for betting_status in data.get("betting_status_description", {}).get(
-                "betting_status", []
-            )
+            for betting_status in data.get("betting_status_description", {}).get("betting_status", [])
         ]
 
 
@@ -138,9 +123,7 @@ class MatchStatus:
         if not data:
             data = {}
         self.response_code = data.get("@response_code", None)
-        self.match_status = [
-            data.get("@match_status_description", {}).get("match_status", {})
-        ]
+        self.match_status = [data.get("@match_status_description", {}).get("match_status", {})]
 
 
 class Mstatus:
@@ -151,9 +134,7 @@ class Mstatus:
         self.id = data.get("@id", None)
         self.period_number = data.get("@period_number", None)
         self.is_all_sports = data.get("@all", None)
-        self.sports = [
-            Sport(sport) for sport in data.get("sports", {}).get("sport", [])
-        ]
+        self.sports = [Sport(sport) for sport in data.get("sports", {}).get("sport", [])]
 
 
 class RecoveryOdds(BetRadarResponseData):
@@ -188,17 +169,11 @@ class Fixture:
         self.start_time_confimed = data.get("@start_time_confimed", None)
         self.start_time_tbd = data.get("@start_time_tbd", None)
         self.status = data.get("@status", None)
-        self.competitors = [
-            Competitor(competitor) for competitor in data.get("competitors", {})
-        ]
-        self.extra_info = [
-            ExtraInfo(extra_info)
-            for extra_info in data.get("extra_info", {}).get("info", [])
-        ]
+        self.competitors = [Competitor(competitor) for competitor in data.get("competitors", {})]
+        self.extra_info = [ExtraInfo(extra_info) for extra_info in data.get("extra_info", {}).get("info", [])]
         self.product_info = data.get("product_info", None)
         self.reference_ids = [
-            ReferenceId(reference_id)
-            for reference_id in data.get("reference_ids", {}).get("reference_id", {})
+            ReferenceId(reference_id) for reference_id in data.get("reference_ids", {}).get("reference_id", {})
         ]
         self.season = Season(data.get("season", {}))
         self.tournament = Tournament(data.get("@tournament", {}))
@@ -280,9 +255,7 @@ class Variants:
     def __init__(self, data):
         if not data:
             data = {}
-        self.response_code = data.get("variant_desciptions", {}).get(
-            "@response_code", None
-        )
+        self.response_code = data.get("variant_desciptions", {}).get("@response_code", None)
         self.variants = data.get("variant_desciptions", {}).get("variants", [])
 
 
@@ -291,22 +264,15 @@ class Variant:
         if not data:
             data = {}
         self.id = data.get("@id", {})
-        self.outcomes = [
-            Outcome(outcome) for outcome in data.get("outcomes", {}).get("outcome", [])
-        ]
-        self.mappings = [
-            Mapping(mapping) for mapping in data.get("mappings", {}).get("mapping", [])
-        ]
+        self.outcomes = [Outcome(outcome) for outcome in data.get("outcomes", {}).get("outcome", [])]
+        self.mappings = [Mapping(mapping) for mapping in data.get("mappings", {}).get("mapping", [])]
 
 
 class Producers:
     def __init__(self, data):
         if not data:
             data = {}
-        self.producers = [
-            Producer(producer)
-            for producer in data.get("producers", {}).get("producer", [])
-        ]
+        self.producers = [Producer(producer) for producer in data.get("producers", {}).get("producer", [])]
 
 
 class Producer:
@@ -320,9 +286,7 @@ class Producer:
         self.api_url = data.get("@api_url", None)
         self.active = data.get("@active", None)
         self.scope = data.get("@scope", None)
-        self.stateful_recovery_window_in_minutes = data.get(
-            "@stateful_recovery_window_in_minutes", None
-        )
+        self.stateful_recovery_window_in_minutes = data.get("@stateful_recovery_window_in_minutes", None)
 
 
 class Status(BetRadarResponseData):
@@ -396,11 +360,7 @@ class User(BetRadarResponseData):
         bookmaker_details = data.get("bookmaker_details", None)
         if bookmaker_details:
             expire_at = bookmaker_details.get("@expire_at", None)
-            self.expire_at = (
-                datetime.strptime(expire_at, "%Y-%m-%dT%H:%M:%SZ")
-                if expire_at
-                else None
-            )
+            self.expire_at = datetime.strptime(expire_at, "%Y-%m-%dT%H:%M:%SZ") if expire_at else None
             self.bookmaker_id = int(bookmaker_details.get("@bookmaker_id", None))
             self.virtual_host = bookmaker_details.get("@virtual_host", None)
 
@@ -408,14 +368,10 @@ class User(BetRadarResponseData):
 class Info:
     def __init__(self, data):
         tournment_info = data.get("tournment_info", {})
-        self.live_coverage = tournment_info.get("coverage_info", {}).get(
-            "@live_coverage", None
-        )
+        self.live_coverage = tournment_info.get("coverage_info", {}).get("@live_coverage", None)
         self.groups = [
             Competitor(competitor)
-            for competitor in tournment_info.get("groups", {})
-            .get("group", {})
-            .get("competitor", [])
+            for competitor in tournment_info.get("groups", {}).get("group", {}).get("competitor", [])
         ]
         self.round = Round(tournment_info.get("round", {}))
         self.season = Season(tournment_info.get("season", {}))
@@ -438,14 +394,12 @@ class Categories:
         if sport_categories_data:
             if sport_categories_data["sport"]:
                 self.sport = sport_categories_data.get("sport", None)
-            if sport_categories_data.get(
-                "categories", None
-            ) and sport_categories_data.get("categories", None).get("category", None):
+            if sport_categories_data.get("categories", None) and sport_categories_data.get("categories", None).get(
+                "category", None
+            ):
                 self.categories = [
                     Category(category)
-                    for category in sport_categories_data.get("categories", None).get(
-                        "category", None
-                    )
+                    for category in sport_categories_data.get("categories", None).get("category", None)
                 ]
 
 
@@ -489,10 +443,7 @@ class SportEvent:
         if not competitors_data:
             competitors_data = {}
 
-        self.competitors = [
-            Competitor(competitor)
-            for competitor in competitors_data.get("competitor", [])
-        ]
+        self.competitors = [Competitor(competitor) for competitor in competitors_data.get("competitor", [])]
 
         self.season = Season(data.get("@season", None))
 
@@ -560,10 +511,7 @@ class SportEventStatus:
         period_scores_data = data.get("period_scores", None)
         if not period_scores_data:
             period_scores_data = {}
-        self.period_scores = [
-            PeriodScore(period_score)
-            for period_score in period_scores_data.get("period_score", [])
-        ]
+        self.period_scores = [PeriodScore(period_score) for period_score in period_scores_data.get("period_score", [])]
 
         results_data = data.get("results", None)
         if not results_data:

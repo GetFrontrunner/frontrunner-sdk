@@ -26,7 +26,5 @@ class Data:
         }
 
         connector = TCPConnector(keepalive_timeout=1000)
-        self.session = ClientSession(
-            timeout=ClientTimeout(total=10), headers=self.headers, connector=connector
-        )
+        self.session = ClientSession(timeout=ClientTimeout(total=10), headers=self.headers, connector=connector)
         self.t = 10
