@@ -24,26 +24,63 @@ class MarketStatus(Enum):
     closed = 2
 
 
+class EventType(Enum):
+    game = 1
+    future = 2
+
+
+class PropType(Enum):
+    winner = 1
+    team_prop = 2
+    player_prop = 3
+    other = 4
+
+
+@dataclass(slots=True)
 class League:
-    def __init__(self):
-        pass
+    id: int
+    name: str
+    updated: str
+    sport: Sport
 
 
+@dataclass(slots=True)
 class SportEntity:
-    def __init__(self):
-        pass
+    id: int
+    name: str
+    abbreviation: str
+    updated: str
+    league: League
 
 
+@dataclass(slots=True)
 class SportEvent:
-    def __init__(self):
-        pass
+    id: int
+    name: str
+    event_type: EventType
+    start_time: str
+    created: str
+    updated: str
+    league: League
 
 
+@dataclass(slots=True)
 class Prop:
-    def __init__(self):
-        pass
+    id: int
+    name: str
+    prop_type: PropType
+    created: str
+    updated: str
+    sport_event: SportEvent
 
 
+@dataclass(slots=True)
 class Market:
-    def __init__(self):
-        pass
+    id: int
+    injective_id: str
+    created: str
+    updated: str
+    long_entity: SportEntity
+    short_entity: SportEntity
+    status: MarketStatus
+    prop: Prop
