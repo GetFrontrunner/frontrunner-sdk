@@ -518,6 +518,15 @@ class Model:
     #        return await MarketOrder(price, quantity, is_buy, _market_id, pk)
     #    return await LimitOrder(price, quantity, is_buy, _market_id, pk)
 
+    async def get_orders(self):
+        for granter in self.granters:
+            orders = await self.client.get_historical_derivative_orders(
+                market_id=granter.market.market_id,
+                subaccount_id=granter.subaccount_id,
+            )
+            async for order in orders:
+                pass
+
     def get_loop(self):
         return get_event_loop()
 

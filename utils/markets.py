@@ -67,28 +67,28 @@ def factory(disable_error_msg: bool = False, **kwargs):
 
 class Market:
     def __init__(self, **kwargs):
-        self.ticker = kwargs.get("ticker")  # "staging-1659438300-NYM-WSH"
-        self.oracle_symbol = kwargs.get("oracle_symbol")  # "Frontrunner"
-        self.oracle_provider = kwargs.get("oracle_provider")  # "Frontrunner"
-        self.oracle_type = kwargs.get("oracle_type")  # "Provider"
-        self.oracle_scale_factor = kwargs.get("oracle_scale_factor")  # 6
-        self.expiration_timestamp = kwargs.get("expiration_timestamp")
+        self.ticker: str = kwargs["ticker"]  # "staging-1659438300-NYM-WSH"
+        self.oracle_symbol: str = kwargs["oracle_symbol"]  # "Frontrunner"
+        self.oracle_provider: str = kwargs["oracle_provider"]  # "Frontrunner"
+        self.oracle_type: str = kwargs["oracle_type"]  # "Provider"
+        self.oracle_scale_factor: int = kwargs["oracle_scale_factor"]  # 6
+        self.expiration_timestamp = kwargs["expiration_timestamp"]
         # "1659438300"
-        self.settlement_timestamp = kwargs.get("settlement_timestamp")
+        self.settlement_timestamp = kwargs["settlement_timestamp"]
         # "1659481500"
-        self.admin = kwargs.get("admin")
+        self.admin = kwargs["admin"]
         # "inj1v0txc0ep93a3xsxlcf36ctwh3uhxzjackcctp3"
-        self.quote_denom = kwargs.get("quote_denom")
+        self.quote_denom = kwargs["quote_denom"]
         # "peggy0x87aB3B4C8661e07D6372361211B96ed4Dc36B1B5"
-        self.market_type = kwargs.get("market_type")
-        self.market_id = kwargs.get("market_id")
-        self.maker_fee_rate = kwargs.get("maker_fee_rate")  # "0.000000000000000000"
-        self.taker_fee_rate = kwargs.get("taker_fee_rate")  # "0.000000000000000000"
-        self.relayer_fee_share_rate = kwargs.get("relayer_fee_share_rate")
-        self.status = kwargs.get("status")  # "Active"
-        self.min_price_tick_size = kwargs.get("min_price_tick_size")
-        self.min_quantity_tick_size = kwargs.get("min_quantity_tick_size")
-        self.settlement_price = kwargs.get("settlement_price")  # None
+        self.market_type = kwargs["market_type"]
+        self.market_id: str = kwargs["market_id"]
+        self.maker_fee_rate = kwargs["maker_fee_rate"]  # "0.000000000000000000"
+        self.taker_fee_rate = kwargs["taker_fee_rate"]  # "0.000000000000000000"
+        self.relayer_fee_share_rate = kwargs["relayer_fee_share_rate"]
+        self.status = kwargs["status"]  # "Active"
+        self.min_price_tick_size = kwargs["min_price_tick_size"]
+        self.min_quantity_tick_size = kwargs["min_quantity_tick_size"]
+        self.settlement_price = kwargs["settlement_price"]  # None
 
     def deactive_market(self):
         self.market_type = "deactived"
