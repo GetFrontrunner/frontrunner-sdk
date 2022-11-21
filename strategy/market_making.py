@@ -523,9 +523,19 @@ class Model:
             orders = await self.client.get_historical_derivative_orders(
                 market_id=granter.market.market_id,
                 subaccount_id=granter.subaccount_id,
+                state="booked",  # TODO need to test if partial filled is included in booked
             )
             async for order in orders:
-                pass
+                if order.order_type == 'buy' and order.is_reduce_only==False:
+                    print('buy_for')
+                elif order.order_type == 'buy' and order.is_reduce_only==True:
+                    print('sell_against')
+                elif order.order_type == 'sell' and order.is_reduce_only==True:
+                    print('sell_for')
+                elif order.order_type == 'sell' and order.is_reduce_only==False:
+                    print("buy_against")
+                else:
+                    print("unknown order type")
 
     def get_loop(self):
         return get_event_loop()

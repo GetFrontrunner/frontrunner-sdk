@@ -1,8 +1,8 @@
+from __future__ import annotations
 import logging
 
 from typing import Any
 from dataclasses import dataclass
-from __future__ import annotations
 
 from typing import Any, Optional, Dict, List
 from pyinjective.composer import Composer
@@ -141,6 +141,9 @@ class Order:
             compute_orderhash(self, nounce)
         else:
             raise Exception("missing subaccount id")
+
+    def update_olderhash_new(self, orderhash: str):
+        pass
 
 
 class LimitOrder(Order):
@@ -462,6 +465,28 @@ class Orders:
     def __iter__(self):
         for orderhash, order in self.list.items():
             yield orderhash, order
+
+
+class LimitOrders(Orders):
+    def __init__(self):
+        self.list: Dict[str, LimitOrder] = {}
+
+    def add(self, order: LimitOrder):
+        if order.hash:
+            self.list[order.hash] = order
+        else:
+            raise Exception("No order hash")
+
+
+class MarketOrders(Orders):
+    def __init__(self):
+        self.list: Dict[str, MarketOrder] = {}
+
+    def add(self, order: MarketOrder):
+        if order.hash:
+            self.list[order.hash] = order
+        else:
+            raise Exception("No order hash")
 
 
 @dataclass(init=True, repr=True)

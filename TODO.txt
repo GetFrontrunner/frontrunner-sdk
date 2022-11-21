@@ -7,3 +7,5 @@ what can you do with sdk
 Plan:
 1. go over the repo, and try to simplify the structure (verify the Authz)
 2. Make it easier to use, drop the local orderhash computation.
+3. update open orders with info from chain, no need to track it locally
+

@@ -4,7 +4,16 @@ from pyinjective.constant import Denom
 import logging
 from typing import List, Tuple
 
-from utils.objects import Orders, Order
+from utils.objects import (
+    LimitOrder,
+    MarketOrder,
+    MarketOrders,
+    LimitOrders,
+    LimitBuyForOrder,
+    LimitBuyAgainstOrder,
+    MarketBuyForOrder,
+    MarketBuyAgainstOrder,
+)
 from utils.markets import Market
 from utils.utilities import get_nonce
 
@@ -18,10 +27,10 @@ logging.basicConfig(
 class Granter:
     def __init__(self, market: Market, inj_address: str, fee_recipient: str):
         self.market = market
-        self.limit_bids = Orders()
-        self.limit_asks = Orders()
-        self.market_bids = Orders()
-        self.market_asks = Orders()
+        self.limit_bids = LimitOrders()
+        self.limit_asks = LimitOrders()
+        self.market_bids = MarketOrders()
+        self.market_asks = MarketOrders()
         self.fee_recipient = fee_recipient
         self.inj_address = inj_address
         self.granter_address = Address.from_acc_bech32(inj_address)
@@ -51,7 +60,6 @@ class Granter:
         is_limit: bool,
         is_bid: bool,
         is_for: bool,
-        # is_bid: bool,
         composer: Composer,
     ):
         logging.info(f"market id: {self.market.market_id}")
@@ -91,11 +99,10 @@ class Granter:
         self.limit_asks.list.clear()
         self.limit_bids.list.clear()
         if is_limit:
-            order = Order(
+            order = LimitOrder(
                 nonce=self.nonce,
                 price=price,
                 quantity=quantity,
-                order_type="limit",
                 subaccount_id=self.subaccount_id,
                 fee_recipient=self.fee_recipient,
                 inj_address=self.inj_address,
@@ -107,11 +114,10 @@ class Granter:
             )
             self.limit_bids.add(order)
         else:
-            order = Order(
+            order = MarketOrder(
                 nonce=self.nonce,
                 price=price,
                 quantity=quantity,
-                order_type="market",
                 subaccount_id=self.subaccount_id,
                 fee_recipient=self.fee_recipient,
                 inj_address=self.inj_address,
@@ -135,11 +141,10 @@ class Granter:
         logging.debug(f"nonce: {self.nonce}")
         logging.debug(f"subaccount_id: {self.subaccount_id}, inj address: {self.inj_address}")
         if is_limit:
-            order = Order(
+            order = LimitOrder(
                 nonce=self.nonce,
                 price=price,
                 quantity=quantity,
-                order_type="limit",
                 subaccount_id=self.subaccount_id,
                 fee_recipient=self.fee_recipient,
                 inj_address=self.inj_address,
@@ -151,11 +156,10 @@ class Granter:
             )
             self.limit_asks.add(order)
         else:
-            order = Order(
+            order = MarketOrder(
                 nonce=self.nonce,
                 price=price,
                 quantity=quantity,
-                order_type="market",
                 subaccount_id=self.subaccount_id,
                 fee_recipient=self.fee_recipient,
                 inj_address=self.inj_address,
