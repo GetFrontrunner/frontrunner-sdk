@@ -17,15 +17,16 @@ from pyinjective.utils import (
     spot_quantity_from_backend,
 )
 
-from pyinjective.orderhash import build_eip712_msg, domain_separator
-from sha3 import keccak_256 as sha3_keccak_256
+#from pyinjective.orderhash import build_eip712_msg, domain_separator
+
+# from sha3 import keccak_256 as sha3_keccak_256
 
 
 # from utils.objects import Order, OrderList
-from utils.markets import factory  # , Market, ActiveMarket, StagingMarket
+from utils.markets import multi_states_markets_factory, binary_states_market_factory # , Market, ActiveMarket, StagingMarket
 from utils.granter import Granter
 from utils.get_markets import get_all_active_markets, get_all_staging_markets
-from utils.utilities import RedisConsumer, compute_orderhash, get_nonce
+from utils.utilities import RedisConsumer, get_nonce
 from utils.markets import Market, ActiveMarket, StagingMarket
 from chain.execution import execute
 from chain.client import create_client, switch_node_recreate_client
@@ -167,9 +168,7 @@ class Model:
         )
         return granter
 
-    def create_granters(
-        self,
-    ):
+    def create_granters(self):
         all_active_markets = get_all_active_markets(True)
         granters = []
         for idx, active_markets in enumerate(all_active_markets.values()):
@@ -526,13 +525,13 @@ class Model:
                 state="booked",  # TODO need to test if partial filled is included in booked
             )
             async for order in orders:
-                if order.order_type == 'buy' and order.is_reduce_only==False:
-                    print('buy_for')
-                elif order.order_type == 'buy' and order.is_reduce_only==True:
-                    print('sell_against')
-                elif order.order_type == 'sell' and order.is_reduce_only==True:
-                    print('sell_for')
-                elif order.order_type == 'sell' and order.is_reduce_only==False:
+                if order.order_type == "buy" and order.is_reduce_only == False:
+                    print("buy_for")
+                elif order.order_type == "buy" and order.is_reduce_only == True:
+                    print("sell_against")
+                elif order.order_type == "sell" and order.is_reduce_only == True:
+                    print("sell_for")
+                elif order.order_type == "sell" and order.is_reduce_only == False:
                     print("buy_against")
                 else:
                     print("unknown order type")

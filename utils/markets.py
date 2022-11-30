@@ -1,11 +1,11 @@
 from __future__ import annotations
-from typing import List, Optional
+from typing import Dict, List, Optional
 from datetime import datetime
 from time import time
 import logging
 
 
-def multi_states_markets_factory(markets, disable_error_msg: bool = False) -> List[MultiStatesMarket]:
+def multi_states_markets_factory(markets:List[Dict[str,str]], disable_error_msg: bool = False) -> List[MultiStatesMarket]:
     tickers = {}
     for market in markets:
         if market.get("ticker"):
@@ -74,7 +74,7 @@ def binary_states_market_factory(disable_error_msg: bool = False, **kwargs) -> O
                 # "1.000000000000000000"
                 settlement_price=kwargs.get("settlement_price"),  # None
             )
-        elif len(ticker.split("-"))==4:
+        elif len(ticker.split("-")) == 4:
             pass
         else:
             if disable_error_msg:
@@ -140,7 +140,7 @@ class StagingMarket(Market):
 class MultiStatesMarket:
     def __init__(self, ticker, *markets):
         self.ticker = ticker
-        self.tickers = [
+        self.markets = [
             ActiveMarket(
                 ticker=kwargs.get("ticker"),  # "staging-1659438300-NYM-WSH"
                 oracle_symbol=kwargs.get("oracle_symbol"),  # "Frontrunner"

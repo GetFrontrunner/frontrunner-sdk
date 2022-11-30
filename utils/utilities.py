@@ -240,7 +240,6 @@ def handle_task_result(task: Task) -> None:
     """
     asyncio task result handler
     """
-
     try:
         task.result()
     except CancelledError:
@@ -248,7 +247,6 @@ def handle_task_result(task: Task) -> None:
     except Exception:  # pylint: disable=broad-except
         logging.exception("Exception raised by task = %r", task)
         raise Exception("Exception raised by task = %r", task)
-
     # only support msgs from single subaccount
 
 
@@ -264,6 +262,7 @@ def get_nonce(lcd_endpoint: str, subaccount_id: str) -> int:
     return 0
 
 
+"""
 def compute_orderhash(order, nonce: int):
     # get starting nonce
     # nonce = get_nounce(lcd_endpoint, subaccount_id)
@@ -280,3 +279,5 @@ def compute_orderhash(order, nonce: int):
         keccak256.update(typed_bytes)
         order_hash = keccak256.hexdigest()
         order.hash = f"0x{order_hash}"
+
+"""

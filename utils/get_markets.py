@@ -22,6 +22,7 @@ def _get_all_markets(
         if binary_states_market_factory(disable_error_msg, **market)
     ]
     multi_states_markets = multi_states_markets_factory(markets)
+    #print(f"############## {len(multi_states_markets)}")
     all_markets = multi_states_markets + two_states_markets
     return all_markets
 
@@ -67,5 +68,10 @@ def get_all_staging_markets() -> Dict[str, List[StagingMarket]]:
 
 if __name__ == "__main__":
     markets = get_all_active_markets()
-    for market in markets:
-        print(market)
+    for key,market in markets.items():
+        #print(key, len(market))
+        if "TKO" in key:
+            print(isinstance(market[0], MultiStatesMarket))
+            print(market[0].ticker)
+            for m in market[0].markets:
+                print(m.ticker)
