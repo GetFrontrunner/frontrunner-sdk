@@ -13,7 +13,6 @@ logging.basicConfig(format=FORMAT)
 
 if grantee_private_key:
     model = Model(
-        # private_key=grantee_private_key, topics=["Matchbook/events"], is_testnet=True
         private_key=grantee_private_key,
         topics=["BetRadar/probabilities"],
         is_testnet=True,

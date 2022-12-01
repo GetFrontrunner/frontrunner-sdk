@@ -8,9 +8,16 @@ from typing import Any, Optional, Dict, List
 from pyinjective.composer import Composer
 from pyinjective.constant import Denom
 
-from utils.utilities import compute_orderhash
+# from utils.utilities import compute_orderhash
 from utils.markets import Market  # , ActiveMarket, StagingMarket
 
+class Probability:
+    def __init__(self):
+        pass
+
+class Probabilities:
+    def __init__(self):
+        self.events:List[Probability] = []
 
 class Order:
     def __init__(

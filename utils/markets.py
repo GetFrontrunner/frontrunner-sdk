@@ -5,7 +5,9 @@ from time import time
 import logging
 
 
-def multi_states_markets_factory(markets:List[Dict[str,str]], disable_error_msg: bool = False) -> List[MultiStatesMarket]:
+def multi_states_markets_factory(
+    markets: List[Dict[str, str]], disable_error_msg: bool = False
+) -> List[MultiStatesMarket]:
     tickers = {}
     for market in markets:
         if market.get("ticker"):

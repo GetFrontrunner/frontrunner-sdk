@@ -27,10 +27,21 @@ logging.basicConfig(
 class Granter:
     def __init__(self, market: Market, inj_address: str, fee_recipient: str):
         self.market = market
-        self.limit_bids = LimitOrders()
+
+        self.limit_buy_for = LimitOrders()
+        self.limit_buy_against = LimitOrders()
+        self.limit_ask_for = LimitOrders()
+        self.limit_ask_against = LimitOrders()
+        self.market_bid_for = MarketOrders()
+        self.market_bid_against = MarketOrders()
+        self.market_ask_for = MarketOrders()
+        self.market_ask_against = MarketOrders()
+
         self.limit_asks = LimitOrders()
-        self.market_bids = MarketOrders()
+        self.limit_bids = LimitOrders()
         self.market_asks = MarketOrders()
+        self.market_bids = MarketOrders()
+
         self.fee_recipient = fee_recipient
         self.inj_address = inj_address
         self.granter_address = Address.from_acc_bech32(inj_address)

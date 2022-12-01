@@ -5,7 +5,6 @@ from typing import List, Dict, Optional
 import datetime
 from expiringdict import ExpiringDict
 
-
 from pyinjective.async_client import AsyncClient
 from pyinjective.constant import Network  # , Denom
 from pyinjective.composer import Composer
@@ -17,21 +16,18 @@ from pyinjective.utils import (
     spot_quantity_from_backend,
 )
 
-#from pyinjective.orderhash import build_eip712_msg, domain_separator
-
-# from sha3 import keccak_256 as sha3_keccak_256
-
-
-# from utils.objects import Order, OrderList
-from utils.markets import multi_states_markets_factory, binary_states_market_factory # , Market, ActiveMarket, StagingMarket
+from utils.markets import (
+    multi_states_markets_factory,
+    binary_states_market_factory,
+)  # , Market, ActiveMarket, StagingMarket
 from utils.granter import Granter
 from utils.get_markets import get_all_active_markets, get_all_staging_markets
 from utils.utilities import RedisConsumer, get_nonce
+from utils.objects import Probability, Probabilities
 from utils.markets import Market, ActiveMarket, StagingMarket
 from chain.execution import execute
 from chain.client import create_client, switch_node_recreate_client
 import logging
-
 
 from asyncio import sleep, get_event_loop
 from dotenv import load_dotenv
@@ -62,6 +58,12 @@ class Model:
         self.granters: List[Granter] = []  # get_perp_granters(configs, [], n_markets=1)
         self.last_granter_update = 0
         self.consumer = self.get_consumer(redis_addr, topics)
+
+        # local orders
+        self.buy_for_orders = {}
+        self.buy_against_orders = {}
+        self.sell_for_orders = {}
+        self.sell_against_orders = {}
 
         self.gas_price = 500000000
 
@@ -106,6 +108,12 @@ class Model:
         self.position = data
 
     async def on_probabilities(self, probabilities):
+        """
+        Probabilities object
+        TODO: 
+            3 events market
+            2 events market
+        """
         if probabilities.outcomes:
             event_1 = probabilities.outcomes[0]
             event_2 = probabilities.outcomes[1]
@@ -168,18 +176,22 @@ class Model:
         )
         return granter
 
-    def create_granters(self):
+    def create_granters(self, ticker: Optional[str] = None):
         all_active_markets = get_all_active_markets(True)
         granters = []
-        for idx, active_markets in enumerate(all_active_markets.values()):
-            if idx == 1:
-                for active_market in active_markets:
-                    granters.append(
-                        self._create_granter(
-                            lcd_endpoint=self.lcd_endpoint,
-                            market=active_market,
+        if ticker:
+            pass
+        else:
+            for idx, active_markets in enumerate(all_active_markets.values()):
+                # TODO only the first market works, need to fix this part
+                if idx == 1:
+                    for active_market in active_markets:
+                        granters.append(
+                            self._create_granter(
+                                lcd_endpoint=self.lcd_endpoint,
+                                market=active_market,
+                            )
                         )
-                    )
 
         self.granters = granters
         for granter in self.granters:
@@ -281,6 +293,29 @@ class Model:
                     is_limit=False,
                 )
 
+    def create_limit_orders_for_granters(self, event_1, event_2):
+        if self.granters:
+            for granter in self.granters:
+                logging.info(f"granter.market.ticker: {granter.market.ticker}")
+                event_1_bid_price = round(0.32 * event_1.probabilities, 2)
+                event_1_bid_quantity = int(10 * event_1.probabilities) + 1
+                event_1_bid_for = True
+                event_2_bid_price = round(0.69 * (1 + event_2.probabilities), 2)
+                event_2_bid_quantity = int(10 * event_2.probabilities) + 1
+                event_2_bid_for = True
+                logging.info(f"event 1 :{event_1_bid_price} {event_1_bid_quantity}")
+                logging.info(f"event 2 :{event_2_bid_price} {event_2_bid_quantity}")
+                self._create_orders_for_granters(
+                    granter,
+                    event_1_bid_price=event_1_bid_price,
+                    event_1_bid_quantity=event_1_bid_quantity,
+                    event_1_bid_for=event_1_bid_for,
+                    event_2_bid_price=event_2_bid_price,
+                    event_2_bid_quantity=event_2_bid_quantity,
+                    event_2_bid_for=event_2_bid_for,
+                    is_limit=True,
+                )
+
     def create_limit_orders_for_granters_3_markets(self, event_1=None, event_2=None, event_3=None):
         if self.granters:
             for granter in self.granters:
@@ -334,29 +369,6 @@ class Model:
                     event_3_bid_quantity=event_3_bid_quantity,
                     event_3_bid_for=event_3_bid_for,
                     is_limit=False,
-                )
-
-    def create_limit_orders_for_granters(self, event_1, event_2):
-        if self.granters:
-            for granter in self.granters:
-                logging.info(f"granter.market.ticker: {granter.market.ticker}")
-                event_1_bid_price = round(0.32 * event_1.probabilities, 2)
-                event_1_bid_quantity = int(10 * event_1.probabilities) + 1
-                event_1_bid_for = True
-                event_2_bid_price = round(0.69 * (1 + event_2.probabilities), 2)
-                event_2_bid_quantity = int(10 * event_2.probabilities) + 1
-                event_2_bid_for = True
-                logging.info(f"event 1 :{event_1_bid_price} {event_1_bid_quantity}")
-                logging.info(f"event 2 :{event_2_bid_price} {event_2_bid_quantity}")
-                self._create_orders_for_granters(
-                    granter,
-                    event_1_bid_price=event_1_bid_price,
-                    event_1_bid_quantity=event_1_bid_quantity,
-                    event_1_bid_for=event_1_bid_for,
-                    event_2_bid_price=event_2_bid_price,
-                    event_2_bid_quantity=event_2_bid_quantity,
-                    event_2_bid_for=event_2_bid_for,
-                    is_limit=True,
                 )
 
     async def batch_replace_orders(self):
@@ -524,15 +536,25 @@ class Model:
                 subaccount_id=granter.subaccount_id,
                 state="booked",  # TODO need to test if partial filled is included in booked
             )
+            # clear
+            self.buy_for_orders.clear()
+            self.buy_against_orders.clear()
+            self.sell_for_orders.clear()
+            self.sell_against_orders.clear()
+
             async for order in orders:
                 if order.order_type == "buy" and order.is_reduce_only == False:
                     print("buy_for")
-                elif order.order_type == "buy" and order.is_reduce_only == True:
-                    print("sell_against")
-                elif order.order_type == "sell" and order.is_reduce_only == True:
-                    print("sell_for")
+                    self.buy_for_orders[order.order_hash] = order
                 elif order.order_type == "sell" and order.is_reduce_only == False:
                     print("buy_against")
+                    self.buy_against_orders[order.order_hash] = order
+                elif order.order_type == "buy" and order.is_reduce_only == True:
+                    print("sell_against")
+                    self.sell_against_orders[order.order_hash] = order
+                elif order.order_type == "sell" and order.is_reduce_only == True:
+                    print("sell_for")
+                    self.sell_for_orders[order.order_hash] = order
                 else:
                     print("unknown order type")
 
