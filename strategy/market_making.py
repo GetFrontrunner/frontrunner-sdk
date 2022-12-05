@@ -18,13 +18,13 @@ from pyinjective.utils import (
 
 from utils.markets import (
     multi_states_markets_factory,
-    binary_states_market_factory,
+    bi_states_market_factory,
 )  # , Market, ActiveMarket, StagingMarket
-from utils.granter import Granter
+from utils.granter import BiStatesGranter, MultiStatesGranter
 from utils.get_markets import get_all_active_markets, get_all_staging_markets
 from utils.utilities import RedisConsumer, get_nonce
 from utils.objects import Probability, Probabilities
-from utils.markets import Market, ActiveMarket, StagingMarket
+from utils.markets import Market, ActiveMarket, StagingMarket, MultiStatesMarket
 from chain.execution import execute
 from chain.client import create_client, switch_node_recreate_client
 import logging
@@ -55,7 +55,7 @@ class Model:
         self.ask_orderbook = None
         self.position = None
         self.last_trade = None
-        self.granters: List[Granter] = []  # get_perp_granters(configs, [], n_markets=1)
+        self.granters: List[BiStatesGranter] = []  # get_perp_granters(configs, [], n_markets=1)
         self.last_granter_update = 0
         self.consumer = self.get_consumer(redis_addr, topics)
 
@@ -110,7 +110,7 @@ class Model:
     async def on_probabilities(self, probabilities):
         """
         Probabilities object
-        TODO: 
+        TODO:
             3 events market
             2 events market
         """
@@ -123,7 +123,7 @@ class Model:
             logging.info(
                 f"outcome 2: id: {event_2.id}, Prob: {round(event_2.probabilities,4)}, odds: {round(event_2.odds,4)}"
             )
-            self.create_limit_orders_for_granters(event_1, event_2)
+            self.create_limit_orders_for_granters_bi_states_markets(event_1, event_2)
             resp = await self.batch_new_orders()
             logging.info(resp)
 
@@ -164,8 +164,8 @@ class Model:
         # else:
         #    raise Exception("No config")
 
-    def _create_granter(self, lcd_endpoint: str, market: ActiveMarket) -> Granter:
-        granter = Granter(
+    def _create_granter_for_bi_states_markets(self, lcd_endpoint: str, market: ActiveMarket) -> BiStatesGranter:
+        granter = BiStatesGranter(
             market=market,
             inj_address=self.inj_address,
             fee_recipient=self.inj_address,
@@ -176,7 +176,7 @@ class Model:
         )
         return granter
 
-    def create_granters(self, ticker: Optional[str] = None):
+    def create_granters_for_bi_states_markets(self, ticker: Optional[str] = None):
         all_active_markets = get_all_active_markets(True)
         granters = []
         if ticker:
@@ -187,7 +187,7 @@ class Model:
                 if idx == 1:
                     for active_market in active_markets:
                         granters.append(
-                            self._create_granter(
+                            self._create_granter_for_bi_states_markets(
                                 lcd_endpoint=self.lcd_endpoint,
                                 market=active_market,
                             )
@@ -198,178 +198,288 @@ class Model:
             logging.info(f"market ticker: {granter.market.ticker}")
         # logging.info(f"number of granters: {len(self.granters)}")
 
+    def _create_granter_for_multi_states_markets(
+        self, lcd_endpoint: str, market: MultiStatesMarket
+    ) -> MultiStatesGranter:
+        granter = MultiStatesGranter(
+            buy_market=market.markets[0],
+            sell_market=market.markets[1],
+            draw_market=market.markets[2],
+            inj_address=self.inj_address,
+            fee_recipient=self.inj_address,
+        )
+        granter.get_nonce(lcd_endpoint)
+
+        logging.debug(
+            f"granter: {granter.inj_address}, nonce: {granter.nonce}, buy market: {granter.buy_market.ticker}, buy market id: {granter.buy_market.market_id}"
+        )
+
+        logging.debug(
+            f"granter: {granter.inj_address}, nonce: {granter.nonce}, sell market: {granter.sell_market.ticker}, sell market id: {granter.sell_market.market_id}"
+        )
+
+        logging.debug(
+            f"granter: {granter.inj_address}, nonce: {granter.nonce}, draw market: {granter.draw_market.ticker}, buy market id: {granter.draw_market.market_id}"
+        )
+        return granter
+
     def update_granter_nonce(self):
         for granter in self.granters:
             granter.get_nonce(self.lcd_endpoint)
 
-    def _create_orders_for_granters_3_markets(
+    def _create_orders_for_granters_multi_states_markets(
         self,
-        granter: Granter,
-        event_1_bid_price: float,
-        event_1_bid_quantity: int,
-        event_1_bid_for: bool,
-        event_2_bid_price: float,
-        event_2_bid_quantity: int,
-        event_2_bid_for: bool,
-        event_3_bid_price: float,
-        event_3_bid_quantity: int,
-        event_3_bid_for: bool,
-        is_limit: bool,
+        granter: MultiStatesGranter,
+        event_1_price: float,
+        event_1_quantity: int,
+        event_1_is_bid: bool,
+        event_1_is_for: bool,
+        event_1_is_limit: bool,
+        event_2_price: float,
+        event_2_quantity: int,
+        event_2_is_bid: bool,
+        event_2_is_for: bool,
+        event_2_is_limit: bool,
+        event_3_price: float,
+        event_3_quantity: int,
+        event_3_is_bid: bool,
+        event_3_is_for: bool,
+        event_3_is_limit: bool,
     ):
         granter.create_orders(
-            price=event_1_bid_price,
-            quantity=event_1_bid_quantity,
-            is_limit=is_limit,
-            is_bid=True,
-            is_for=event_1_bid_for,
+            price=event_1_price,
+            quantity=event_1_quantity,
+            is_limit=event_1_is_limit,
+            is_bid=event_1_is_bid,
+            is_for=event_1_is_for,
+            state=1,
             composer=self.composer,
         )
 
         granter.create_orders(
-            price=event_2_bid_price,
-            quantity=event_2_bid_quantity,
-            is_limit=is_limit,
-            is_bid=True,
-            is_for=event_2_bid_for,
+            price=event_2_price,
+            quantity=event_2_quantity,
+            is_limit=event_2_is_limit,
+            is_bid=event_2_is_bid,
+            is_for=event_2_is_for,
+            state=2,
             composer=self.composer,
         )
 
         granter.create_orders(
-            price=event_3_bid_price,
-            quantity=event_3_bid_quantity,
-            is_limit=is_limit,
-            is_bid=True,
-            is_for=event_3_bid_for,
+            price=event_3_price,
+            quantity=event_3_quantity,
+            is_limit=event_3_is_limit,
+            is_bid=event_3_is_bid,
+            is_for=event_3_is_for,
+            state=3,
             composer=self.composer,
         )
 
-    def _create_orders_for_granters(
+    def _create_orders_for_granters_bi_states_markets(
         self,
-        granter: Granter,
-        event_1_bid_price: float,
-        event_1_bid_quantity: int,
-        event_1_bid_for: bool,
-        event_2_bid_price: float,
-        event_2_bid_quantity: int,
-        event_2_bid_for: bool,
-        is_limit: bool,
+        granter: BiStatesGranter,
+        event_1_price: float,
+        event_1_quantity: int,
+        event_1_is_bid: bool,
+        event_1_is_for: bool,
+        event_1_is_limit: bool,
+        event_2_price: float,
+        event_2_quantity: int,
+        event_2_is_bid: bool,
+        event_2_is_for: bool,
+        event_2_is_limit: bool,
     ):
         granter.create_orders(
-            price=event_1_bid_price,
-            quantity=event_1_bid_quantity,
-            is_limit=is_limit,
-            is_bid=True,
-            is_for=event_1_bid_for,
+            price=event_1_price,
+            quantity=event_1_quantity,
+            is_limit=event_1_is_limit,
+            is_bid=event_1_is_bid,
+            is_for=event_1_is_for,
             composer=self.composer,
         )
 
         granter.create_orders(
-            price=event_2_bid_price,
-            quantity=event_2_bid_quantity,
-            is_limit=is_limit,
-            is_bid=False,
-            is_for=event_2_bid_for,
+            price=event_2_price,
+            quantity=event_2_quantity,
+            is_limit=event_2_is_limit,
+            is_bid=event_2_is_bid,
+            is_for=event_2_is_for,
             composer=self.composer,
         )
 
-    def create_market_orders_for_granters(self, event_1, event_2):
+    def create_market_orders_for_granters_bi_states_markets(self, event_1, event_2):
         if self.granters:
             for granter in self.granters:
-                event_1_bid_price = 0.32
-                event_1_bid_quantity = 12
-                event_1_bid_for = True
-                event_2_bid_price = 0.40
-                event_2_bid_quantity = 1
-                event_2_bid_for = False
+                event_1_price = 0.32
+                event_1_quantity = 12
+                event_1_is_bid = True
+                event_1_is_for = True
+                event_1_is_limit = False
+                event_2_price = 0.4
+                event_2_quantity = 1
+                event_2_is_bid = True
+                event_2_is_for = True
+                event_2_is_limit = False
 
-                self._create_orders_for_granters(
+                # event_1_bid_price = 0.32
+                # event_1_bid_quantity = 12
+                # event_1_bid_for = True
+                # event_2_bid_price = 0.40
+                # event_2_bid_quantity = 1
+                # event_2_bid_for = False
+
+                self._create_orders_for_granters_bi_states_markets(
                     granter,
-                    event_1_bid_price=event_1_bid_price,
-                    event_1_bid_quantity=event_1_bid_quantity,
-                    event_1_bid_for=event_1_bid_for,
-                    event_2_bid_price=event_2_bid_price,
-                    event_2_bid_quantity=event_2_bid_quantity,
-                    event_2_bid_for=event_2_bid_for,
-                    is_limit=False,
+                    event_1_price=event_1_price,
+                    event_1_quantity=event_1_quantity,
+                    event_1_is_bid=event_1_is_bid,
+                    event_1_is_for=event_1_is_for,
+                    event_1_is_limit=event_1_is_limit,
+                    event_2_price=event_2_price,
+                    event_2_quantity=event_2_quantity,
+                    event_2_is_bid=event_2_is_bid,
+                    event_2_is_for=event_2_is_for,
+                    event_2_is_limit=event_2_is_limit,
                 )
 
-    def create_limit_orders_for_granters(self, event_1, event_2):
+    def create_limit_orders_for_granters_bi_states_markets(self, event_1, event_2):
         if self.granters:
             for granter in self.granters:
                 logging.info(f"granter.market.ticker: {granter.market.ticker}")
-                event_1_bid_price = round(0.32 * event_1.probabilities, 2)
-                event_1_bid_quantity = int(10 * event_1.probabilities) + 1
-                event_1_bid_for = True
-                event_2_bid_price = round(0.69 * (1 + event_2.probabilities), 2)
-                event_2_bid_quantity = int(10 * event_2.probabilities) + 1
-                event_2_bid_for = True
-                logging.info(f"event 1 :{event_1_bid_price} {event_1_bid_quantity}")
-                logging.info(f"event 2 :{event_2_bid_price} {event_2_bid_quantity}")
-                self._create_orders_for_granters(
+                event_1_price = round(0.32 * event_1.probabilities, 2)
+                event_1_quantity = int(10 * event_1.probabilities) + 1
+                event_1_is_bid = True
+                event_1_is_for = True
+                event_1_is_limit = True
+
+                event_2_price = round(0.69 * (1 + event_2.probabilities), 2)
+                event_2_quantity = int(10 * event_2.probabilities) + 1
+                event_2_is_bid = True
+                event_2_is_for = True
+                event_2_is_limit = True
+                logging.info(f"event 1 :{event_1_price} {event_1_quantity}")
+                logging.info(f"event 2 :{event_2_price} {event_2_quantity}")
+                self._create_orders_for_granters_bi_states_markets(
                     granter,
-                    event_1_bid_price=event_1_bid_price,
-                    event_1_bid_quantity=event_1_bid_quantity,
-                    event_1_bid_for=event_1_bid_for,
-                    event_2_bid_price=event_2_bid_price,
-                    event_2_bid_quantity=event_2_bid_quantity,
-                    event_2_bid_for=event_2_bid_for,
-                    is_limit=True,
+                    event_1_price=event_1_price,
+                    event_1_quantity=event_1_quantity,
+                    event_1_is_bid=event_1_is_bid,
+                    event_1_is_for=event_1_is_for,
+                    event_1_is_limit=event_1_is_limit,
+                    event_2_price=event_2_price,
+                    event_2_quantity=event_2_quantity,
+                    event_2_is_bid=event_2_is_bid,
+                    event_2_is_for=event_2_is_for,
+                    event_2_is_limit=event_2_is_limit,
                 )
 
-    def create_limit_orders_for_granters_3_markets(self, event_1=None, event_2=None, event_3=None):
+    def create_limit_orders_for_granters_multi_states_markets(self, event_1=None, event_2=None, event_3=None):
         if self.granters:
             for granter in self.granters:
                 logging.info(f"granter.market.ticker: {granter.market.ticker}")
-                event_1_bid_price = 0.66
-                event_1_bid_quantity = 10
-                event_1_bid_for = False
-                event_2_bid_price = 0.1
-                event_2_bid_for = False
-                event_2_bid_quantity = 1
-                event_3_bid_price = 0.1
-                event_3_bid_quantity = 1
-                event_3_bid_for = False
+                if isinstance(granter, MultiStatesGranter):
 
-                self._create_orders_for_granters_3_markets(
-                    granter,
-                    event_1_bid_price=event_1_bid_price,
-                    event_1_bid_quantity=event_1_bid_quantity,
-                    event_1_bid_for=event_1_bid_for,
-                    event_2_bid_price=event_2_bid_price,
-                    event_2_bid_quantity=event_2_bid_quantity,
-                    event_2_bid_for=event_2_bid_for,
-                    event_3_bid_price=event_3_bid_price,
-                    event_3_bid_quantity=event_3_bid_quantity,
-                    event_3_bid_for=event_3_bid_for,
-                    is_limit=True,
-                )
+                    event_1_price = round(0.32 * event_1.probabilities, 2)
+                    event_1_quantity = int(10 * event_1.probabilities) + 1
+                    event_1_is_bid = True
+                    event_1_is_for = True
+                    event_1_is_limit = True
 
-    def create_market_orders_for_granters_3_markets(self, event_1=None, event_2=None, event_3=None):
+                    event_2_price = round(0.69 * (1 + event_2.probabilities), 2)
+                    event_2_quantity = int(10 * event_2.probabilities) + 1
+                    event_2_is_bid = True
+                    event_2_is_for = True
+                    event_2_is_limit = True
+
+                    event_3_price = round(0.69 * (1 + event_3.probabilities), 2)
+                    event_3_quantity = int(10 * event_3.probabilities) + 1
+                    event_3_is_bid = True
+                    event_3_is_for = True
+                    event_3_is_limit = True
+
+                    # event_1_bid_price = 0.66
+                    # event_1_bid_quantity = 10
+                    # event_1_bid_for = False
+                    # event_2_bid_price = 0.1
+                    # event_2_bid_for = False
+                    # event_2_bid_quantity = 1
+                    # event_3_bid_price = 0.1
+                    # event_3_bid_quantity = 1
+                    # event_3_bid_for = False
+
+                    self._create_orders_for_granters_multi_states_markets(
+                        granter,
+                        event_1_price=event_1_price,
+                        event_1_quantity=event_1_quantity,
+                        event_1_is_bid=event_1_is_bid,
+                        event_1_is_for=event_1_is_for,
+                        event_1_is_limit=event_1_is_limit,
+                        event_2_price=event_2_price,
+                        event_2_quantity=event_2_quantity,
+                        event_2_is_bid=event_2_is_bid,
+                        event_2_is_for=event_2_is_for,
+                        event_2_is_limit=event_2_is_limit,
+                        event_3_price=event_3_price,
+                        event_3_quantity=event_3_quantity,
+                        event_3_is_bid=event_3_is_bid,
+                        event_3_is_for=event_3_is_for,
+                        event_3_is_limit=event_3_is_limit,
+                    )
+
+    def create_market_orders_for_granters_multi_states_markets(self, event_1=None, event_2=None, event_3=None):
         if self.granters:
             for granter in self.granters:
-                event_1_bid_price = 0.1
-                event_1_bid_quantity = 1
-                event_1_bid_for = True
-                event_2_bid_price = 0.1
-                event_2_bid_quantity = 1
-                event_2_bid_for = True
-                event_3_bid_price = 0.1
-                event_3_bid_quantity = 1
-                event_3_bid_for = True
+                if isinstance(granter, MultiStatesGranter):
+                    event_1_price = round(0.32 * event_1.probabilities, 2)
+                    event_1_quantity = int(10 * event_1.probabilities) + 1
+                    event_1_is_bid = True
+                    event_1_is_for = True
+                    event_1_is_limit = True
 
-                self._create_orders_for_granters_3_markets(
-                    granter,
-                    event_1_bid_price=event_1_bid_price,
-                    event_1_bid_quantity=event_1_bid_quantity,
-                    event_1_bid_for=event_1_bid_for,
-                    event_2_bid_price=event_2_bid_price,
-                    event_2_bid_quantity=event_2_bid_quantity,
-                    event_2_bid_for=event_2_bid_for,
-                    event_3_bid_price=event_3_bid_price,
-                    event_3_bid_quantity=event_3_bid_quantity,
-                    event_3_bid_for=event_3_bid_for,
-                    is_limit=False,
-                )
+                    event_2_price = round(0.69 * (1 + event_2.probabilities), 2)
+                    event_2_quantity = int(10 * event_2.probabilities) + 1
+                    event_2_is_bid = True
+                    event_2_is_for = True
+                    event_2_is_limit = True
+
+                    event_3_price = round(0.69 * (1 + event_3.probabilities), 2)
+                    event_3_quantity = int(10 * event_3.probabilities) + 1
+                    event_3_is_bid = True
+                    event_3_is_for = True
+                    event_3_is_limit = True
+                    self._create_orders_for_granters_multi_states_markets(
+                        granter,
+                        event_1_price=event_1_price,
+                        event_1_quantity=event_1_quantity,
+                        event_1_is_bid=event_1_is_bid,
+                        event_1_is_for=event_1_is_for,
+                        event_1_is_limit=event_1_is_limit,
+                        event_2_price=event_2_price,
+                        event_2_quantity=event_2_quantity,
+                        event_2_is_bid=event_2_is_bid,
+                        event_2_is_for=event_2_is_for,
+                        event_2_is_limit=event_2_is_limit,
+                        event_3_price=event_3_price,
+                        event_3_quantity=event_3_quantity,
+                        event_3_is_bid=event_3_is_bid,
+                        event_3_is_for=event_3_is_for,
+                        event_3_is_limit=event_3_is_limit,
+                    )
+
+                    # self._create_orders_for_granters_multi_states_markets(
+                    #    granter,
+                    #    event_1_price=event_1_bid_price,
+                    #    event_1_quantity=event_1_bid_quantity,
+                    #    event_1_is_for=event_1_bid_for,
+                    #    event_2_bid_price=event_2_bid_price,
+                    #    event_2_bid_quantity=event_2_bid_quantity,
+                    #    event_2_bid_for=event_2_bid_for,
+                    #    event_3_bid_price=event_3_bid_price,
+                    #    event_3_bid_quantity=event_3_bid_quantity,
+                    #    event_3_bid_for=event_3_bid_for,
+                    #    is_limit=False,
+                    # )
 
     async def batch_replace_orders(self):
         msg = self._build_batch_replace_orders_msg()
@@ -424,10 +534,10 @@ class Model:
 
         for granter in self.granters:
             tmp = (
-                [ask_order.msg for (orderhash, ask_order) in granter.limit_asks]
-                + [bid_order.msg for (orderhash, bid_order) in granter.limit_bids]
-                + [ask_order.msg for (orderhash, ask_order) in granter.market_asks]
-                + [bid_order.msg for (orderhash, bid_order) in granter.market_bids]
+                [ask_order.msg for ask_order in granter.limit_asks]
+                + [bid_order.msg for bid_order in granter.limit_bids]
+                + [ask_order.msg for ask_order in granter.market_asks]
+                + [bid_order.msg for bid_order in granter.market_bids]
             )
 
             # tmp = (
@@ -455,17 +565,17 @@ class Model:
 
         for granter in self.granters:
             tmp = (
-                [ask_order.msg for (orderhash, ask_order) in granter.limit_asks]
-                + [bid_order.msg for (orderhash, bid_order) in granter.limit_bids]
-                + [ask_order.msg for (orderhash, ask_order) in granter.market_asks]
-                + [bid_order.msg for (orderhash, bid_order) in granter.market_bids]
+                [ask_order.msg for ask_order in granter.limit_asks]
+                + [bid_order.msg for bid_order in granter.limit_bids]
+                + [ask_order.msg for ask_order in granter.market_asks]
+                + [bid_order.msg for bid_order in granter.market_bids]
             )
             logging.debug(f"len(tmp): {len(tmp)}")
             binary_options_orders_to_create.extend(tmp)
-            for orderhash, ask_order in granter.limit_asks:
-                logging.info(f"{orderhash}, {ask_order.hash}")
-            for orderhash, bid_order in granter.limit_bids:
-                logging.info(f"{orderhash}, {bid_order.hash}")
+            for ask_order in granter.limit_asks:
+                logging.info(f" {ask_order.hash}")
+            for bid_order in granter.limit_bids:
+                logging.info(f" {bid_order.hash}")
 
         logging.debug(f"grantee inj address: {self.inj_address}")
         logging.debug(binary_options_orders_to_create)
@@ -481,10 +591,10 @@ class Model:
 
         for granter in self.granters:
             tmp = (
-                [ask_order.market.market_id for (orderhash, ask_order) in granter.limit_asks]
-                + [bid_order.market.market_id for (orderhash, bid_order) in granter.limit_bids]
-                + [ask_order.market.market_id for (orderhash, ask_order) in granter.market_asks]
-                + [bid_order.market.market_id for (orderhash, bid_order) in granter.market_bids]
+                [ask_order.market.market_id for ask_order in granter.limit_asks]
+                + [bid_order.market.market_id for bid_order in granter.limit_bids]
+                + [ask_order.market.market_id for ask_order in granter.market_asks]
+                + [bid_order.market.market_id for bid_order in granter.market_bids]
             )
             tmp_binary_options_market_ids_to_cancel_all.extend(set(tmp))
 
@@ -546,15 +656,19 @@ class Model:
                 if order.order_type == "buy" and order.is_reduce_only == False:
                     print("buy_for")
                     self.buy_for_orders[order.order_hash] = order
+
                 elif order.order_type == "sell" and order.is_reduce_only == False:
                     print("buy_against")
                     self.buy_against_orders[order.order_hash] = order
+
                 elif order.order_type == "buy" and order.is_reduce_only == True:
                     print("sell_against")
                     self.sell_against_orders[order.order_hash] = order
+
                 elif order.order_type == "sell" and order.is_reduce_only == True:
                     print("sell_for")
                     self.sell_for_orders[order.order_hash] = order
+
                 else:
                     print("unknown order type")
 
@@ -569,17 +683,10 @@ class Model:
         logging.info(f"sleep for {t}s")
         await sleep(t)
         logging.info(f"slept {t}s")
-        self.create_granters()
+        self.create_granters_for_bi_states_markets()
 
         while True:
             # self.update_granters()
-            # self.create_limit_orders_for_granters()
-            # self.create_market_orders_for_granters()
-            ## resp = await self.batch_new_orders()
-            # resp = await self.single_new_order(
-            #    pk, price=0.3, quantity=1, is_buy=True, is_market=False
-            # )
-            # logging.info(resp)
             await sleep(200)
             logging.info("will cancell all orders in 200s")
             # await sleep(5)

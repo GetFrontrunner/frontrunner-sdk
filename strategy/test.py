@@ -18,7 +18,7 @@ if grantee_private_key:
         is_testnet=True,
     )
     # model.create_granters([granter_inj_address])
-    model.create_granters()
+    model.create_granters_for_bi_states_markets()
     loop = model.get_loop()
     loop.run_until_complete(model.run())
     # loop.create_task(model.run())

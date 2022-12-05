@@ -6,7 +6,8 @@ from pyinjective.wallet import Address, PublicKey, PrivateKey
 from pyinjective.composer import Composer
 from pyinjective.async_client import AsyncClient
 from pyinjective.constant import Network  # , Denom
-from utils.granter import Granter
+
+# from utils.granter import Granter
 from typing import List, Any
 
 

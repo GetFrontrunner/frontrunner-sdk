@@ -1,3 +1,9 @@
+Problem:
+1. how to find market
+2. how to go from probability to orders 
+3. 2-3 states market to orders
+4. send orders
+
 what can you do with sdk
 1. Supported data sources
 2. Functions and what do they do

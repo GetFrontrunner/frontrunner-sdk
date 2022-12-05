@@ -11,13 +11,16 @@ from pyinjective.constant import Denom
 # from utils.utilities import compute_orderhash
 from utils.markets import Market  # , ActiveMarket, StagingMarket
 
+
 class Probability:
     def __init__(self):
         pass
 
+
 class Probabilities:
     def __init__(self):
-        self.events:List[Probability] = []
+        self.events: List[Probability] = []
+
 
 class Order:
     def __init__(
@@ -69,7 +72,7 @@ class Order:
                 denom,
             )
         )
-        self.update_orderhash(nonce)
+        # self.update_orderhash(nonce)
 
     def __lt__(self, obj):
         return self.price < obj.price
@@ -143,14 +146,14 @@ class Order:
         else:
             raise Exception("missing market id")
 
-    def update_orderhash(self, nounce: int):
-        if self.msg and self.subaccount_id:
-            compute_orderhash(self, nounce)
-        else:
-            raise Exception("missing subaccount id")
+    # def update_orderhash(self, nounce: int):
+    #    if self.msg and self.subaccount_id:
+    #        compute_orderhash(self, nounce)
+    #    else:
+    #        raise Exception("missing subaccount id")
 
-    def update_olderhash_new(self, orderhash: str):
-        pass
+    # def update_olderhash_new(self, orderhash: str):
+    #    pass
 
 
 class LimitOrder(Order):
@@ -442,58 +445,61 @@ class MarketSellAgainstOrder(MarketOrder):
 
 class Orders:
     def __init__(self):
-        self.list: Dict[str, Order] = {}
+        # self.list: Dict[str, Order] = {}
+        self.list: List[Order] = []
 
     def add(self, order: Order):
-        if order.hash:
-            self.list[order.hash] = order
-        else:
-            raise Exception("No order hash")
+        # if order.hash:
+        self.list.append(order)
 
     def remove_by_orderhash(self, orderhash: str):
-        order = self.list[orderhash]
-        del self.list[orderhash]
-        print(f"success delete order {order.price}, {order.quantity}")
+        for order in self.list:
+            if order.hash == orderhash:
+                self.list.remove(order)
+                print(f"success delete order {order.price}, {order.quantity}")
 
     def remove_by_price_lower(self, price: float) -> List[str]:
         orderhash_list = []
-        for (orderhash, order) in self.list.items():
+        for order in self.list:
             if order.price <= price:
-                orderhash_list.append((orderhash))
+                orderhash_list.append(order.hash)
         return orderhash_list
 
     def remove_by_price_upper(self, price: float) -> List[str]:
         orderhash_list = []
-        for (orderhash, order) in self.list.items():
+        for order in self.list:
             if order.price >= price:
-                orderhash_list.append((orderhash))
+                orderhash_list.append(order.hash)
         return orderhash_list
 
     def __iter__(self):
-        for orderhash, order in self.list.items():
-            yield orderhash, order
+        for order in self.list:
+            yield order
 
 
 class LimitOrders(Orders):
     def __init__(self):
-        self.list: Dict[str, LimitOrder] = {}
+        # self.list: Dict[str, LimitOrder] = {}
+        super().__init__()
+        # self.list: List[Order]=[]
 
-    def add(self, order: LimitOrder):
-        if order.hash:
-            self.list[order.hash] = order
-        else:
-            raise Exception("No order hash")
+    # def add(self, order: LimitOrder):
+    #    if order.hash:
+    #        self.list[order.hash] = order
+    #    else:
+    #        raise Exception("No order hash")
 
 
 class MarketOrders(Orders):
     def __init__(self):
-        self.list: Dict[str, MarketOrder] = {}
+        super().__init__()
+        # self.list: Dict[str, MarketOrder] = {}
 
-    def add(self, order: MarketOrder):
-        if order.hash:
-            self.list[order.hash] = order
-        else:
-            raise Exception("No order hash")
+    # def add(self, order: MarketOrder):
+    #    if order.hash:
+    #        self.list[order.hash] = order
+    #    else:
+    #        raise Exception("No order hash")
 
 
 @dataclass(init=True, repr=True)
