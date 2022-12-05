@@ -347,16 +347,16 @@ class Model:
         if self.granters:
             for granter in self.granters:
                 logging.info(f"granter.market.ticker: {granter.market.ticker}")
-                event_1_price = round(0.32 * event_1.probabilities, 2)
+                event_1_price = 0.49  # round(0.32 * event_1.probabilities, 2)
                 event_1_quantity = int(10 * event_1.probabilities) + 1
                 event_1_is_bid = True
                 event_1_is_for = True
                 event_1_is_limit = True
 
-                event_2_price = round(0.69 * (1 + event_2.probabilities), 2)
+                event_2_price = 0.68  # round(0.69 * (1 + event_2.probabilities), 2)
                 event_2_quantity = int(10 * event_2.probabilities) + 1
                 event_2_is_bid = True
-                event_2_is_for = True
+                event_2_is_for = False
                 event_2_is_limit = True
                 logging.info(f"event 1 :{event_1_price} {event_1_quantity}")
                 logging.info(f"event 2 :{event_2_price} {event_2_quantity}")
@@ -570,12 +570,13 @@ class Model:
                 + [ask_order.msg for ask_order in granter.market_asks]
                 + [bid_order.msg for bid_order in granter.market_bids]
             )
+            print(tmp)
             logging.debug(f"len(tmp): {len(tmp)}")
             binary_options_orders_to_create.extend(tmp)
             for ask_order in granter.limit_asks:
-                logging.info(f" {ask_order.hash}")
+                logging.info(f"ask_order.hash {ask_order.hash}")
             for bid_order in granter.limit_bids:
-                logging.info(f" {bid_order.hash}")
+                logging.info(f"bid_order.hash {bid_order.hash}")
 
         logging.debug(f"grantee inj address: {self.inj_address}")
         logging.debug(binary_options_orders_to_create)
@@ -687,8 +688,9 @@ class Model:
 
         while True:
             # self.update_granters()
-            await sleep(200)
             logging.info("will cancell all orders in 200s")
+            await sleep(200)
+            logging.info("slept for 200s")
             # await sleep(5)
             resp = await self.batch_cancel()
             logging.info(resp)

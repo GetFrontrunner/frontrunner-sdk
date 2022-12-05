@@ -341,7 +341,7 @@ class BiStatesGranter:
     ):
         logging.info(f"market id: {self.market.market_id}")
         self.update_nonce()
-        logging.debug(f"nonce: {self.nonce}")
+        logging.info(f"nonce: {self.nonce}")
         # logging.info(
         #    f"subaccount_id: {self.subaccount_id}, inj address: {self.inj_address}"
         # )
@@ -354,12 +354,12 @@ class BiStatesGranter:
             if is_for:
                 self._create_bid_order(price, quantity, is_limit, is_for, composer)
             else:
-                self._create_bid_order(price, quantity, is_limit, is_for, composer)
+                self._create_ask_order(price, quantity, is_limit, is_for, composer)
         else:
             if is_for:
                 self._create_ask_order(price, quantity, is_limit, is_for, composer)
             else:
-                self._create_ask_order(price, quantity, is_limit, is_for, composer)
+                self._create_bid_order(price, quantity, is_limit, is_for, composer)
 
     def _create_bid_order(
         self,

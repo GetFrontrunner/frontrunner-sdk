@@ -5,15 +5,16 @@ from strategy.market_making import Model
 grantee_private_key = os.getenv("grantee_private_key")  # None
 grantee_inj_address = os.getenv("grantee_inj_address")  # None
 
-# granter_private_key = os.getenv("granter_private_key")  # None
-# granter_inj_address = os.getenv("granter_inj_address")  # None
-#
+frontrunner_test_1_pk = os.getenv("frontrunner_test_1_private_key")
+frontrunner_test_1_ia = os.getenv("frontrunner_test_1_inj_address")
+print(frontrunner_test_1_pk)
+
 FORMAT = "[%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s"
 logging.basicConfig(format=FORMAT)
 
-if grantee_private_key:
+if frontrunner_test_1_pk:
     model = Model(
-        private_key=grantee_private_key,
+        private_key=frontrunner_test_1_pk,
         topics=["BetRadar/probabilities"],
         is_testnet=True,
     )
