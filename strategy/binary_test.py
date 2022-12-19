@@ -1,6 +1,8 @@
 import os
 import logging
-from strategy.market_making import Model
+
+# from strategy.market_making import Model
+from strategy.binary_states_market_market_making import BinaryMarketModel
 
 grantee_private_key = os.getenv("grantee_private_key")  # None
 grantee_inj_address = os.getenv("grantee_inj_address")  # None
@@ -12,13 +14,13 @@ FORMAT = "[%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s"
 logging.basicConfig(format=FORMAT)
 
 if grantee_private_key:
-    model = Model(
+    model = BinaryMarketModel(
         private_key=grantee_private_key,
         topics=["BetRadar/probabilities"],
         is_testnet=True,
     )
     # model.create_granters([granter_inj_address])
-    model.create_granters()
+    model.create_granters_for_binary_states_markets()
     loop = model.get_loop()
     loop.run_until_complete(model.run())
     # loop.create_task(model.run())

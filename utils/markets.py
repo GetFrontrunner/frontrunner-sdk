@@ -25,7 +25,7 @@ def multi_states_markets_factory(
     return [MultiStatesMarket(ticker, *markets) for ticker, markets in tickers.items()]
 
 
-def bi_states_market_factory(disable_error_msg: bool = False, **kwargs) -> Optional[Market]:
+def binary_states_market_factory(disable_error_msg: bool = False, **kwargs) -> Optional[Market]:
     if kwargs.get("ticker"):
         ticker = kwargs["ticker"]
         if len(ticker.split("-")) == 3:

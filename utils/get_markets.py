@@ -5,7 +5,7 @@ from utils.markets import (
     ActiveMarket,
     StagingMarket,
     MultiStatesMarket,
-    bi_states_market_factory,
+    binary_states_market_factory,
     multi_states_markets_factory,
 )
 
@@ -17,9 +17,9 @@ def _get_all_markets(
     data = resp.json()
     markets = data["markets"]
     two_states_markets = [
-        bi_states_market_factory(disable_error_msg, **market)
+        binary_states_market_factory(disable_error_msg, **market)
         for market in markets
-        if bi_states_market_factory(disable_error_msg, **market)
+        if binary_states_market_factory(disable_error_msg, **market)
     ]
     multi_states_markets = multi_states_markets_factory(markets)
     # print(f"############## {len(multi_states_markets)}")

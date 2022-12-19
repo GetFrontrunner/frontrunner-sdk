@@ -12,6 +12,15 @@ from pyinjective.constant import Denom
 from utils.markets import Market  # , ActiveMarket, StagingMarket
 
 
+class Event:
+    def __init__(self, price: float, quantity, is_bid: bool, is_for: bool, is_limit: bool):
+        self.price = price
+        self.quantity = quantity
+        self.is_bid = is_bid
+        self.is_for = is_for
+        self.is_limit = is_limit
+
+
 class Probability:
     def __init__(self):
         pass
@@ -45,33 +54,47 @@ class Order:
         self.subaccount_id = subaccount_id
         self.is_buy = is_buy
         self.market = market
-        self.msg = (
-            self._create_market_order_msg(
-                subaccount_id,
-                fee_recipient,
-                inj_address,
-                price,
-                quantity,
-                is_buy,
-                is_for,
-                market,
-                composer,
-                denom,
+        if market.market_id:
+            self.msg = composer.BinaryOptionsOrder(
+                sender=inj_address,
+                market_id=market.market_id,
+                subaccount_id=subaccount_id,
+                fee_recipient=fee_recipient,
+                price=price,
+                quantity=quantity,
+                is_buy=is_buy,
+                is_reduce_only=is_for,
+                denom=denom,
             )
-            if self.order_type == "market"
-            else self._create_limit_order_msg(
-                subaccount_id,
-                fee_recipient,
-                inj_address,
-                price,
-                quantity,
-                is_buy,
-                is_for,
-                market,
-                composer,
-                denom,
-            )
-        )
+        else:
+            raise Exception("missing market id")
+        # self.msg = (
+        #    self._create_market_order_msg(
+        #        subaccount_id,
+        #        fee_recipient,
+        #        inj_address,
+        #        price,
+        #        quantity,
+        #        is_buy,
+        #        is_for,
+        #        market,
+        #        composer,
+        #        denom,
+        #    )
+        #    if self.order_type == "market"
+        #    else self._create_limit_order_msg(
+        #        subaccount_id,
+        #        fee_recipient,
+        #        inj_address,
+        #        price,
+        #        quantity,
+        #        is_buy,
+        #        is_for,
+        #        market,
+        #        composer,
+        #        denom,
+        #    )
+        # )
         # self.update_orderhash(nonce)
 
     def __lt__(self, obj):
@@ -89,71 +112,71 @@ class Order:
     def __eq__(self, obj):
         return self.price == obj.price
 
-    def _create_limit_order_msg(
-        self,
-        subaccount_id: str,
-        fee_recipient: str,
-        inj_address: str,
-        price: float,
-        quantity: float,
-        is_buy: bool,
-        is_for: bool,
-        market: Market,
-        composer: Composer,
-        denom: Denom,
-    ):
-        if market.market_id:
-            return composer.BinaryOptionsOrder(
-                sender=inj_address,
-                market_id=market.market_id,
-                subaccount_id=subaccount_id,
-                fee_recipient=fee_recipient,
-                price=price,
-                quantity=quantity,
-                is_buy=is_buy,
-                is_reduce_only=is_for,
-                denom=denom,
-            )
-        else:
-            raise Exception("missing market id")
+    # ,def _create_limit_order_msg(
+    # ,    self,
+    # ,    subaccount_id: str,
+    # ,    fee_recipient: str,
+    # ,    inj_address: str,
+    # ,    price: float,
+    # ,    quantity: float,
+    # ,    is_buy: bool,
+    # ,    is_for: bool,
+    # ,    market: Market,
+    # ,    composer: Composer,
+    # ,    denom: Denom,
+    #     ):
+    # ,    if market.market_id:
+    # ,        return composer.BinaryOptionsOrder(
+    # ,            sender=inj_address,
+    # ,            market_id=market.market_id,
+    # ,            subaccount_id=subaccount_id,
+    # ,            fee_recipient=fee_recipient,
+    # ,            price=price,
+    # ,            quantity=quantity,
+    # ,            is_buy=is_buy,
+    # ,            is_reduce_only=is_for,
+    # ,            denom=denom,
+    # ,        )
+    # ,    else:
+    # ,        raise Exception("missing market id")
 
-    def _create_market_order_msg(
-        self,
-        subaccount_id: str,
-        fee_recipient: str,
-        inj_address: str,
-        price: float,
-        quantity: float,
-        is_buy: bool,
-        is_for: bool,
-        market: Market,
-        composer: Composer,
-        denom: Denom,
-    ):
-        if market.market_id:
-            price = round(price * 1.05, 2) if is_buy else round(price * 0.95, 2)
-            return composer.BinaryOptionsOrder(
-                sender=inj_address,
-                market_id=market.market_id,
-                subaccount_id=subaccount_id,
-                fee_recipient=fee_recipient,
-                price=price,
-                quantity=quantity,
-                is_buy=is_buy,
-                is_reduce_only=is_for,
-                denom=denom,
-            )
-        else:
-            raise Exception("missing market id")
+    # ,def _create_market_order_msg(
+    # ,    self,
+    # ,    subaccount_id: str,
+    # ,    fee_recipient: str,
+    # ,    inj_address: str,
+    # ,    price: float,
+    # ,    quantity: float,
+    # ,    is_buy: bool,
+    # ,    is_for: bool,
+    # ,    market: Market,
+    # ,    composer: Composer,
+    # ,    denom: Denom,
+    #     ):
+    # ,    if market.market_id:
+    # ,        price = round(price * 1.05, 2) if is_buy else round(price * 0.95, 2)
+    # ,        return composer.BinaryOptionsOrder(
+    # ,            sender=inj_address,
+    # ,            market_id=market.market_id,
+    # ,            subaccount_id=subaccount_id,
+    # ,            fee_recipient=fee_recipient,
+    # ,            price=price,
+    # ,            quantity=quantity,
+    # ,            is_buy=is_buy,
+    # ,            is_reduce_only=is_for,
+    # ,            denom=denom,
+    # ,        )
+    # ,    else:
+    # ,        raise Exception("missing market id")
 
-    # def update_orderhash(self, nounce: int):
-    #    if self.msg and self.subaccount_id:
-    #        compute_orderhash(self, nounce)
-    #    else:
-    #        raise Exception("missing subaccount id")
+    # ,def update_orderhash(self, nounce: int):
+    # ,    if self.msg and self.subaccount_id:
+    # ,        compute_orderhash(self, nounce)
+    # ,    else:
+    # ,        raise Exception("missing subaccount id")
 
-    # def update_olderhash_new(self, orderhash: str):
-    #    pass
+    # ,def update_olderhash_new(self, orderhash: str):
+    # ,    pass
 
 
 class LimitOrder(Order):
@@ -445,61 +468,58 @@ class MarketSellAgainstOrder(MarketOrder):
 
 class Orders:
     def __init__(self):
-        # self.list: Dict[str, Order] = {}
-        self.list: List[Order] = []
+        self.list: Dict[str, Order] = {}
 
     def add(self, order: Order):
-        # if order.hash:
-        self.list.append(order)
+        if order.hash:
+            self.list[order.hash] = order
+        else:
+            raise Exception("No order hash")
 
     def remove_by_orderhash(self, orderhash: str):
-        for order in self.list:
-            if order.hash == orderhash:
-                self.list.remove(order)
-                print(f"success delete order {order.price}, {order.quantity}")
+        order = self.list[orderhash]
+        del self.list[orderhash]
+        print(f"success delete order {order.price}, {order.quantity}")
 
     def remove_by_price_lower(self, price: float) -> List[str]:
         orderhash_list = []
-        for order in self.list:
+        for (orderhash, order) in self.list.items():
             if order.price <= price:
-                orderhash_list.append(order.hash)
+                orderhash_list.append((orderhash))
         return orderhash_list
 
     def remove_by_price_upper(self, price: float) -> List[str]:
         orderhash_list = []
-        for order in self.list:
+        for (orderhash, order) in self.list.items():
             if order.price >= price:
-                orderhash_list.append(order.hash)
+                orderhash_list.append((orderhash))
         return orderhash_list
 
     def __iter__(self):
-        for order in self.list:
-            yield order
+        for orderhash, order in self.list.items():
+            yield orderhash, order
 
 
 class LimitOrders(Orders):
     def __init__(self):
-        # self.list: Dict[str, LimitOrder] = {}
-        super().__init__()
-        # self.list: List[Order]=[]
+        self.list: Dict[str, LimitOrder] = {}
 
-    # def add(self, order: LimitOrder):
-    #    if order.hash:
-    #        self.list[order.hash] = order
-    #    else:
-    #        raise Exception("No order hash")
+    def add(self, order: LimitOrder):
+        if order.hash:
+            self.list[order.hash] = order
+        else:
+            raise Exception("No order hash")
 
 
 class MarketOrders(Orders):
     def __init__(self):
-        super().__init__()
-        # self.list: Dict[str, MarketOrder] = {}
+        self.list: Dict[str, MarketOrder] = {}
 
-    # def add(self, order: MarketOrder):
-    #    if order.hash:
-    #        self.list[order.hash] = order
-    #    else:
-    #        raise Exception("No order hash")
+    def add(self, order: MarketOrder):
+        if order.hash:
+            self.list[order.hash] = order
+        else:
+            raise Exception("No order hash")
 
 
 @dataclass(init=True, repr=True)

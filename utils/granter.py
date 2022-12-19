@@ -24,7 +24,7 @@ logging.basicConfig(
 )
 
 
-class MultiStatesGranter:
+class MultiStateGranter:
     def __init__(
         self, buy_market: Market, sell_market: Market, draw_market: Market, inj_address: str, fee_recipient: str
     ):
@@ -290,7 +290,7 @@ class MultiStatesGranter:
         # self.market_asks.remove_by_orderhash(orderhash)
 
 
-class BiStatesGranter:
+class BinaryStateGranter:
     def __init__(self, market: Market, inj_address: str, fee_recipient: str):
         self.market = market
 
@@ -341,7 +341,7 @@ class BiStatesGranter:
     ):
         logging.info(f"market id: {self.market.market_id}")
         self.update_nonce()
-        logging.info(f"nonce: {self.nonce}")
+        logging.debug(f"nonce: {self.nonce}")
         # logging.info(
         #    f"subaccount_id: {self.subaccount_id}, inj address: {self.inj_address}"
         # )
@@ -354,12 +354,12 @@ class BiStatesGranter:
             if is_for:
                 self._create_bid_order(price, quantity, is_limit, is_for, composer)
             else:
-                self._create_ask_order(price, quantity, is_limit, is_for, composer)
+                self._create_bid_order(price, quantity, is_limit, is_for, composer)
         else:
             if is_for:
                 self._create_ask_order(price, quantity, is_limit, is_for, composer)
             else:
-                self._create_bid_order(price, quantity, is_limit, is_for, composer)
+                self._create_ask_order(price, quantity, is_limit, is_for, composer)
 
     def _create_bid_order(
         self,
