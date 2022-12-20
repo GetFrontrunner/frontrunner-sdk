@@ -118,22 +118,7 @@ class Model:
             3 events market
             2 events market
         """
-        # if probabilities.outcomes:
-        #    event_1 = probabilities.outcomes[0]
-        #    event_2 = probabilities.outcomes[1]
-        #    logging.info(
-        #        f"outcome 1: id: {event_1.id}, Prob: {round(event_1.probabilities,4)}, odds: {round(event_1.odds,4)}"
-        #    )
-        #    logging.info(
-        #        f"outcome 2: id: {event_2.id}, Prob: {round(event_2.probabilities,4)}, odds: {round(event_2.odds,4)}"
-        #    )
-        #    # TODO fix this event_1, and event 2
-        #    orders = self.create_orders_for_granters(event_1, event_2)
-        #    resp = await self.batch_new_orders(orders=orders)
-        #    logging.info(resp)
-
-        # else:
-        #    logging.info("no events in {msg['channel'].decode('utf-8')}")
+        raise NotImplementedError("Subclasses should implement this!")
 
     def get_consumer(self, redis_addr: str, topics: List[str]):
         return RedisConsumer(
@@ -147,29 +132,7 @@ class Model:
         )
 
     async def get_granters_portfolio(self):
-        pass
-        # if self.granters:
-        #    for granter in self.granters:
-        #        portfolio = await self.client.get_portfolio(granter.inj_address)
-        #        granter.available_balance = float(portfolio.portfolio.subaccounts[0].available_balance)
-        #        granter.locked_balance = float(portfolio.portfolio.subaccounts[0].locked_balance)
-        #        logging.debug(
-        #            f"granter: {granter.inj_address}, market: {granter.market.ticker}, market id: {granter.market.market_id}"
-        #        )
-        #        logging.debug(
-        #            f"available_balance: {granter.available_balance}, locked_balance: {granter.locked_balance}"
-        #        )
-        #        logging.debug(portfolio)
-
-    def update_granters(self):
-        # not suppored for now because Authz is broken
-        pass
-        # if self.configs:
-        #    self.perp_granters = get_perp_granters(
-        #        self.configs, self.perp_granters, n_markets=1
-        #    )
-        # else:
-        #    raise Exception("No config")
+        raise NotImplementedError("Subclasses should implement this!")
 
     async def batch_replace_orders(self):
         msg = self._build_batch_replace_orders_msg()
@@ -218,46 +181,10 @@ class Model:
         )
 
     def _build_batch_replace_orders_msg(self):
-        pass
-        # binary_options_orders_to_create = []
-        # binary_options_orders_to_cancel = []
-        # binary_options_market_ids_to_cancel_all = []
-
-        # for granter in self.granters:
-        #    tmp = [limit_order.msg for limit_order in granter.limit_orders] + [
-        #        market_order.msg for market_order in granter.market_orders
-        #    ]
-        #    binary_options_orders_to_create.extend(tmp)
-
-        # binary_options_market_ids_to_cancel_all = list(
-        #    set([order.market.market_id for order in binary_options_orders_to_create])
-        # )
-        # msg = self.composer.MsgBatchUpdateOrders(
-        #    sender=self.inj_address,
-        #    subaccount_id=self.subaccount_id,
-        #    binary_options_orders_to_create=binary_options_orders_to_create,
-        #    binary_options_orders_to_cancel=binary_options_orders_to_cancel,
-        #    binary_options_market_ids_to_cancel_all=binary_options_market_ids_to_cancel_all,
-        # )
-        # return msg
+        raise NotImplementedError("Subclasses should implement this!")
 
     def _build_batch_new_orders_msg(self, orders: List[Order]):
-        pass
-        # binary_options_orders_to_create = []
-
-        # for granter in self.granters:
-        #    tmp = [order.msg for order in orders]
-        #    logging.debug(f"len(tmp): {len(tmp)}")
-        #    binary_options_orders_to_create.extend(tmp)
-
-        # logging.debug(f"grantee inj address: {self.inj_address}")
-        # logging.debug(binary_options_orders_to_create)
-        # logging.info(f"n orders to create: {len(binary_options_orders_to_create)}")
-        # msg = self.composer.MsgBatchUpdateOrders(
-        #    sender=self.inj_address,
-        #    binary_options_orders_to_create=binary_options_orders_to_create,
-        # )
-        # return msg
+        raise NotImplementedError("Subclasses should implement this!")
 
     def _build_batch_cancel_all_orders_msg(self):
         tmp_binary_options_market_ids_to_cancel_all = []
@@ -298,7 +225,7 @@ class Model:
         return msg
 
     async def get_orders(self):
-        pass
+        raise NotImplementedError("Subclasses should implement this!")
 
     async def _get_orders(self, market: Market, subaccount_id: str):
         orders = await self.client.get_historical_derivative_orders(
@@ -307,16 +234,16 @@ class Model:
             state="booked",  # TODO need to test if partial filled is included in booked
         )
         async for order in orders:
-            if order.order_type == "buy" and order.is_reduce_only == False:
+            if order.order_type == "buy" and not order.is_reduce_only:
                 print("buy_for")
                 self.buy_for_orders[order.order_hash] = order
-            elif order.order_type == "sell" and order.is_reduce_only == False:
+            elif order.order_type == "sell" and not order.is_reduce_only:
                 print("buy_against")
                 self.buy_against_orders[order.order_hash] = order
-            elif order.order_type == "buy" and order.is_reduce_only == True:
+            elif order.order_type == "buy" and order.is_reduce_only:
                 print("sell_against")
                 self.sell_against_orders[order.order_hash] = order
-            elif order.order_type == "sell" and order.is_reduce_only == True:
+            elif order.order_type == "sell" and order.is_reduce_only:
                 print("sell_for")
                 self.sell_for_orders[order.order_hash] = order
             else:
@@ -326,29 +253,4 @@ class Model:
         return get_event_loop()
 
     async def run(self, t=10):
-        pass
-
-        # logging.info("cancel all current open orders")
-        # resp = await self.batch_cancel(cancel_current_open_orders=True)
-        # logging.info(resp)
-        # logging.info("getting data")
-        # logging.info(f"sleep for {t}s")
-        # await sleep(t)
-        # logging.info(f"slept {t}s")
-        # self.create_granters_for_binary_states_markets()
-
-        # while True:
-        #    # self.update_granters()
-        #    # self.create_limit_orders_for_granters()
-        #    # self.create_market_orders_for_granters()
-        #    ## resp = await self.batch_new_orders()
-        #    # resp = await self.single_new_order(
-        #    #    pk, price=0.3, quantity=1, is_buy=True, is_market=False
-        #    # )
-        #    # logging.info(resp)
-        #    await sleep(200)
-        #    logging.info("will cancell all orders in 200s")
-        #    # await sleep(5)
-        #    resp = await self.batch_cancel()
-        #    logging.info(resp)
-        # logging.info("finished")
+        raise NotImplementedError("Subclasses should implement this!")

@@ -59,7 +59,7 @@ class BinaryMarketModel(Model):
 
         self.position = None
         self.last_trade = None
-        self.granters: List[BinaryStateGranter] = []  # get_perp_granters(configs, [], n_markets=1)
+        self.granters: List[BinaryStateGranter] = []
         self.last_granter_update = 0
         self.consumer = self.get_consumer(redis_addr, topics)
 
@@ -97,21 +97,6 @@ class BinaryMarketModel(Model):
 
         self.expire_in = expire_in
 
-    # async def on_tob(self, data):
-    #    self.tob_bid_price = data[0]
-    #    self.tob_ask_price = data[0]
-
-    # async def on_trade(self, data):
-    #    self.last_trade = data
-    #    logging.debug(data)
-
-    # async def on_depth(self, data):
-    #    self.bid_orderbook = data["bid"]
-    #    self.ask_orderbook = data["ask"]
-
-    # async def on_position(self, data):
-    #    self.position = data
-
     async def on_probabilities(self, probabilities):
         """
         Probabilities object
@@ -136,17 +121,6 @@ class BinaryMarketModel(Model):
         else:
             logging.info("no events in {msg['channel'].decode('utf-8')}")
 
-    # def get_consumer(self, redis_addr: str, topics: List[str]):
-    #    return RedisConsumer(
-    #        redis_addr,
-    #        topics=topics,
-    #        on_tob=self.on_tob,
-    #        on_trade=self.on_trade,
-    #        on_depth=self.on_depth,
-    #        on_position=self.on_position,
-    #        on_probabilities=self.on_probabilities,
-    #    )
-
     async def get_granters_portfolio(self):
         if self.granters:
             for granter in self.granters:
@@ -160,16 +134,6 @@ class BinaryMarketModel(Model):
                     f"available_balance: {granter.available_balance}, locked_balance: {granter.locked_balance}"
                 )
                 logging.debug(portfolio)
-
-    def update_granters(self):
-        # not suppored for now because Authz is broken
-        pass
-        # if self.configs:
-        #    self.perp_granters = get_perp_granters(
-        #        self.configs, self.perp_granters, n_markets=1
-        #    )
-        # else:
-        #    raise Exception("No config")
 
     def _create_granter_for_binary_states_market(self, lcd_endpoint: str, market: ActiveMarket) -> BinaryStateGranter:
         granter = BinaryStateGranter(
@@ -237,52 +201,6 @@ class BinaryMarketModel(Model):
                 event_2 = Event(price=0.40, quantity=1, is_bid=True, is_for=True, is_limit=True)
                 return self._create_orders_for_granters_binary_states_market(granter, event_1=event_1, event_2=event_2)
         raise Exception("No granter")
-
-    # async def batch_replace_orders(self):
-    #    msg = self._build_batch_replace_orders_msg()
-    #    msg = self.composer.MsgExec(grantee=self.inj_address, msgs=[msg])
-    #    return await execute(
-    #        pub_key=self.pub_key,
-    #        priv_key=self.priv_key,
-    #        address=self.address,
-    #        network=self.network,
-    #        client=self.client,
-    #        composer=self.composer,
-    #        gas_price=self.gas_price,
-    #        msg=msg,
-    #    )
-
-    # async def batch_new_orders(self, orders: List[Order]):
-    #    msg = self._build_batch_new_orders_msg(orders=orders)
-    #    logging.debug(f"msg: {msg}")
-    #    msg = self.composer.MsgExec(grantee=self.inj_address, msgs=[msg])
-    #    return await execute(
-    #        pub_key=self.pub_key,
-    #        priv_key=self.priv_key,
-    #        address=self.address,
-    #        network=self.network,
-    #        client=self.client,
-    #        composer=self.composer,
-    #        gas_price=self.gas_price,
-    #        msg=msg,
-    #    )
-
-    # async def batch_cancel(self, cancel_current_open_orders=False):
-    #    if cancel_current_open_orders:
-    #        msg = self._build_cancel_all_current_open_orders()
-    #    else:
-    #        msg = self._build_batch_cancel_all_orders_msg()
-    #    msg = self.composer.MsgExec(grantee=self.inj_address, msgs=[msg])
-    #    return await execute(
-    #        pub_key=self.pub_key,
-    #        priv_key=self.priv_key,
-    #        address=self.address,
-    #        network=self.network,
-    #        client=self.client,
-    #        composer=self.composer,
-    #        gas_price=self.gas_price,
-    #        msg=msg,
-    #    )
 
     def _build_batch_replace_orders_msg(self):
         binary_options_orders_to_create = []
