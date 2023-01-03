@@ -27,11 +27,15 @@ async def execute(
     # else:
     #    seq = address.init_num_seq(network.lcd_endpoint).get_sequence()
     logging.debug(f"msg: {msg}")
+    await address.async_init_num_seq(network.lcd_endpoint)
+    #await address.init_num_seq(network.lcd_endpoint)#.sequence
+    seq = address.sequence
 
     tx = (
         Transaction()
         .with_messages(msg)
-        .with_sequence(client.get_sequence())
+        .with_sequence(seq)
+        #.with_sequence(client.get_sequence())
         .with_account_num(client.get_number())
         .with_chain_id(network.chain_id)
     )

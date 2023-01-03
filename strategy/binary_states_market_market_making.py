@@ -90,11 +90,11 @@ class BinaryMarketModel(Model):
         # self.inj_address = 'inj1x7rm49urgq3ap03wuyqkd75e9tr4fupnkh782k'#self.address.to_acc_bech32()
         self.inj_address = self.address.to_acc_bech32()
         self.subaccount_id = self.address.get_subaccount_id(index=0)
-        logging.info(f"private key: {self.priv_key}")
-        logging.info(f"self.address: {self.address}")
+        logging.debug(f"private key: {self.priv_key}")
+        logging.debug(f"self.address: {self.address}")
         logging.info(f"inj_address: {self.inj_address}")
-        logging.info(f"inj_address: inj1x7rm49urgq3ap03wuyqkd75e9tr4fupnkh782k")
-        logging.info(f"subaccount id: {self.subaccount_id}")
+        #logging.info(f"inj_address: inj1x7rm49urgq3ap03wuyqkd75e9tr4fupnkh782k")
+        logging.debug(f"subaccount id: {self.subaccount_id}")
 
         if not fee_recipient:
             self.fee_recipient = self.inj_address
@@ -161,8 +161,9 @@ class BinaryMarketModel(Model):
         else:
             for (idx, active_markets) in enumerate(all_active_markets.items()):
                 # TODO only the first market works, need to fix this part
-                if "af6c34d4" in active_markets[0]:
-                    print("found market ", active_markets[1][0].ticker, len(active_markets[1]))
+                #if "af6c34d4" in active_markets[0]:
+                if "93ee64bd" in active_markets[0]:
+                    print("found market ", active_markets[1][0].ticker)#, len(active_markets[1]))
                     for active_market in active_markets[1]:
                         print(active_market.market_id)
                         # for active_market in active_markets[1]:

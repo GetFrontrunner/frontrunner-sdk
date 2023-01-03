@@ -66,7 +66,7 @@ class Order:
                 is_reduce_only=is_for,
                 denom=denom,
             )
-            logging.info(f"{self.msg}")
+            logging.debug(f"{self.msg}")
         else:
             raise Exception("missing market id")
         # self.msg = (
