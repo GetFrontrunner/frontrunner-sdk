@@ -14,8 +14,8 @@ if __name__ == "__main__":
         # filename="async_manager.log", encoding="utf-8", level=logging.DEBUG
         level=logging.INFO
     )
-    configs = configparser.ConfigParser()
-    configs.read("../configs/config_guild_1.ini")
+    # configs = configparser.ConfigParser()
+    # configs.read("../configs/config_guild_1.ini")
 
     loop = asyncio.get_event_loop()
 

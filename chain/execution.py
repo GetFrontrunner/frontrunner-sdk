@@ -6,7 +6,7 @@ from pyinjective.wallet import Address, PublicKey, PrivateKey
 from pyinjective.composer import Composer
 from pyinjective.async_client import AsyncClient
 from pyinjective.constant import Network  # , Denom
-from utils.granter import Granter
+from utils.granter import MultiStateGranter, BinaryStateGranter
 from typing import List, Any
 
 
@@ -22,17 +22,17 @@ async def execute(
     send_mode: str = "block",
     update_sequence: bool = True,
 ):
-    if not update_sequence:
-        seq = address.get_sequence()
-    else:
-        seq = address.init_num_seq(network.lcd_endpoint).get_sequence()
+    # if not update_sequence:
+    #    seq = address.get_sequence()
+    # else:
+    #    seq = address.init_num_seq(network.lcd_endpoint).get_sequence()
     logging.debug(f"msg: {msg}")
 
     tx = (
         Transaction()
         .with_messages(msg)
-        .with_sequence(seq)
-        .with_account_num(address.get_number())
+        .with_sequence(client.get_sequence())
+        .with_account_num(client.get_number())
         .with_chain_id(network.chain_id)
     )
 

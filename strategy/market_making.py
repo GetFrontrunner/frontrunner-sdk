@@ -11,7 +11,6 @@ from pyinjective.composer import Composer
 from pyinjective.transaction import Transaction
 from pyinjective.wallet import PrivateKey, PublicKey, Address
 from pyinjective.utils import (
-    Event,
     derivative_price_from_backend,
     spot_price_from_backend,
     spot_quantity_from_backend,
@@ -22,7 +21,7 @@ from utils.markets import binary_states_market_factory  # , Market, ActiveMarket
 from utils.binary_state_market_granter import BinaryStateGranter
 from utils.get_markets import get_all_active_markets, get_all_staging_markets
 from utils.utilities import RedisConsumer, get_nonce
-from utils.objects import Order, Probability, Probabilities
+from utils.objects import Order, Probability, Probabilities, Event
 from utils.markets import Market, ActiveMarket, StagingMarket
 from chain.execution import execute
 from chain.client import create_client, switch_node_recreate_client

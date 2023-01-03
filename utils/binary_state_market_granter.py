@@ -2,7 +2,7 @@ from pyinjective.composer import Composer
 from pyinjective.wallet import Address
 from pyinjective.constant import Denom
 import logging
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 from utils.objects import (
     Order,
@@ -70,7 +70,7 @@ class BinaryStateGranter:
         self,
         price: float,
         quantity: int,
-        is_limit: bool,
+        is_limit: Optional[bool],
         is_bid: bool,
         is_for: bool,
         composer: Composer,

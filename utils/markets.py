@@ -28,6 +28,8 @@ def multi_states_markets_factory(
 def binary_states_market_factory(disable_error_msg: bool = False, **kwargs) -> Optional[Market]:
     if kwargs.get("ticker"):
         ticker = kwargs["ticker"]
+        # if "af6c34d4-1673170200-KC" in ticker:
+        #    print(ticker)
         if len(ticker.split("-")) == 3:
             return ActiveMarket(
                 ticker=kwargs.get("ticker"),  # "staging-1659438300-NYM-WSH"

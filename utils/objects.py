@@ -13,7 +13,7 @@ from utils.markets import Market  # , ActiveMarket, StagingMarket
 
 
 class Event:
-    def __init__(self, price: float, quantity, is_bid: bool, is_for: bool, is_limit: bool):
+    def __init__(self, price: float, quantity, is_bid: bool, is_for: bool, is_limit: Optional[bool] = None):
         self.price = price
         self.quantity = quantity
         self.is_bid = is_bid
@@ -66,6 +66,7 @@ class Order:
                 is_reduce_only=is_for,
                 denom=denom,
             )
+            logging.info(f"{self.msg}")
         else:
             raise Exception("missing market id")
         # self.msg = (

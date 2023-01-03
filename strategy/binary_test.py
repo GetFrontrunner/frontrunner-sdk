@@ -4,8 +4,9 @@ import logging
 # from strategy.market_making import Model
 from strategy.binary_states_market_market_making import BinaryMarketModel
 
-grantee_private_key = os.getenv("grantee_private_key")  # None
-grantee_inj_address = os.getenv("grantee_inj_address")  # None
+grantee_private_key = os.getenv("frontrunner_test_1_private_key")  # None
+grantee_inj_address = os.getenv("frontrunner_test_1_inj_address")  # None
+logging.info(f"private_key: {grantee_private_key}")
 
 # granter_private_key = os.getenv("granter_private_key")  # None
 # granter_inj_address = os.getenv("granter_inj_address")  # None

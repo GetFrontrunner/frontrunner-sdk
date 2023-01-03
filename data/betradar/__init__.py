@@ -469,9 +469,12 @@ class BetRadarData(Data):
             logging.info("sent msg, ")
             event_1 = probabilities.outcomes[0]
             event_2 = probabilities.outcomes[1]
-            logging.info(f"outcome 1  Prob: {round(event_1.probabilities,4)}, odds: {round(event_1.odds,4)}")
-            logging.info(f"outcome 2  Prob: {round(event_2.probabilities,4)}, odds: {round(event_2.odds,4)}")
-            n += 1
+            if event_1.probabilities and event_2.probabilities and event_1.odds and event_2.odds:
+                logging.info(f"outcome 1  Prob: {round(event_1.probabilities,4)}, odds: {round(event_1.odds,4)}")
+                logging.info(f"outcome 2  Prob: {round(event_2.probabilities,4)}, odds: {round(event_2.odds,4)}")
+                n += 1
+            else:
+                continue
 
             await sleep(random.random() * 50)
 

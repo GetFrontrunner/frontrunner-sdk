@@ -11,7 +11,6 @@ from pyinjective.composer import Composer
 from pyinjective.transaction import Transaction
 from pyinjective.wallet import PrivateKey, PublicKey, Address
 from pyinjective.utils import (
-    Event,
     derivative_price_from_backend,
     spot_price_from_backend,
     spot_quantity_from_backend,
@@ -22,7 +21,7 @@ from utils.markets import binary_states_market_factory  # , Market, ActiveMarket
 from utils.binary_state_market_granter import BinaryStateGranter
 from utils.get_markets import get_all_active_markets, get_all_staging_markets
 from utils.utilities import RedisConsumer, get_nonce
-from utils.objects import Order, Probability, Probabilities
+from utils.objects import Order, Probability, Probabilities, Event
 from utils.markets import Market, ActiveMarket, StagingMarket
 from chain.execution import execute
 from chain.client import create_client, switch_node_recreate_client
@@ -79,16 +78,23 @@ class BinaryMarketModel(Model):
             self.client,
             self.lcd_endpoint,
         ) = create_client(node_idx=3, nodes=nodes, is_testnet=is_testnet)
+        # self.network = Network.testnet()
+        # self.composer = Composer(network=self.network.string())
+        # self.client = AsyncClient(self.network, insecure=False)
 
         self.lcd_endpoint = self.network.lcd_endpoint
         # load account
         self.priv_key: PrivateKey = PrivateKey.from_hex(private_key)
         self.pub_key: PublicKey = self.priv_key.to_public_key()
-        logging.info(f"self.network.lcd_endpoint: {self.lcd_endpoint}")
-        self.address = self.pub_key.to_address().init_num_seq(self.lcd_endpoint)
+        self.address = self.pub_key.to_address()  # .init_num_seq(self.lcd_endpoint)
+        # self.inj_address = 'inj1x7rm49urgq3ap03wuyqkd75e9tr4fupnkh782k'#self.address.to_acc_bech32()
         self.inj_address = self.address.to_acc_bech32()
         self.subaccount_id = self.address.get_subaccount_id(index=0)
-        logging.debug(self.subaccount_id)
+        logging.info(f"private key: {self.priv_key}")
+        logging.info(f"self.address: {self.address}")
+        logging.info(f"inj_address: {self.inj_address}")
+        logging.info(f"inj_address: inj1x7rm49urgq3ap03wuyqkd75e9tr4fupnkh782k")
+        logging.info(f"subaccount id: {self.subaccount_id}")
 
         if not fee_recipient:
             self.fee_recipient = self.inj_address
@@ -141,7 +147,7 @@ class BinaryMarketModel(Model):
             inj_address=self.inj_address,
             fee_recipient=self.inj_address,
         )
-        granter.get_nonce(lcd_endpoint)
+        # granter.get_nonce(lcd_endpoint)
         logging.debug(
             f"granter: {granter.inj_address}, nonce: {granter.nonce}, market: {granter.market.ticker}, market id: {granter.market.market_id}"
         )
@@ -153,10 +159,13 @@ class BinaryMarketModel(Model):
         if ticker:
             pass
         else:
-            for idx, active_markets in enumerate(all_active_markets.values()):
+            for (idx, active_markets) in enumerate(all_active_markets.items()):
                 # TODO only the first market works, need to fix this part
-                if idx == 1:
-                    for active_market in active_markets:
+                if "af6c34d4" in active_markets[0]:
+                    print("found market ", active_markets[1][0].ticker, len(active_markets[1]))
+                    for active_market in active_markets[1]:
+                        print(active_market.market_id)
+                        # for active_market in active_markets[1]:
                         granters.append(
                             self._create_granter_for_binary_states_market(
                                 lcd_endpoint=self.lcd_endpoint,
@@ -175,6 +184,8 @@ class BinaryMarketModel(Model):
         event_1: Event,
         event_2: Event,
     ) -> List[Order]:
+        logging.info(f"event 1, price: {event_1.price}, quantity: {event_1.quantity}")
+        logging.info(f"event 2, price: {event_2.price}, quantity: {event_2.quantity}")
         return [
             granter.create_order(
                 price=event_1.price,
@@ -195,10 +206,15 @@ class BinaryMarketModel(Model):
         ]
 
     def create_orders_for_granters(self, event_1, event_2) -> List[Order]:
+        logging.info("got event data from redis")
         if self.granters:
             for granter in self.granters:
-                event_1 = Event(price=0.32, quantity=12, is_bid=True, is_for=True, is_limit=True)
-                event_2 = Event(price=0.40, quantity=1, is_bid=True, is_for=True, is_limit=True)
+                # buy for
+                event_1 = Event(price=0.1, quantity=12, is_bid=True, is_for=False, is_limit=True)
+                # event_1 = Event(price=0.1, quantity=12, is_bid=True, is_for=False)
+                # buy against
+                event_2 = Event(price=0.9, quantity=10, is_bid=False, is_for=False, is_limit=True)
+                # event_2 = Event(price=0.9, quantity=10, is_bid=False, is_for=False)
                 return self._create_orders_for_granters_binary_states_market(granter, event_1=event_1, event_2=event_2)
         raise Exception("No granter")
 
@@ -293,6 +309,8 @@ class BinaryMarketModel(Model):
     #    return get_event_loop()
 
     async def run(self, t=10):
+        await self.client.sync_timeout_height()
+        await sleep(t)
         logging.info("cancel all current open orders")
         resp = await self.batch_cancel(cancel_current_open_orders=True)
         logging.info(resp)
