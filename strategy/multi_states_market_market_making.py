@@ -1,7 +1,8 @@
 import os
-from typing import List, Dict, Optional
+import logging
 import datetime
 from expiringdict import ExpiringDict
+from typing import List, Dict, Optional
 
 from pyinjective.async_client import AsyncClient
 from pyinjective.constant import Network
@@ -15,7 +16,6 @@ from pyinjective.utils import (
 )
 
 from utils.markets import multi_states_markets_factory  # , Market, ActiveMarket, StagingMarket
-
 from utils.multi_state_market_granter import MultiStateGranter
 from utils.get_markets import get_all_active_markets, get_all_staging_markets
 from utils.utilities import RedisConsumer, get_nonce
@@ -23,12 +23,11 @@ from utils.objects import Order, Probability, Probabilities, Event
 from utils.markets import Market, ActiveMarket, StagingMarket, MultiStatesMarket
 from chain.execution import execute
 from chain.client import create_client, switch_node_recreate_client
-import logging
+from strategy.market_making import Model
 
-from asyncio import sleep, get_event_loop
 from dotenv import load_dotenv
 from configparser import ConfigParser
-from strategy.market_making import Model
+from asyncio import sleep, get_event_loop
 
 
 load_dotenv()
