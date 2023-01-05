@@ -1,17 +1,14 @@
-# get current positions, if program restarted, this will lose all tracked info
-# TODO use both perp and spot market to compute variances
 import os
 from typing import List, Dict, Optional
 import datetime
 from expiringdict import ExpiringDict
 
 from pyinjective.async_client import AsyncClient
-from pyinjective.constant import Network  # , Denom
+from pyinjective.constant import Network
 from pyinjective.composer import Composer
 from pyinjective.transaction import Transaction
 from pyinjective.wallet import PrivateKey, PublicKey, Address
 from pyinjective.utils import (
-    Event,
     derivative_price_from_backend,
     spot_price_from_backend,
     spot_quantity_from_backend,
@@ -22,7 +19,7 @@ from utils.markets import multi_states_markets_factory  # , Market, ActiveMarket
 from utils.multi_state_market_granter import MultiStateGranter
 from utils.get_markets import get_all_active_markets, get_all_staging_markets
 from utils.utilities import RedisConsumer, get_nonce
-from utils.objects import Order, Probability, Probabilities
+from utils.objects import Order, Probability, Probabilities, Event
 from utils.markets import Market, ActiveMarket, StagingMarket, MultiStatesMarket
 from chain.execution import execute
 from chain.client import create_client, switch_node_recreate_client
@@ -157,7 +154,7 @@ class MultiStatesMarketModel(Model):
         if ticker:
             pass
         else:
-            for idx, active_markets in enumerate(all_active_markets.values()):
+            for active_markets in all_active_markets.values():
                 if isinstance(active_markets, MultiStatesMarket):
                     # TODO only the first market works, need to fix this part
                     for active_market in active_markets:

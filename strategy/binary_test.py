@@ -1,15 +1,11 @@
 import os
 import logging
-
-# from strategy.market_making import Model
 from strategy.binary_states_market_market_making import BinaryMarketModel
 
-grantee_private_key = os.getenv("frontrunner_test_1_private_key")  # None
-grantee_inj_address = os.getenv("frontrunner_test_1_inj_address")  # None
+grantee_private_key = os.getenv("frontrunner_test_1_private_key")
+grantee_inj_address = os.getenv("frontrunner_test_1_inj_address")
 logging.info(f"private_key: {grantee_private_key}")
 
-# granter_private_key = os.getenv("granter_private_key")  # None
-# granter_inj_address = os.getenv("granter_inj_address")  # None
 #
 FORMAT = "[%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s"
 logging.basicConfig(format=FORMAT)
@@ -20,13 +16,8 @@ if grantee_private_key:
         topics=["BetRadar/probabilities"],
         is_testnet=True,
     )
-    # model.create_granters([granter_inj_address])
     model.create_granters_for_binary_states_markets()
     loop = model.get_loop()
     loop.run_until_complete(model.run())
-    # loop.create_task(model.run())
-    # loop.run_forever()
-    # model.create_limit_orders_for_granters()
-    # model.create_market_orders_for_granters()
 else:
     raise Exception("private key is None")

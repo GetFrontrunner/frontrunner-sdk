@@ -1,6 +1,5 @@
 import logging
 
-# from security_module import batch_compute_order_hashes
 from pyinjective.transaction import Transaction
 from pyinjective.wallet import Address, PublicKey, PrivateKey
 from pyinjective.composer import Composer
@@ -22,20 +21,17 @@ async def execute(
     send_mode: str = "block",
     update_sequence: bool = True,
 ):
-    # if not update_sequence:
-    #    seq = address.get_sequence()
-    # else:
-    #    seq = address.init_num_seq(network.lcd_endpoint).get_sequence()
     logging.debug(f"msg: {msg}")
-    await address.async_init_num_seq(network.lcd_endpoint)
-    #await address.init_num_seq(network.lcd_endpoint)#.sequence
-    seq = address.sequence
+    if update_sequence:
+        await address.async_init_num_seq(network.lcd_endpoint)
+        seq = address.sequence
+    else:
+        seq = client.get_sequence()
 
     tx = (
         Transaction()
         .with_messages(msg)
         .with_sequence(seq)
-        #.with_sequence(client.get_sequence())
         .with_account_num(client.get_number())
         .with_chain_id(network.chain_id)
     )
@@ -85,7 +81,6 @@ async def execute(
         logging.error(f"broadcast error: {e}")
         return
 
-    # logging.debug("type res: ", type(res)) FIXME need to check gas
     res_msg = composer.MsgResponses(res.data)
     if len(res_msg) == 0:
         address.get_sequence()

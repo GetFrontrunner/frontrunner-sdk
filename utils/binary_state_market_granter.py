@@ -101,127 +101,6 @@ class BinaryStateGranter:
             composer=composer,
         )
 
-        # if is_limit:
-        #    self.limit_orders.append(
-        #        Order(
-        #            nonce=self.nonce,
-        #            price=price,
-        #            quantity=quantity,
-        #            order_type="limit",
-        #            subaccount_id=self.subaccount_id,
-        #            fee_recipient=self.fee_recipient,
-        #            inj_address=self.inj_address,
-        #            is_buy=is_bid,
-        #            is_for=is_for,
-        #            market=self.market,
-        #            denom=self.denom,
-        #            composer=composer,
-        #        )
-        #    )
-        # else:
-        #    self.market_orders.append(
-        #        Order(
-        #            nonce=self.nonce,
-        #            price=price,
-        #            quantity=quantity,
-        #            order_type="market",
-        #            subaccount_id=self.subaccount_id,
-        #            fee_recipient=self.fee_recipient,
-        #            inj_address=self.inj_address,
-        #            is_buy=is_bid,
-        #            is_for=is_for,
-        #            market=self.market,
-        #            denom=self.denom,
-        #            composer=composer,
-        #        )
-        #    )
-
-    # def _create_bid_order(
-    #    self,
-    #    price: float,
-    #    quantity: int,
-    #    is_limit: bool,
-    #    is_for: bool,
-    #    composer: Composer,
-    #    ):
-    #    # logging.info(f"market id: {self.market.market_id}")
-    #    # self.update_nonce()
-    #    logging.debug(f"nonce: {self.nonce}")
-    #    logging.info(f"subaccount_id: {self.subaccount_id}, inj address: {self.inj_address}")
-    #    self.limit_asks.list.clear()
-    #    self.limit_bids.list.clear()
-    #    if is_limit:
-    #        order = LimitOrder(
-    #            nonce=self.nonce,
-    #            price=price,
-    #            quantity=quantity,
-    #            subaccount_id=self.subaccount_id,
-    #            fee_recipient=self.fee_recipient,
-    #            inj_address=self.inj_address,
-    #            is_buy=True,
-    #            is_for=is_for,
-    #            market=self.market,
-    #            denom=self.denom,
-    #            composer=composer,
-    #        )
-    #        self.limit_bids.add(order)
-    #    else:
-    #        order = MarketOrder(
-    #            nonce=self.nonce,
-    #            price=price,
-    #            quantity=quantity,
-    #            subaccount_id=self.subaccount_id,
-    #            fee_recipient=self.fee_recipient,
-    #            inj_address=self.inj_address,
-    #            is_buy=True,
-    #            is_for=is_for,
-    #            market=self.market,
-    #            denom=self.denom,
-    #            composer=composer,
-    #        )
-    #        self.market_bids.add(order)
-
-    # def _create_ask_order(
-    #    self,
-    #    price: float,
-    #    quantity: int,
-    #    is_limit: bool,
-    #    is_for: bool,
-    #    composer: Composer,
-    #    ):
-    #    # self.update_nonce()
-    #    logging.debug(f"nonce: {self.nonce}")
-    #    logging.debug(f"subaccount_id: {self.subaccount_id}, inj address: {self.inj_address}")
-    #    if is_limit:
-    #        order = LimitOrder(
-    #            nonce=self.nonce,
-    #            price=price,
-    #            quantity=quantity,
-    #            subaccount_id=self.subaccount_id,
-    #            fee_recipient=self.fee_recipient,
-    #            inj_address=self.inj_address,
-    #            is_buy=False,
-    #            is_for=is_for,
-    #            market=self.market,
-    #            denom=self.denom,
-    #            composer=composer,
-    #        )
-    #        self.limit_asks.add(order)
-    #    else:
-    #        order = MarketOrder(
-    #            nonce=self.nonce,
-    #            price=price,
-    #            quantity=quantity,
-    #            subaccount_id=self.subaccount_id,
-    #            fee_recipient=self.fee_recipient,
-    #            inj_address=self.inj_address,
-    #            is_buy=False,
-    #            is_for=is_for,
-    #            market=self.market,
-    #            denom=self.denom,
-    #            composer=composer,
-    #        )
-    #        self.market_asks.add(order)
 
     def _cancel_order(
         self,
@@ -240,10 +119,6 @@ class BinaryStateGranter:
             self.market_sell_for.remove_by_orderhash(orderhash)
             self.market_sell_against.remove_by_orderhash(orderhash)
 
-            # self.limit_bids.remove_by_orderhash(orderhash)
-            # self.limit_asks.remove_by_orderhash(orderhash)
-            # self.market_bids.remove_by_orderhash(orderhash)
-            # self.market_asks.remove_by_orderhash(orderhash)
             return composer.MsgCancelBinaryOptionsOrder(
                 sender=self.inj_address,
                 market_id=self.market.market_id,
@@ -266,7 +141,3 @@ class BinaryStateGranter:
         self.market_bid_against.remove_by_orderhash(orderhash)
         self.market_sell_for.remove_by_orderhash(orderhash)
         self.market_sell_against.remove_by_orderhash(orderhash)
-        # self.limit_bids.remove_by_orderhash(orderhash)
-        # self.limit_asks.remove_by_orderhash(orderhash)
-        # self.market_bids.remove_by_orderhash(orderhash)
-        # self.market_asks.remove_by_orderhash(orderhash)

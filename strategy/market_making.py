@@ -248,6 +248,10 @@ class Model:
             else:
                 print("unknown order type")
 
+    async def get_positions(self):
+        # TODO
+        raise NotImplemented("Subclasses should implement this")
+
     def get_loop(self):
         return get_event_loop()
 

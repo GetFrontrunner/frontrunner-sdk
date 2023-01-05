@@ -2,7 +2,7 @@ from pyinjective.composer import Composer
 from pyinjective.wallet import Address
 from pyinjective.constant import Denom
 import logging
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 from utils.objects import (
     Order,
@@ -78,67 +78,12 @@ class MultiStateGranter:
     def update_nonce(self):
         self.nonce += 1
 
-    # def create_orders(
-    #    self,
-    #    price: float,
-    #    quantity: int,
-    #    is_limit: bool,
-    #    is_bid: bool,
-    #    is_for: bool,
-    #    state: int,
-    #    composer: Composer,
-    # ):
-    #    logging.info(f"market id: {self.buy_market.market_id}")
-    #    self.update_nonce()
-    #    logging.debug(f"nonce: {self.nonce}")
-    #    # logging.info(
-    #    #    f"subaccount_id: {self.subaccount_id}, inj address: {self.inj_address}"
-    #    # )
-    #    # Injective order params:
-    #    # * BUY_FOR: is_buy = True is_reduce = False
-    #    # * BUY_AGAINST: is_buy = False and is_reduce = False
-    #    # * SELL_AGAINST: is_buy = True and is_reduce = True
-    #    # * SELL_FOR: is_buy = False and is_reduce = True
-    #    if state == 0:
-    #        if is_bid:
-    #            if is_for:
-    #                self._create_bid_order(price, quantity, is_limit, is_for, composer)
-    #            else:
-    #                self._create_bid_order(price, quantity, is_limit, is_for, composer)
-    #        else:
-    #            if is_for:
-    #                self._create_ask_order(price, quantity, is_limit, is_for, composer)
-    #            else:
-    #                self._create_ask_order(price, quantity, is_limit, is_for, composer)
 
-    #    if state == 1:
-    #        if is_bid:
-    #            if is_for:
-    #                self._create_bid_order(price, quantity, is_limit, is_for, composer)
-    #            else:
-    #                self._create_bid_order(price, quantity, is_limit, is_for, composer)
-    #        else:
-    #            if is_for:
-    #                self._create_ask_order(price, quantity, is_limit, is_for, composer)
-    #            else:
-    #                self._create_ask_order(price, quantity, is_limit, is_for, composer)
-
-    #    if state == 2:
-    #        if is_bid:
-    #            if is_for:
-    #                self._create_bid_order(price, quantity, is_limit, is_for, composer)
-    #            else:
-    #                self._create_bid_order(price, quantity, is_limit, is_for, composer)
-    #        else:
-    #            if is_for:
-    #                self._create_ask_order(price, quantity, is_limit, is_for, composer)
-    #            else:
-    #                self._create_ask_order(price, quantity, is_limit, is_for, composer)
     def create_order(
         self,
         price: float,
         quantity: int,
-        is_limit: bool,
+        is_limit: Optional[bool],
         is_bid: bool,
         is_for: bool,
         market: Market,
@@ -171,135 +116,6 @@ class MultiStateGranter:
             composer=composer,
         )
 
-    # def _create_bid_order(
-    #    self,
-    #    price: float,
-    #    quantity: int,
-    #    is_limit: bool,
-    #    is_for: bool,
-    #    # state:int,
-    #    composer: Composer,
-    #    ):
-    #    logging.debug(f"nonce: {self.nonce}")
-    #    logging.info(f"subaccount_id: {self.subaccount_id}, inj address: {self.inj_address}")
-    #    self.limit_buy_for.list.clear()
-    #    self.buy_market_orders.list.clear()
-    #    if is_limit:
-    #        order = LimitOrder(
-    #            nonce=self.nonce,
-    #            price=price,
-    #            quantity=quantity,
-    #            subaccount_id=self.subaccount_id,
-    #            fee_recipient=self.fee_recipient,
-    #            inj_address=self.inj_address,
-    #            is_buy=True,
-    #            is_for=is_for,
-    #            market=self.buy_market,
-    #            denom=self.denom,
-    #            composer=composer,
-    #        )
-    #        self.limit_buy_for.add(order)
-    #    else:
-    #        order = MarketOrder(
-    #            nonce=self.nonce,
-    #            price=price,
-    #            quantity=quantity,
-    #            subaccount_id=self.subaccount_id,
-    #            fee_recipient=self.fee_recipient,
-    #            inj_address=self.inj_address,
-    #            is_buy=True,
-    #            is_for=is_for,
-    #            market=self.buy_market,
-    #            denom=self.denom,
-    #            composer=composer,
-    #        )
-    #        self.buy_market_orders.add(order)
-
-    # def _create_ask_order(
-    #    self,
-    #    price: float,
-    #    quantity: int,
-    #    is_limit: bool,
-    #    is_for: bool,
-    #    # state:int,
-    #    composer: Composer,
-    #    ):
-    #    # self.update_nonce()
-    #    logging.debug(f"nonce: {self.nonce}")
-    #    logging.debug(f"subaccount_id: {self.subaccount_id}, inj address: {self.inj_address}")
-    #    if is_limit:
-    #        order = LimitOrder(
-    #            nonce=self.nonce,
-    #            price=price,
-    #            quantity=quantity,
-    #            subaccount_id=self.subaccount_id,
-    #            fee_recipient=self.fee_recipient,
-    #            inj_address=self.inj_address,
-    #            is_buy=False,
-    #            is_for=is_for,
-    #            market=self.sell_market,
-    #            denom=self.denom,
-    #            composer=composer,
-    #        )
-    #        self.sell_limit_orders.add(order)
-    #    else:
-    #        order = MarketOrder(
-    #            nonce=self.nonce,
-    #            price=price,
-    #            quantity=quantity,
-    #            subaccount_id=self.subaccount_id,
-    #            fee_recipient=self.fee_recipient,
-    #            inj_address=self.inj_address,
-    #            is_buy=False,
-    #            is_for=is_for,
-    #            market=self.sell_market,
-    #            denom=self.denom,
-    #            composer=composer,
-    #        )
-    #        self.sell_market_orders.add(order)
-
-    # def _create_draw_order(
-    #    self,
-    #    price: float,
-    #    quantity: int,
-    #    is_limit: bool,
-    #    is_for: bool,
-    #    # state:int,
-    #    composer: Composer,
-    #    ):
-    #    # self.update_nonce()
-    #    logging.debug(f"nonce: {self.nonce}")
-    #    logging.debug(f"subaccount_id: {self.subaccount_id}, inj address: {self.inj_address}")
-    #    if is_limit:
-    #        order = LimitOrder(
-    #            nonce=self.nonce,
-    #            price=price,
-    #            quantity=quantity,
-    #            subaccount_id=self.subaccount_id,
-    #            fee_recipient=self.fee_recipient,
-    #            inj_address=self.inj_address,
-    #            is_buy=False,
-    #            is_for=is_for,
-    #            market=self.draw_market,
-    #            denom=self.denom,
-    #            composer=composer,
-    #        )
-    #        self.draw_limit_orders.add(order)
-    #    else:
-    #        order = MarketOrder(
-    #            nonce=self.nonce,
-    #            price=price,
-    #            quantity=quantity,
-    #            subaccount_id=self.subaccount_id,
-    #            fee_recipient=self.fee_recipient,
-    #            inj_address=self.inj_address,
-    #            is_buy=False,
-    #            is_for=is_for,
-    #            market=self.draw_market,
-    #            denom=self.denom,
-    #            composer=composer,
-    #        )
-    #        self.draw_market_orders.add(order)
 
     def _cancel_order(
         self,
@@ -342,11 +158,3 @@ class MultiStateGranter:
         self.market_draw_for.remove_by_orderhash(orderhash)  # = MarketOrders()
         self.market_draw_against.remove_by_orderhash(orderhash)  # = MarketOrders()
 
-        # self.limit_buy_for.remove_by_orderhash(orderhash)
-        # self.sell_limit_orders.remove_by_orderhash(orderhash)
-        # self.draw_limit_orders.remove_by_orderhash(orderhash)
-        # self.buy_market_orders.remove_by_orderhash(orderhash)
-        # self.sell_market_orders.remove_by_orderhash(orderhash)
-        # self.draw_market_orders.remove_by_orderhash(orderhash)
-        # self.market_bids.remove_by_orderhash(orderhash)
-        # self.market_asks.remove_by_orderhash(orderhash)

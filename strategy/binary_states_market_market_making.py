@@ -159,11 +159,11 @@ class BinaryMarketModel(Model):
         if ticker:
             pass
         else:
-            for (idx, active_markets) in enumerate(all_active_markets.items()):
+            for active_markets in all_active_markets.items():
                 # TODO only the first market works, need to fix this part
-                #if "af6c34d4" in active_markets[0]:
-                if "93ee64bd" in active_markets[0]:
-                    print("found market ", active_markets[1][0].ticker)#, len(active_markets[1]))
+                if (active_markets[1][0].ticker==ticker):
+                #if "93ee64bd" in active_markets[0]:
+                   # print("found market ", active_markets[1][0].ticker)#, len(active_markets[1]))
                     for active_market in active_markets[1]:
                         print(active_market.market_id)
                         # for active_market in active_markets[1]:
@@ -322,14 +322,6 @@ class BinaryMarketModel(Model):
         self.create_granters_for_binary_states_markets()
 
         while True:
-            # self.update_granters()
-            # self.create_limit_orders_for_granters()
-            # self.create_market_orders_for_granters()
-            ## resp = await self.batch_new_orders()
-            # resp = await self.single_new_order(
-            #    pk, price=0.3, quantity=1, is_buy=True, is_market=False
-            # )
-            # logging.info(resp)
             await sleep(200)
             logging.info("will cancell all orders in 200s")
             # await sleep(5)
