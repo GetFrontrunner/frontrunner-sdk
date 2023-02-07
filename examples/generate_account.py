@@ -59,17 +59,17 @@ def check_env_is_on(env_name: str):
         # sys.exit(1)
 
 
-def set_env(env_name: str, env_value: str):
+def set_env(env_name: str, env_value: str, file_location: str):
     os.environ.setdefault(env_name, env_value)
-    os.system(f"bash -c 'echo \"export {env_name}={env_value}\" >> .env'")
-    print(f"{env_name} has saved to .env")
+    os.system(f"bash -c 'echo \"export {env_name}={env_value}\" >> {file_location}'")
+    print(f"{env_name} has saved to {file_location}")
 
 
-def set_env_variables(secret_obj: Dict[str, str]):
+def set_env_variables(secret_obj: Dict[str, str], file_location: str):
     for key, value in secret_obj.items():
         if key in ("inj_address", "inj_private_key"):
             check_env_is_set(key.upper())
-            set_env(key.upper(), value)
+            set_env(key.upper(), value, file_location)
 
 
 def request_test_tokens(inj_address: str):
@@ -84,20 +84,21 @@ def request_test_tokens(inj_address: str):
         print("succeeded in requesting test tokens")
 
 
-def main():
+def main(file_location: str):
     secret_obj = generate_mnemonic()
 
-    set_env_variables(secret_obj)
+    set_env_variables(secret_obj, file_location)
 
     for key in ("inj_address", "inj_private_key"):
         check_env_is_on(key.upper())
 
-    os.system("bash -c 'cat .env'")
-    os.system("bash -c 'source .env'")
+    os.system(f"bash -c 'cat {file_location}'")
+    os.system(f"bash -c 'source {file_location}'")
 
     request_test_tokens(secret_obj["inj_address"])
     print("run 'source .env' to set env variables")
 
 
 if __name__ == "__main__":
-    main()
+    file_location = "example.env"
+    main(file_location)
