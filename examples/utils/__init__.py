@@ -1,6 +1,6 @@
 import os
 import sys
-from typing import Dict
+from typing import Dict, Optional
 
 
 def check_env_is_set(env_name: str):
@@ -19,7 +19,6 @@ def check_env_is_on(env_name: str):
         print(f"{env_name}    is on")
     else:
         print(f"{env_name}    is off")
-        # sys.exit(1)
 
 
 def set_env(env_name: str, env_value: str, file_location: str):
@@ -34,3 +33,7 @@ def set_env_variables(secret_obj: Dict[str, str], file_location: str):
         if key in ("inj_address", "inj_private_key"):
             check_env_is_set(key.upper())
             set_env(key.upper(), value, file_location)
+
+
+def get_env(env_name: str) -> Optional[str]:
+    return os.environ.get(env_name)

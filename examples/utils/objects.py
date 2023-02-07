@@ -1,13 +1,16 @@
 from enum import Enum
+from dataclasses import dataclass
 from pyinjective.constant import Network
 
 
+@dataclass
 class BroadcastMode(Enum):
     ASYNC = 0
     SYNC = 1
     BLOCK = 2
 
 
+@dataclass
 class CustomNetwork:
     def __init__(
         self,
@@ -35,3 +38,38 @@ class CustomNetwork:
     @property
     def network(self) -> Network:
         return self._network
+
+
+@dataclass
+class OrderCreateRequest:
+    subaccount_id: str
+    market_id: str
+    price: float
+    quantity: int
+    is_buy: bool
+    is_po: bool
+    is_reduce_only: bool
+
+
+@dataclass
+class OrderCancelRequest:
+    subaccount_id: str
+    market_id: str
+    order_hash: str
+
+
+@dataclass
+class OrderCreateResponse:
+    subaccount_id: str
+    market_id: str
+    price: float
+    quantity: int
+    is_buy: bool
+    is_reduce_only: bool
+
+
+@dataclass
+class OrderCancelResponse:
+    subaccount_id: str
+    market_id: str
+    order_hash: str

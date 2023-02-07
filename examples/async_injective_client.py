@@ -19,7 +19,7 @@ from pyinjective.proto.injective.exchange.v1beta1 import tx_pb2 as injective_exc
 
 from generate_account import generate_mnemonic, request_test_tokens
 from .utils import set_env_variables
-from .utils.objects import BroadcastMode, CustomNetwork
+from .utils.objects import BroadcastMode, CustomNetwork, OrderCreateRequest, OrderCancelRequest
 
 # from common.injective_client.src.injective_composer import InjectiveComposer
 
@@ -168,20 +168,20 @@ class AsyncInjectiveChainClient(InjectiveExchangeClient):
         return injective_address.to_acc_bech32()
 
     def _build_batch_msg(
-        self, orders_to_create: List[Dict], orders_to_cancel: List[Dict]
+        self, orders_to_create: List[OrderCreateRequest], orders_to_cancel: List[OrderCancelRequest]
     ) -> injective_exchange_tx_pb.MsgBatchUpdateOrders:
         binary_options_orders_to_create = list(
             map(
                 lambda order: self.composer.BinaryOptionsOrder(
                     sender=self.sender_address.to_acc_bech32(),
-                    market_id=order["market_id"],
-                    subaccount_id=order["subaccount_id"],
+                    market_id=order.market_id,
+                    subaccount_id=order.subaccount_id,
                     fee_recipient=self.fee_recipient_address,
-                    price=order["price"],
-                    quantity=order["quantity"],
-                    is_buy=order["is_buy"],
-                    is_reduce_only=order["is_reduce_only"],
-                    is_po=order["is_po"],
+                    price=order.price,
+                    quantity=order.quantity,
+                    is_buy=order.is_buy,
+                    is_reduce_only=order.is_reduce_only,
+                    is_po=order.is_po,
                     denom=self.denom,
                 ),
                 orders_to_create,
@@ -191,7 +191,7 @@ class AsyncInjectiveChainClient(InjectiveExchangeClient):
         binary_options_orders_to_cancel = list(
             map(
                 lambda order: self.composer.OrderData(
-                    market_id=order["market_id"], subaccount_id=order["subaccount_id"], order_hash=order["order_hash"]
+                    market_id=order.market_id, subaccount_id=order.subaccount_id, order_hash=order.order_hash
                 ),
                 orders_to_cancel,
             )
@@ -203,7 +203,9 @@ class AsyncInjectiveChainClient(InjectiveExchangeClient):
             binary_options_orders_to_cancel=binary_options_orders_to_cancel,
         )
 
-    async def batch_update_orders(self, orders_to_create: List[Dict], orders_to_cancel: List[Dict]):
+    async def batch_update_orders(
+        self, orders_to_create: List[OrderCreateRequest], orders_to_cancel: List[OrderCancelRequest]
+    ):
         msg = self._build_batch_msg(orders_to_create, orders_to_cancel)
 
         async with self.num_seq_lock:
