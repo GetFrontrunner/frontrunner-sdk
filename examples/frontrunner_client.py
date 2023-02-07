@@ -17,7 +17,8 @@ from pyinjective.proto.cosmos.base.v1beta1 import coin_pb2 as cosmos_base_coin_p
 from pyinjective.proto.cosmos.base.abci.v1beta1.abci_pb2 import TxResponse
 from pyinjective.proto.injective.exchange.v1beta1 import tx_pb2 as injective_exchange_tx_pb
 
-from generate_account import generate_mnemonic, set_env_variables, check_env_is_on, request_test_tokens
+from generate_account import generate_mnemonic, request_test_tokens
+from .utils import set_env_variables
 
 # from common.injective_client.src.injective_composer import InjectiveComposer
 

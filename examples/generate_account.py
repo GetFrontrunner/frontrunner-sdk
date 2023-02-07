@@ -4,7 +4,7 @@ import json
 from typing import Dict
 import requests
 from pyinjective.wallet import PrivateKey, Address
-from .utils import *
+from .utils import set_env_variables, check_env_is_on
 
 
 ### Generate and Fund an Injective Wallet
