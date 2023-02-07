@@ -1,9 +1,10 @@
-import json
 import os
 import sys
+import json
 from typing import Dict
 import requests
 from pyinjective.wallet import PrivateKey, Address
+from .utils import *
 
 
 ### Generate and Fund an Injective Wallet
@@ -40,38 +41,6 @@ def get_eth_address_from_inj(inj_wallet_address: str) -> str:
     return eth_address
 
 
-def check_env_is_set(env_name: str):
-    try:
-        if os.environ[env_name]:
-            print(f"error: {env_name} is set to {os.environ[env_name]}")
-            sys.exit(1)
-    except KeyError:
-        pass
-        # print(f"{env_name} is not set.")
-
-
-def check_env_is_on(env_name: str):
-    # Checking the value of the environment variable
-    if os.environ.get(env_name):
-        print(f"{env_name}    is on")
-    else:
-        print(f"{env_name}    is off")
-        # sys.exit(1)
-
-
-def set_env(env_name: str, env_value: str, file_location: str):
-    os.environ.setdefault(env_name, env_value)
-    os.system(f"bash -c 'echo \"export {env_name}={env_value}\" >> {file_location}'")
-    print(f"{env_name} has saved to {file_location}")
-
-
-def set_env_variables(secret_obj: Dict[str, str], file_location: str):
-    for key, value in secret_obj.items():
-        if key in ("inj_address", "inj_private_key"):
-            check_env_is_set(key.upper())
-            set_env(key.upper(), value, file_location)
-
-
 def request_test_tokens(inj_address: str):
     print("requesting test tokens(this may take several seconds)")
     response = requests.post(
@@ -100,5 +69,5 @@ def main(file_location: str):
 
 
 if __name__ == "__main__":
-    file_location = "example.env"
+    file_location = "examples.env"
     main(file_location)
