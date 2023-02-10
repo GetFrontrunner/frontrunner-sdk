@@ -18,55 +18,57 @@ from os import environ
 from argparse import Namespace
 from typing import Optional, Tuple
 from async_injective_client import async_injective_chain_client_factory
-from .utils.objects import OrderCreateRequest
+from .utils.objects import OrderCreateRequest, MutiStateMarketMap
 
 
-async def run() -> None:
+def parse_cli_argments() -> Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--state",
+        nargs="*",
+        help="final state in arsenal vs. chelsea game, allowed values: arsenal, chelsea, draw",
+        default=MutiStateMarketMap["draw"],
+    )
+    parser.add_argument("--price", nargs="*", type=float, help="order price, float", default=0.2)
+    parser.add_argument("--quantity", nargs="*", type=int, help="order quantity, int", default=20)
+    parser.add_argument("--post_only", nargs="*", type=bool, help="post only order, bool", default=True)
+    parser.add_argument("--reduce_only", nargs="*", type=bool, help="reduce only order, bool", default=False)
+    args = parser.parse_args()
+
+    length = len(args.binary_market_id)
+    if all(len(arg) == length for arg in args._dict__.values()):
+        return args
+    else:
+        raise Exception("args length are not same")
+
+
+async def run_create_limit_orders(namespace: Namespace) -> None:
     inj_address = environ["INJ_ADDRESS"]
     inj_private_key = environ["INJ_PRIVATE_KEY"]
-    arsenal = environ["ARSENAL"]
-    chelsea = environ["CHELSEA"]
-    draw = environ["DRAW"]
-    if not draw and not arsenal and not chelsea:
-        print("can't find market id")
-        return
+
     client = async_injective_chain_client_factory(fee_recipient_address=inj_address, priv_key_hex=inj_private_key)
 
-    order_create_request_arsenal = OrderCreateRequest(
-        client.subaccount_id,
-        market_id=arsenal,
-        price=0.2,
-        quantity=20,
-        is_buy=True,
-        is_po=True,
-        is_reduce_only=False,
-    )
+    order_create_requests = [
+        OrderCreateRequest(
+            client.subaccount_id,
+            market_id=MutiStateMarketMap[namespace.__dict__["state"][i]],
+            price=namespace.__dict__["price"][i],
+            quantity=namespace.__dict__["quantity"][i],
+            is_buy=True,
+            is_po=namespace.__dict__["is_po"][i],
+            is_reduce_only=namespace.__dict__["is_reduce_only"][i],
+        )
+        for i in range(len(namespace.state))
+    ]
 
-    order_create_request_chelsea = OrderCreateRequest(
-        client.subaccount_id,
-        market_id=chelsea,
-        price=0.8,
-        quantity=31,
-        is_buy=False,
-        is_po=True,
-        is_reduce_only=False,
-    )
-
-    order_create_request_draw = OrderCreateRequest(
-        client.subaccount_id,
-        market_id=draw,
-        price=0.1,
-        quantity=31,
-        is_buy=False,
-        is_po=True,
-        is_reduce_only=False,
-    )
-
-    sim_res = await client.batch_update_orders(
-        [order_create_request_arsenal, order_create_request_chelsea, order_create_request_draw], []
-    )
+    sim_res = await client.batch_update_orders(orders_to_create=order_create_requests, orders_to_cancel=[])
     print(f"sim response: \n{sim_res}")
 
 
+async def main():
+    namespace = parse_cli_argments()
+    await run_create_limit_orders(namespace=namespace)
+
+
 if __name__ == "__main__":
-    asyncio.get_event_loop().run_until_complete(run())
+    asyncio.get_event_loop().run_until_complete(main())

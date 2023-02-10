@@ -18,20 +18,16 @@ from os import environ
 from argparse import Namespace
 from typing import Optional, Tuple
 from async_injective_client import async_injective_chain_client_factory
-from .utils.objects import OrderCancelRequest
+from .utils.objects import OrderCancelRequest, BiStateMarketMap
 
 
 async def run() -> None:
     inj_address = environ["INJ_ADDRESS"]
     inj_private_key = environ["INJ_PRIVATE_KEY"]
-    binary_market_id = environ["BINARY_MARKET"]
-    if not binary_market_id:
-        print("can't find market id")
-        return
     client = async_injective_chain_client_factory(fee_recipient_address=inj_address, priv_key_hex=inj_private_key)
     order_hash = "<YOUR ORDER HASH>"
     order_cancel_request = OrderCancelRequest(
-        subaccount_id=client.subaccount_id, market_id=binary_market_id, order_hash=order_hash
+        subaccount_id=client.subaccount_id, market_id=BiStateMarketMap["default"], order_hash=order_hash
     )
     sim_res = await client.batch_update_orders([], [order_cancel_request])
     print(f"sim response: \n{sim_res}")

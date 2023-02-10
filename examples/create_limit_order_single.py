@@ -18,30 +18,56 @@ from os import environ
 from argparse import Namespace
 from typing import Optional, Tuple
 from async_injective_client import async_injective_chain_client_factory
-from .utils.objects import OrderCreateRequest
+from .utils.objects import OrderCreateRequest, BinarySideMap, BiStateMarketMap
 
 
-async def run() -> None:
+def parse_cli_argments() -> Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "binary_market_id",
+        help="injective chain market id",
+        default=BiStateMarketMap["default"],
+    )
+    parser.add_argument("side", help="order side: buy or sell", default="buy")
+    parser.add_argument("price", type=float, help="order price, float", default=0.2)
+    parser.add_argument("quantity", type=int, help="order quantity, int", default=20)
+    parser.add_argument("post_only", type=bool, help="post only order, bool", default=True)
+    parser.add_argument("reduce_only", type=bool, help="reduce only order, bool", default=False)
+    args = parser.parse_args()
+    return args
+
+
+async def run_create_limit_order_single(
+    market_id: str, price: float, quantity: int, side: str, is_po: bool, is_reduce_only: bool
+) -> None:
     inj_address = environ["INJ_ADDRESS"]
     inj_private_key = environ["INJ_PRIVATE_KEY"]
-    binary_market_id = environ["BINARY_MARKET"]
-    if not binary_market_id:
-        print("can't find market id")
-        return
     client = async_injective_chain_client_factory(fee_recipient_address=inj_address, priv_key_hex=inj_private_key)
     order_create_request = OrderCreateRequest(
         client.subaccount_id,
-        market_id=binary_market_id,
-        price=0.3,
-        quantity=20,
-        is_buy=True,
-        is_po=True,
-        is_reduce_only=False,
+        market_id=market_id,
+        price=price,
+        quantity=quantity,
+        is_buy=BinarySideMap[side],
+        is_po=is_po,
+        is_reduce_only=is_reduce_only,
     )
 
-    sim_res = await client.batch_update_orders([order_create_request], [])
+    sim_res = await client.batch_update_orders(orders_to_create=[order_create_request], orders_to_cancel=[])
     print(f"sim response: \n{sim_res}")
 
 
+async def main():
+    namespace = parse_cli_argments()
+    await run_create_limit_order_single(
+        namespace.binary_market_id,
+        namespace.side,
+        namespace.price,
+        namespace.quantity,
+        namespace.post_only,
+        namespace.reduce_only,
+    )
+
+
 if __name__ == "__main__":
-    asyncio.get_event_loop().run_until_complete(run())
+    asyncio.get_event_loop().run_until_complete(main())

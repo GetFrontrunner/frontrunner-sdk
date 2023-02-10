@@ -73,3 +73,13 @@ class OrderCancelResponse:
     subaccount_id: str
     market_id: str
     order_hash: str
+
+
+BinarySideMap = {"buy": True, "sell": False}
+
+BiStateMarketMap = {"default": "0xb3a7e524c2ba5ec1eb44bf6780881d671992537eeab1428b8a44b205ceb3c304"}
+MutiStateMarketMap = {
+    "arsenal": "0x14be5f20eca7403929756b2333add97c1a4da3d49123664ef756c7a35b6e43e6",
+    "chelsea": "0xc7c017e8b569eda649f4bcb51d71cee98de4f4e1fe33fcf341ba68afc4b3acb9",
+    "draw": "0x4ab38f8ebea3a12acc08865990f3275fc5ab8f4662d3bd882c1840f434dae531",
+}
