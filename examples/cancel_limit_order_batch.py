@@ -11,7 +11,7 @@ from .utils.objects import OrderCancelRequest, MutiStateMarketMap
 
 def parse_cli_argments() -> Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--state", nargs="*", help="injective chain market id", default=MutiStateMarketMap["draw"])
+    parser.add_argument("--state", nargs="*", help="injective chain market id", default=[MutiStateMarketMap["draw"]])
     parser.add_argument("--orderhash", nargs="*", help="orderhash of existing order", required=True)
     args = parser.parse_args()
 

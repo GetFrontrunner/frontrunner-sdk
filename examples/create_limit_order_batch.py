@@ -27,13 +27,13 @@ def parse_cli_argments() -> Namespace:
         "--binary_market_id",
         nargs="*",
         help="injective chain market id",
-        default=BiStateMarketMap["default"],
+        default=[BiStateMarketMap["default"]],
     )
-    parser.add_argument("--side", nargs="*", help="order side: buy or sell", default="buy")
-    parser.add_argument("--price", nargs="*", type=float, help="order price, float", default=0.2)
-    parser.add_argument("--quantity", nargs="*", type=int, help="order quantity, int", default=20)
-    parser.add_argument("--post_only", nargs="*", type=bool, help="post only order, bool", default=True)
-    parser.add_argument("--reduce_only", nargs="*", type=bool, help="reduce only order, bool", default=False)
+    parser.add_argument("--side", nargs="*", help="order side: buy or sell", default=["buy"])
+    parser.add_argument("--price", nargs="*", type=float, help="order price, float", default=[0.2])
+    parser.add_argument("--quantity", nargs="*", type=int, help="order quantity, int", default=[20])
+    parser.add_argument("--post_only", nargs="*", type=bool, help="post only order, bool", default=[True])
+    parser.add_argument("--reduce_only", nargs="*", type=bool, help="reduce only order, bool", default=[False])
     args = parser.parse_args()
 
     length = len(args.binary_market_id)
