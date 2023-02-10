@@ -21,17 +21,34 @@ from async_injective_client import async_injective_chain_client_factory
 from .utils.objects import OrderCancelRequest, BiStateMarketMap
 
 
-async def run() -> None:
+def parse_cli_argments() -> Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "binary_market_id",
+        help="injective chain market id",
+        default=BiStateMarketMap["default"],
+    )
+    parser.add_argument("--orderhash", help="orderhash of existing order", required=True)
+    args = parser.parse_args()
+    return args
+
+
+async def run_cancel_limit_order(namespace: Namespace) -> None:
     inj_address = environ["INJ_ADDRESS"]
     inj_private_key = environ["INJ_PRIVATE_KEY"]
     client = async_injective_chain_client_factory(fee_recipient_address=inj_address, priv_key_hex=inj_private_key)
     order_hash = "<YOUR ORDER HASH>"
     order_cancel_request = OrderCancelRequest(
-        subaccount_id=client.subaccount_id, market_id=BiStateMarketMap["default"], order_hash=order_hash
+        subaccount_id=client.subaccount_id, market_id=namespace.binary_market_id, order_hash=namespace.orderhash
     )
     sim_res = await client.batch_update_orders([], [order_cancel_request])
     print(f"sim response: \n{sim_res}")
 
 
+async def main():
+    namespace = parse_cli_argments()
+    await run_cancel_limit_order(namespace)
+
+
 if __name__ == "__main__":
-    asyncio.get_event_loop().run_until_complete(run())
+    asyncio.get_event_loop().run_until_complete(main())

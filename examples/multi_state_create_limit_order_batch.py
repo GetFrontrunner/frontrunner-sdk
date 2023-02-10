@@ -51,12 +51,12 @@ async def run_create_limit_orders(namespace: Namespace) -> None:
     order_create_requests = [
         OrderCreateRequest(
             client.subaccount_id,
-            market_id=MutiStateMarketMap[namespace.__dict__["state"][i]],
-            price=namespace.__dict__["price"][i],
-            quantity=namespace.__dict__["quantity"][i],
+            market_id=MutiStateMarketMap[namespace.state[i]],
+            price=namespace.price[i],
+            quantity=namespace.quantity[i],
             is_buy=True,
-            is_po=namespace.__dict__["is_po"][i],
-            is_reduce_only=namespace.__dict__["is_reduce_only"][i],
+            is_po=namespace.post_only[i],
+            is_reduce_only=namespace.reduce_only[i],
         )
         for i in range(len(namespace.state))
     ]
