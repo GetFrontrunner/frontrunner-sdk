@@ -75,6 +75,16 @@ class OrderCancelResponse:
     order_hash: str
 
 
+@dataclass
+class OrderInfo:
+    market_id: str
+    side: str
+    quantity: int
+    price: float
+    post_only: bool
+    reduce_only: bool
+
+
 BinarySideMap = {"buy": True, "sell": False}
 
 BiStateMarketMap = {"default": "0xb3a7e524c2ba5ec1eb44bf6780881d671992537eeab1428b8a44b205ceb3c304"}

@@ -1,6 +1,7 @@
 import os
 import sys
 from typing import Dict, Optional
+from objects import OrderInfo
 
 
 def check_env_is_set(env_name: str):
@@ -37,3 +38,15 @@ def set_env_variables(secret_obj: Dict[str, str], file_location: str):
 
 def get_env(env_name: str) -> Optional[str]:
     return os.environ.get(env_name)
+
+
+def order_info(order_info_str: str, market_map: Dict[str, str]) -> OrderInfo:
+    order_infos = order_info_str.split(",")
+    return OrderInfo(
+        market_id=market_map[order_infos[0]],
+        side=order_infos[1],
+        price=float(order_infos[2]),
+        quantity=int(order_infos[3]),
+        post_only=order_infos[4] == "true",
+        reduce_only=order_infos[5] == "false",
+    )

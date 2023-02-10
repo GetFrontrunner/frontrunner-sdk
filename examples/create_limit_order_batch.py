@@ -19,6 +19,7 @@ from argparse import Namespace
 from typing import Optional, Tuple
 from async_injective_client import async_injective_chain_client_factory
 from .utils.objects import OrderCreateRequest, BinarySideMap, BiStateMarketMap
+from .utils import order_info
 
 
 def parse_cli_argments() -> Namespace:
