@@ -6,6 +6,7 @@ from asyncio import Lock
 
 import grpc
 from google.protobuf.message import Message
+
 from pyinjective.async_client import AsyncClient
 from pyinjective.composer import Composer as ProtoMsgComposer
 from pyinjective.constant import Network, Denom
@@ -160,10 +161,16 @@ class AsyncInjectiveChainClient(InjectiveExchangeClient):
         return secret_obj["inj_private_key"]
 
     @staticmethod
-    def _to_inj_subaccount_address(wallet_address) -> str:
+    def _to_inj_subaccount_address(address: Address) -> str:
+        return address.to_acc_bech32()
+
+    def _get_address_from_wallet(self, wallet_address: str) -> Address:
         hex_bytes = bytes.fromhex(wallet_address.replace("0x", ""))
-        injective_address = Address(hex_bytes)
-        return injective_address.to_acc_bech32()
+        return Address(hex_bytes)
+
+    def set_sender_address(self, wallet_address: str):
+        self.sender_address = self._get_address_from_wallet(wallet_address)
+        self.sender_address_bech32 = self.sender_address.to_acc_bech32()
 
     def _build_batch_msg(
         self, orders_to_create: List[OrderCreateRequest], orders_to_cancel: List[OrderCancelRequest]
