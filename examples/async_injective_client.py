@@ -21,8 +21,6 @@ from generate_account import generate_mnemonic, request_test_tokens
 from .utils import set_env_variables
 from .utils.objects import BroadcastMode, CustomNetwork, OrderCreateRequest, OrderCancelRequest
 
-# from common.injective_client.src.injective_composer import InjectiveComposer
-
 
 logger = logging.getLogger(__name__)
 
@@ -139,7 +137,7 @@ class AsyncInjectiveChainClient(InjectiveExchangeClient):
 
         if not priv_key_hex and not mnemonic:
             print("generate a new account")
-            priv_key_hex = self.generate_account()
+            priv_key_hex = self._generate_account()
 
         self._priv_key: PrivateKey = (
             PrivateKey.from_hex(priv_key_hex) if priv_key_hex else PrivateKey.from_mnemonic(mnemonic)
@@ -152,7 +150,7 @@ class AsyncInjectiveChainClient(InjectiveExchangeClient):
         self.fee_recipient_address: str = fee_recipient_address if fee_recipient_address else self.sender_address_bech32
         self.num_seq_lock = Lock()
 
-    def generate_account(self):
+    def _generate_account(self):
         secret_obj = generate_mnemonic()
         set_env_variables(secret_obj, DEFAULT_FILE_LOCATION)
         os.system(f"bash -c 'cat {DEFAULT_FILE_LOCATION}'")
@@ -162,7 +160,7 @@ class AsyncInjectiveChainClient(InjectiveExchangeClient):
         return secret_obj["inj_private_key"]
 
     @staticmethod
-    def to_inj_subaccount_address(wallet_address) -> str:
+    def _to_inj_subaccount_address(wallet_address) -> str:
         hex_bytes = bytes.fromhex(wallet_address.replace("0x", ""))
         injective_address = Address(hex_bytes)
         return injective_address.to_acc_bech32()
@@ -204,10 +202,14 @@ class AsyncInjectiveChainClient(InjectiveExchangeClient):
         )
 
     async def batch_update_orders(
-        self, orders_to_create: List[OrderCreateRequest], orders_to_cancel: List[OrderCancelRequest]
+        self, orders_to_create: List[OrderCreateRequest] = [], orders_to_cancel: List[OrderCancelRequest] = []
     ):
+        if not orders_to_create and not orders_to_cancel:
+            print("no orders to create")
+            return
         msg = self._build_batch_msg(orders_to_create, orders_to_cancel)
 
+        sim_res = None
         async with self.num_seq_lock:
             retry_attempt = 1
             while retry_attempt < 3:  # Attempt 2 times
@@ -222,8 +224,8 @@ class AsyncInjectiveChainClient(InjectiveExchangeClient):
                         raise Exception(
                             str(sim_res._state.details)
                         )  # Return the message from the _InactiveRpcError Error
-                if sim_res:
-                    return ProtoMsgComposer.MsgResponses(sim_res.result.data, simulation=True)
+        if sim_res:
+            return ProtoMsgComposer.MsgResponses(sim_res.result.data, simulation=True)
 
     def _build_tx(self, msg) -> Transaction:
         # build sim tx
@@ -366,17 +368,25 @@ def async_injective_chain_client_factory(
     node: Optional[str] = None,
     insecure: bool = False,
     fee_recipient_address: Optional[str] = "",
+    priv_key_hex: Optional[str] = None,
 ):
     if lcd_endpoint and tm_endpoint and grpc_endpoint and exchange_endpoint:
         print("using custom network")
         custom_network = CustomNetwork(lcd_endpoint, tm_endpoint, grpc_endpoint, exchange_endpoint, mainnet=mainnet)
         network = custom_network.network
         return AsyncInjectiveChainClient(
-            fee_recipient_address=fee_recipient_address, override_network=network, insecure=insecure
+            fee_recipient_address=fee_recipient_address,
+            priv_key_hex=priv_key_hex,
+            override_network=network,
+            insecure=insecure,
         )
     else:
         print("using default network")
 
     return AsyncInjectiveChainClient(
-        fee_recipient_address=fee_recipient_address, mainnet=mainnet, node=node, insecure=insecure
+        fee_recipient_address=fee_recipient_address,
+        priv_key_hex=priv_key_hex,
+        mainnet=mainnet,
+        node=node,
+        insecure=insecure,
     )

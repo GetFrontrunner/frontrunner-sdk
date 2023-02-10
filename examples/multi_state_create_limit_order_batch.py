@@ -18,22 +18,53 @@ from os import environ
 from argparse import Namespace
 from typing import Optional, Tuple
 from async_injective_client import async_injective_chain_client_factory
-from .utils.objects import OrderCancelRequest
+from .utils.objects import OrderCreateRequest
 
 
 async def run() -> None:
     inj_address = environ["INJ_ADDRESS"]
     inj_private_key = environ["INJ_PRIVATE_KEY"]
-    binary_market_id = environ["BINARY_MARKET"]
-    if not binary_market_id:
+    arsenal = environ["ARSENAL"]
+    chelsea = environ["CHELSEA"]
+    draw = environ["DRAW"]
+    if not draw and not arsenal and not chelsea:
         print("can't find market id")
         return
     client = async_injective_chain_client_factory(fee_recipient_address=inj_address, priv_key_hex=inj_private_key)
-    order_hash = "<YOUR ORDER HASH>"
-    order_cancel_request = OrderCancelRequest(
-        subaccount_id=client.subaccount_id, market_id=binary_market_id, order_hash=order_hash
+
+    order_create_request_arsenal = OrderCreateRequest(
+        client.subaccount_id,
+        market_id=arsenal,
+        price=0.2,
+        quantity=20,
+        is_buy=True,
+        is_po=True,
+        is_reduce_only=False,
     )
-    sim_res = await client.batch_update_orders([], [order_cancel_request])
+
+    order_create_request_chelsea = OrderCreateRequest(
+        client.subaccount_id,
+        market_id=chelsea,
+        price=0.8,
+        quantity=31,
+        is_buy=False,
+        is_po=True,
+        is_reduce_only=False,
+    )
+
+    order_create_request_draw = OrderCreateRequest(
+        client.subaccount_id,
+        market_id=draw,
+        price=0.1,
+        quantity=31,
+        is_buy=False,
+        is_po=True,
+        is_reduce_only=False,
+    )
+
+    sim_res = await client.batch_update_orders(
+        [order_create_request_arsenal, order_create_request_chelsea, order_create_request_draw], []
+    )
     print(f"sim response: \n{sim_res}")
 
 
