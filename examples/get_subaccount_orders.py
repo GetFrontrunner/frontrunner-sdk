@@ -24,8 +24,9 @@ async def get_subaccount_orders(subaccount_idx: int) -> None:
     )
     subaccount_orders_request = SubaccountOrdersRequest(client.subaccount_id, BiStateMarketMap["default"])
     await client.get_subaccount_orders(subaccount_orders_request)
-    for idx, order in enumerate(client.orders):
-        print(f"{idx}\t{order}")
+    print(f"\n{len(client.orders)} open orders\n")
+    for order in client.orders:
+        print(f"{order}")
 
 
 async def main():
