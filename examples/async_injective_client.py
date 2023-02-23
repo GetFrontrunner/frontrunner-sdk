@@ -20,7 +20,14 @@ from pyinjective.proto.injective.exchange.v1beta1 import tx_pb2 as injective_exc
 
 from generate_account import generate_mnemonic, request_test_tokens
 from .utils import set_env_variables
-from .utils.objects import BroadcastMode, CustomNetwork, OrderCreateRequest, OrderCancelRequest
+from .utils.objects import (
+    BroadcastMode,
+    CustomNetwork,
+    OrderCreateRequest,
+    OrderCancelRequest,
+    SubaccountOrdersRequest,
+    Order,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -58,7 +65,7 @@ class InjectiveExchangeClient:
         self._insecure: bool = insecure
         self._chain_cookie_location: str = chain_cookie_location
         self._async_client: AsyncClient = AsyncClient(
-            self.network, insecure=insecure, chain_cookie_location=self._chain_cookie_location
+            self.network, insecure=self._insecure, chain_cookie_location=self._chain_cookie_location
         )
         self._max_injective_retry_attempts: int = max_injective_retry_attempts
         self.denom = self._get_default_denom()
@@ -89,7 +96,6 @@ class InjectiveExchangeClient:
         :return:
         """
         # defaults for our markets
-        # is_po = False  # https://help.bybit.com/hc/en-us/articles/360039749433-What-Is-A-Post-Only-Order-
         denom_min_price_tick_size = 10000
         denom_min_quantity_tick_size = 1
         denom_quote = 6
@@ -120,6 +126,7 @@ class AsyncInjectiveChainClient(InjectiveExchangeClient):
         node: Optional[str] = None,
         override_network: Optional[Network] = None,
         insecure: bool = False,
+        subaccount_idx: int = 0,
     ):
         """
         A wrapped Injective client for interacting with the writable Chain API: https://api.injective.exchange/#chain-api
@@ -137,7 +144,7 @@ class AsyncInjectiveChainClient(InjectiveExchangeClient):
         self.composer = ProtoMsgComposer(network=self.network.string())
 
         if not priv_key_hex and not mnemonic:
-            print("generate a new account")
+            print("Generate a new account")
             priv_key_hex = self._generate_account()
 
         self._priv_key: PrivateKey = (
@@ -147,8 +154,9 @@ class AsyncInjectiveChainClient(InjectiveExchangeClient):
         self.pub_key: PublicKey = self._priv_key.to_public_key()
         self.sender_address: Address = self.pub_key.to_address()
         self.sender_address_bech32: str = self.sender_address.to_acc_bech32()
-        self.subaccount_id: str = self.sender_address.get_subaccount_id(0)
+        self.subaccount_id: str = self.sender_address.get_subaccount_id(subaccount_idx)
         self.fee_recipient_address: str = fee_recipient_address if fee_recipient_address else self.sender_address_bech32
+        self.orders = []
         self.num_seq_lock = Lock()
 
     def _generate_account(self):
@@ -157,7 +165,7 @@ class AsyncInjectiveChainClient(InjectiveExchangeClient):
         os.system(f"bash -c 'cat {DEFAULT_FILE_LOCATION}'")
         os.system(f"bash -c 'source {DEFAULT_FILE_LOCATION}'")
         request_test_tokens(secret_obj["inj_address"])
-        print("run 'source .env' to set env variables")
+        logger.info("Run 'source .env' to set env variables")
         return secret_obj["inj_private_key"]
 
     @staticmethod
@@ -212,7 +220,7 @@ class AsyncInjectiveChainClient(InjectiveExchangeClient):
         self, orders_to_create: List[OrderCreateRequest] = [], orders_to_cancel: List[OrderCancelRequest] = []
     ):
         if not orders_to_create and not orders_to_cancel:
-            print("no orders to create")
+            logger.info("No orders to create")
             return
         msg = self._build_batch_msg(orders_to_create, orders_to_cancel)
 
@@ -233,6 +241,35 @@ class AsyncInjectiveChainClient(InjectiveExchangeClient):
                         )  # Return the message from the _InactiveRpcError Error
         if sim_res:
             return ProtoMsgComposer.MsgResponses(sim_res.result.data, simulation=True)
+
+    async def get_subaccount_orders(self, get_orders_request: SubaccountOrdersRequest):
+        orders = await self.async_client.get_derivative_subaccount_orders(
+            subaccount_id=get_orders_request.subaccount_id,
+            market_id=get_orders_request.market_id,
+            skip=get_orders_request.skip,
+            limit=get_orders_request.limit,
+        )
+        self.orders = [
+            Order(
+                order_hash=order.order_hash,
+                side=order.order_side,
+                market_id=order.market_id,
+                subaccount_id=order.subaccount_id,
+                margin=order.margin,
+                price=order.price,
+                quantity=order.quantity,
+                unfilled_quantity=order.unfilled_quantity,
+                trigger_price=order.trigger_price,
+                fee_recipient=order.fee_recipient,
+                state=order.state,
+                created_at=order.created_at,
+                updated_at=order.updated_at,
+                order_type=order.order_type,
+                is_conditional=order.is_conditional,
+                execution_type=order.execution_type,
+            )
+            for order in orders.orders
+        ]
 
     def _build_tx(self, msg) -> Transaction:
         # build sim tx
@@ -262,7 +299,7 @@ class AsyncInjectiveChainClient(InjectiveExchangeClient):
             self.sender_address = self.sender_address.init_num_seq(self.network.lcd_endpoint)
         except ValueError as e:
             if len(e.args) == 2 and e.args[1] == 404:
-                print(
+                logger.warn(
                     "Failed to initialize account {}; account may be missing INJ.".format(
                         self.pub_key.to_address().to_acc_bech32()
                     )
@@ -270,27 +307,29 @@ class AsyncInjectiveChainClient(InjectiveExchangeClient):
             else:
                 raise
 
-    async def simulate_and_send_tx(self, tx, retry_attempt):
-        # simulate tx
-        sim_tx_raw_bytes = self._build_sim_bytes(tx)
-        (sim_res, success) = await self.async_client.simulate_tx(sim_tx_raw_bytes)
-        if not success:
-            return sim_res
+    # async def simulate_and_send_tx(self, tx, retry_attempt: int):
+    #     """
+    #     :param tx:
+    #     :param retry_attempt:
+    #     """
+    #     # simulate tx
+    #     sim_tx_raw_bytes = self._build_sim_bytes(tx)
+    #     (sim_res, success) = await self.async_client.simulate_tx(sim_tx_raw_bytes)
+    #     if not success:
+    #         return sim_res
 
-        sim_res_msg = self.composer.MsgResponses(sim_res.result.data, simulation=True)
-        print("---Simulation Response---")
-        print(sim_res_msg)
+    #     sim_res_msg = self.composer.MsgResponses(sim_res.result.data, simulation=True)
+    #     logger.info(f"---Simulation Response---\n{sim_res_msg}")
 
-        gas_limit = sim_res.gas_info.gas_used + DEFAULT_COMPUTATION_GAS  # add 20k for gas, fee computation
-        fee = self._build_fee(gas_limit)
-        tx = await self._update_tx(tx, gas_limit, fee)
-        tx_raw_bytes = self._build_sim_bytes(tx)
+    #     gas_limit = sim_res.gas_info.gas_used + DEFAULT_COMPUTATION_GAS  # add 20k for gas, fee computation
+    #     fee = self._build_fee(gas_limit)
+    #     tx = await self._update_tx(tx, gas_limit, fee)
+    #     tx_raw_bytes = self._build_sim_bytes(tx)
 
-        # broadcast tx: send_tx_async_mode, send_tx_sync_mode, send_tx_block_mode
-        res = await self.async_client.send_tx_sync_mode(tx_raw_bytes)
-        print("---Transaction Response---")
-        print(res)
-        return None
+    #     # broadcast tx: send_tx_async_mode, send_tx_sync_mode, send_tx_block_mode
+    #     res = await self.async_client.send_tx_sync_mode(tx_raw_bytes)
+    #     logger.info(f"---Transaction Response---\n{res}")
+    #     return None
 
     def _build_fee(self, gas_limit) -> List[cosmos_base_coin_pb.Coin]:
         gas_fee = "{:.18f}".format((DEFAULT_GAS_PRICE * gas_limit) / pow(10, 18)).rstrip("0")
@@ -323,13 +362,13 @@ class AsyncInjectiveChainClient(InjectiveExchangeClient):
             # simulate tx
             (sim_response_or_error, success) = await self.async_client.simulate_tx(sim_tx_raw_bytes)
             if not success:
-                logger.debug("error simulating: {}".format(sim_response_or_error))  # caller should log
+                logger.debug("Error simulating: {}".format(sim_response_or_error))  # caller should log
                 if "account sequence mismatch" in sim_response_or_error.details():
                     self._block_init_num_sequence()
                     return await self._send_message(msg, mode=mode, retry_attempt=retry_attempt + 1)
                 else:
                     return None, sim_response_or_error
-            logger.debug(f"simulate txn response message: {sim_response_or_error}")
+            logger.debug(f"Simulate txn response message: {sim_response_or_error}")
 
             # build tx, add gas for fee computation
             gas_limit = sim_response_or_error.gas_info.gas_used + DEFAULT_COMPUTATION_GAS
@@ -376,9 +415,10 @@ def async_injective_chain_client_factory(
     insecure: bool = False,
     fee_recipient_address: Optional[str] = "",
     priv_key_hex: Optional[str] = None,
+    subaccount_idx: int = 0,
 ):
     if lcd_endpoint and tm_endpoint and grpc_endpoint and exchange_endpoint:
-        print("using custom network")
+        logger.info("Using custom network")
         custom_network = CustomNetwork(lcd_endpoint, tm_endpoint, grpc_endpoint, exchange_endpoint, mainnet=mainnet)
         network = custom_network.network
         return AsyncInjectiveChainClient(
@@ -386,9 +426,10 @@ def async_injective_chain_client_factory(
             priv_key_hex=priv_key_hex,
             override_network=network,
             insecure=insecure,
+            subaccount_idx=subaccount_idx,
         )
     else:
-        print("using default network")
+        logger.info("Using default network")
 
     return AsyncInjectiveChainClient(
         fee_recipient_address=fee_recipient_address,
@@ -396,4 +437,5 @@ def async_injective_chain_client_factory(
         mainnet=mainnet,
         node=node,
         insecure=insecure,
+        subaccount_idx=subaccount_idx,
     )

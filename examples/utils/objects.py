@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Optional
 from dataclasses import dataclass
 from pyinjective.constant import Network
 
@@ -83,6 +84,34 @@ class OrderInfo:
     price: float
     post_only: bool
     reduce_only: bool
+
+
+@dataclass
+class SubaccountOrdersRequest:
+    subaccount_id: str
+    market_id: str
+    skip: Optional[int] = 0
+    limit: Optional[int] = 100
+
+
+@dataclass
+class Order:
+    order_hash: str
+    side: str
+    market_id: str
+    subaccount_id: str
+    margin: str
+    price: str
+    quantity: str
+    unfilled_quantity: str
+    trigger_price: str
+    fee_recipient: str
+    state: str
+    created_at: int
+    updated_at: int
+    order_type: str
+    is_conditional: bool
+    execution_type: str
 
 
 BinarySideMap = {"buy": True, "sell": False}

@@ -42,7 +42,7 @@ async def run_cancel_limit_order(namespace: Namespace) -> None:
         subaccount_id=client.subaccount_id, market_id=namespace.binary_market_id, order_hash=namespace.orderhash
     )
     sim_res = await client.batch_update_orders([], [order_cancel_request])
-    print(f"sim response: \n{sim_res}")
+    print(f"Sim response: \n{sim_res}")
 
 
 async def main():

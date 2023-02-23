@@ -23,11 +23,6 @@ from .utils.objects import OrderCreateRequest, BinarySideMap, BiStateMarketMap
 
 def parse_cli_argments() -> Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "binary_market_id",
-        help="injective chain market id",
-        default=BiStateMarketMap["default"],
-    )
     parser.add_argument("side", help="order side: buy or sell", default="buy")
     parser.add_argument("price", type=float, help="order price, float", default=0.2)
     parser.add_argument("quantity", type=int, help="order quantity, int", default=20)
@@ -45,7 +40,7 @@ async def run_create_limit_order_single(
     client = async_injective_chain_client_factory(fee_recipient_address=inj_address, priv_key_hex=inj_private_key)
     order_create_request = OrderCreateRequest(
         client.subaccount_id,
-        market_id=market_id,
+        market_id=BiStateMarketMap["default"],
         price=price,
         quantity=quantity,
         is_buy=BinarySideMap[side],
@@ -54,7 +49,7 @@ async def run_create_limit_order_single(
     )
 
     sim_res = await client.batch_update_orders(orders_to_create=[order_create_request], orders_to_cancel=[])
-    print(f"sim response: \n{sim_res}")
+    print(f"Sim response: \n{sim_res}")
 
 
 async def main():

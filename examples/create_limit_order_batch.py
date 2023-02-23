@@ -24,12 +24,6 @@ from .utils import order_info
 
 def parse_cli_argments() -> Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--binary_market_id",
-        nargs="*",
-        help="injective chain market id",
-        default=[BiStateMarketMap["default"]],
-    )
     parser.add_argument("--side", nargs="*", help="order side: buy or sell", default=["buy"])
     parser.add_argument("--price", nargs="*", type=float, help="order price, float", default=[0.2])
     parser.add_argument("--quantity", nargs="*", type=int, help="order quantity, int", default=[20])
@@ -52,18 +46,18 @@ async def run_create_limit_orders(namespace: Namespace) -> None:
     order_create_requests = [
         OrderCreateRequest(
             subaccount_id=client.subaccount_id,
-            market_id=namespace.binary_market_id[i],
+            market_id=BiStateMarketMap["default"],
             price=namespace.price[i],
             quantity=namespace.quantity[i],
             is_buy=BinarySideMap[namespace.side[i]],
             is_po=namespace.post_only[i],
             is_reduce_only=namespace.reduce_only[i],
         )
-        for i in range(len(namespace.binary_market_id))
+        for i in range(len(namespace.side))
     ]
 
     sim_res = await client.batch_update_orders(orders_to_create=order_create_requests, orders_to_cancel=[])
-    print(f"sim response: \n{sim_res}")
+    print(f"Sim response: \n{sim_res}")
 
 
 async def main():

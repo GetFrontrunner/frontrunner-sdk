@@ -37,7 +37,7 @@ async def run_cancel_limit_order_batch(namespace: Namespace) -> None:
         for i in range(len(namespace.state))
     ]
     sim_res = await client.batch_update_orders(orders_to_create=[], orders_to_cancel=orders_to_cancel)
-    print(f"sim response: \n{sim_res}")
+    print(f"Sim response:\n{sim_res}")
 
 
 async def main():
