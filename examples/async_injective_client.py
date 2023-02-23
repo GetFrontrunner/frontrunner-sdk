@@ -26,7 +26,10 @@ from .utils.objects import (
     OrderCreateRequest,
     OrderCancelRequest,
     SubaccountOrdersRequest,
+    SubaccountTradesRequest,
     Order,
+    Trade,
+    PositionDelta,
 )
 
 
@@ -270,6 +273,38 @@ class AsyncInjectiveChainClient(InjectiveExchangeClient):
             )
             for order in orders.orders
         ]
+
+    async def get_subaccount_trades(self, get_trades_request: SubaccountTradesRequest) -> List[Trade]:
+        trades = await self.async_client.get_derivative_subaccount_trades(
+            subaccount_id=get_trades_request.subaccount_id,
+            market_id=get_trades_request.market_id,
+            execution_type=get_trades_request.execution_type,
+            direction=get_trades_request.direction,
+            skip=get_trades_request.skip,
+            limit=get_trades_request.limit,
+        )
+        trades = [
+            Trade(
+                order_hash=trade.order_hash,
+                subaccount_id=trade.subaccount_id,
+                market_id=trade.market_id,
+                trade_execution_type=trade.trade_execution_type,
+                position_delta=PositionDelta(
+                    trade_direction=trade.position_delta,
+                    execution_price=trade.position_delta.execution_price,
+                    execution_quantity=trade.position_delta.execution_quantity,
+                    execution_margin=trade.position_delta.execution_margin,
+                ),
+                payout=trade.payout,
+                fee=trade.fee,
+                executed_at=trade.executed_at,
+                fee_recipient=trade.fee_recipient,
+                trade_id=trade.trade_id,
+                execution_side=trade.execution_side,
+            )
+            for trade in trades.trades
+        ]
+        return trades
 
     def _build_tx(self, msg) -> Transaction:
         # build sim tx

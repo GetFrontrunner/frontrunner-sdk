@@ -95,6 +95,16 @@ class SubaccountOrdersRequest:
 
 
 @dataclass
+class SubaccountTradesRequest:
+    subaccount_id: str
+    market_id: str
+    execution_type: str
+    direction: str
+    skip: Optional[int] = 0
+    limit: Optional[int] = 100
+
+
+@dataclass
 class Order:
     order_hash: str
     side: str
@@ -112,6 +122,29 @@ class Order:
     order_type: str
     is_conditional: bool
     execution_type: str
+
+
+@dataclass
+class PositionDelta:
+    trade_direction: str
+    execution_price: str
+    execution_quantity: str
+    execution_margin: str
+
+
+@dataclass
+class Trade:
+    order_hash: str
+    subaccount_id: str
+    market_id: str
+    trade_execution_type: str
+    position_delta: PositionDelta
+    payout: int
+    fee: str
+    executed_at: int
+    fee_recipient: str
+    trade_id: str
+    execution_side: str
 
 
 BinarySideMap = {"buy": True, "sell": False}
