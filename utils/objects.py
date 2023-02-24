@@ -12,33 +12,29 @@ class BroadcastMode(Enum):
 
 
 @dataclass
-class CustomNetwork:
-    def __init__(
-        self,
+class CustomNetwork(Network):
+    @classmethod
+    def network(
+        cls,
         lcd_endpoint: str,
-        tm_endpoint: str,
+        tm_websocket_endpoint: str,
         grpc_endpoint: str,
-        exchange_endpoint: str,
-        mainnet=False,
-        mainnet_node="k8s",
+        grpc_exchange_endpoint: str,
+        grpc_explorer_endpoint: str,
+        chain_id: str,
+        fee_denom: str,
+        env: str,
     ):
-        self.lcd_endpoint = lcd_endpoint
-        self.source_network = Network.mainnet(mainnet_node) if mainnet else Network.testnet()
-        self._network = Network(
+        return cls(
             lcd_endpoint=lcd_endpoint,
-            tm_websocket_endpoint=f"ws://{tm_endpoint}/websocket",
+            tm_websocket_endpoint=tm_websocket_endpoint,
             grpc_endpoint=grpc_endpoint,
-            grpc_exchange_endpoint=exchange_endpoint,
-            grpc_explorer_endpoint=self.source_network.grpc_explorer_endpoint,
-            # TODO: use Injective's API until we can run our own explorer container
-            chain_id=self.source_network.chain_id,
-            fee_denom=self.source_network.fee_denom,
-            env=self.source_network.env,
+            grpc_exchange_endpoint=grpc_exchange_endpoint,
+            grpc_explorer_endpoint=grpc_explorer_endpoint,
+            chain_id=chain_id,
+            fee_denom=fee_denom,
+            env=env,
         )
-
-    @property
-    def network(self) -> Network:
-        return self._network
 
 
 @dataclass

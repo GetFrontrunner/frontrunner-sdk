@@ -5,7 +5,7 @@ import argparse
 from os import environ
 from argparse import Namespace
 from typing import Optional, Tuple
-from chain.async_injective_client import async_injective_chain_client_factory
+from chain.injective_client import async_injective_chain_client_factory
 from utils.objects import SubaccountTradesRequest, BinarySideMap, BiStateMarketMap
 
 
