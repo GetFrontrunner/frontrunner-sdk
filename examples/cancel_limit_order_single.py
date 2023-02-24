@@ -17,8 +17,8 @@ import argparse
 from os import environ
 from argparse import Namespace
 from typing import Optional, Tuple
-from async_injective_client import async_injective_chain_client_factory
-from .utils.objects import OrderCancelRequest, BiStateMarketMap
+from chain.async_injective_client import async_injective_chain_client_factory
+from utils.objects import OrderCancelRequest, BiStateMarketMap
 
 
 def parse_cli_argments() -> Namespace:
