@@ -48,8 +48,8 @@ class OrderCreateRequest:
     price: float
     quantity: int
     is_buy: bool
-    is_po: bool
     is_reduce_only: bool
+    is_po: bool = False
 
 
 @dataclass

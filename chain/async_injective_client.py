@@ -19,8 +19,8 @@ from pyinjective.proto.cosmos.base.abci.v1beta1.abci_pb2 import TxResponse
 from pyinjective.proto.injective.exchange.v1beta1 import tx_pb2 as injective_exchange_tx_pb
 
 from generate_account import generate_mnemonic, request_test_tokens
-from .utils import set_env_variables
-from .utils.objects import (
+from utils import set_env_variables
+from utils.objects import (
     BroadcastMode,
     CustomNetwork,
     OrderCreateRequest,

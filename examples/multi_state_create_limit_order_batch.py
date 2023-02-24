@@ -31,7 +31,6 @@ def parse_cli_argments() -> Namespace:
     )
     parser.add_argument("--price", nargs="+", type=float, help="order price, float", default=[0.2])
     parser.add_argument("--quantity", nargs="*", type=int, help="order quantity, int", default=[20])
-    parser.add_argument("--post_only", nargs="*", type=bool, help="post only order, bool", default=[True])
     parser.add_argument("--reduce_only", nargs="*", type=bool, help="reduce only order, bool", default=[False])
     args = parser.parse_args()
 
@@ -55,7 +54,6 @@ async def run_create_limit_orders(namespace: Namespace) -> None:
             price=namespace.price[i],
             quantity=namespace.quantity[i],
             is_buy=True,
-            is_po=namespace.post_only[i],
             is_reduce_only=namespace.reduce_only[i],
         )
         for i in range(len(namespace.state))

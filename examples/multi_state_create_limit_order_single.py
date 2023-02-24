@@ -18,7 +18,7 @@ def parse_cli_argments() -> Namespace:
     )
     parser.add_argument("price", type=float, help="order price, float", default=0.2)
     parser.add_argument("quantity", type=int, help="order quantity, int", default=20)
-    parser.add_argument("post_only", type=bool, help="post only order, bool", default=True)
+    # parser.add_argument("post_only", type=bool, help="post only order, bool", default=True)
     parser.add_argument("reduce_only", type=bool, help="reduce only order, bool", default=False)
     args = parser.parse_args()
 
@@ -29,9 +29,7 @@ def parse_cli_argments() -> Namespace:
         raise Exception("args length are not same")
 
 
-async def run_create_limit_order_single(
-    state: str, price: float, quantity: int, is_po: bool, is_reduce_only: bool
-) -> None:
+async def run_create_limit_order_single(state: str, price: float, quantity: int, is_reduce_only: bool) -> None:
     inj_address = environ["INJ_ADDRESS"]
     inj_private_key = environ["INJ_PRIVATE_KEY"]
     client = async_injective_chain_client_factory(fee_recipient_address=inj_address, priv_key_hex=inj_private_key)
@@ -42,7 +40,6 @@ async def run_create_limit_order_single(
         price=price,
         quantity=quantity,
         is_buy=True,
-        is_po=is_po,
         is_reduce_only=is_reduce_only,
     )
 
@@ -56,7 +53,6 @@ async def main():
         namespace.state,
         namespace.price,
         namespace.quantity,
-        namespace.post_only,
         namespace.reduce_only,
     )
 
