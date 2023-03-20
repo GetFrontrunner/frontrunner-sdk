@@ -1,0 +1,11 @@
+[GLOBAL]
+pants_version = "2.15.0"
+
+backend_packages = [
+  "pants.backend.python",
+]
+
+pants_ignore.add = [
+  # ignore existing code
+  "chain", "data", "examples", "strategy", "utils",
+]

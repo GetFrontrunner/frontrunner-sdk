@@ -3,3 +3,8 @@
 __pycache__
 **/__pycache__
 test.py
+
+# pants
+/.pants.*
+/dist/
+/.pids
