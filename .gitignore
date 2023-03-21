@@ -2,5 +2,10 @@
 .chain_cookie
 __pycache__
 **/__pycache__
-test.py
 **/examples.env
+test.py
+
+# pants
+/.pants.*
+/dist/
+/.pids
