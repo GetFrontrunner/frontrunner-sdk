@@ -18,13 +18,18 @@ from os import environ
 from argparse import Namespace
 from typing import Optional, Tuple
 from chain.injective_client import async_injective_chain_client_factory
-from utils.objects import OrderCreateRequest, BinarySideMap, BiStateMarketMap
+from utils.objects import OrderCreateRequest, MutiStateMarketMap
 
 
 def parse_cli_argments() -> Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--side", nargs="*", help="order side: buy or sell", default=["buy"])
-    parser.add_argument("--price", nargs="*", type=float, help="order price, float", default=[0.2])
+    parser.add_argument(
+        "--state",
+        nargs="+",
+        help="final state in arsenal vs. chelsea game, allowed values: arsenal, chelsea, draw",
+        default=[MutiStateMarketMap["draw"]],
+    )
+    parser.add_argument("--price", nargs="+", type=float, help="order price, float", default=[0.2])
     parser.add_argument("--quantity", nargs="*", type=int, help="order quantity, int", default=[20])
     parser.add_argument("--reduce_only", nargs="*", type=bool, help="reduce only order, bool", default=[False])
     args = parser.parse_args()
@@ -39,27 +44,28 @@ def parse_cli_argments() -> Namespace:
 async def run_create_limit_orders(namespace: Namespace) -> None:
     inj_address = environ["INJ_ADDRESS"]
     inj_private_key = environ["INJ_PRIVATE_KEY"]
+
     client = async_injective_chain_client_factory(fee_recipient_address=inj_address, priv_key_hex=inj_private_key)
 
     order_create_requests = [
         OrderCreateRequest(
-            subaccount_id=client.subaccount_id,
-            market_id=BiStateMarketMap["default"],
+            client.subaccount_id,
+            market_id=MutiStateMarketMap[namespace.state[i]],
             price=namespace.price[i],
             quantity=namespace.quantity[i],
-            is_buy=BinarySideMap[namespace.side[i]],
+            is_buy=True,
             is_reduce_only=namespace.reduce_only[i],
         )
-        for i in range(len(namespace.side))
+        for i in range(len(namespace.state))
     ]
 
     sim_res = await client.batch_update_orders(orders_to_create=order_create_requests, orders_to_cancel=[])
-    print(f"Sim response: \n{sim_res}")
+    print(f"sim response: \n{sim_res}")
 
 
 async def main():
     namespace = parse_cli_argments()
-    await run_create_limit_orders(namespace)
+    await run_create_limit_orders(namespace=namespace)
 
 
 if __name__ == "__main__":
