@@ -3,10 +3,23 @@ run-name: Default
 on: [push]
 
 jobs:
-  Placeholder:
+  Unit-Test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: List files
-        run: ls ${{ github.workspace }}
+      - name: Setup Pants
+        uses: pantsbuild/actions/init-pants@main
+        with:
+          named-caches-hash: ${{ hashFiles('**/*.lockfile') }}
+      - name: Run Unit Tests
+        run: |
+          pants test ::
+      - name: Report Unit Tests
+        uses: mikepenz/action-junit-report@v3
+        if: success() || failure()
+        with:
+          report_paths: "dist/**/*.tests.xml"
