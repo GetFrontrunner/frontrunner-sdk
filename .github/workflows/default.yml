@@ -24,7 +24,8 @@ jobs:
         with:
           report_paths: "dist/**/*.tests.xml"
       - name: Report Coverage
-        uses: irongut/CodeCoverageSummary@v1.3.0
+        uses: orgoro/coverage@v3
         if: success() || failure()
         with:
-          filename: "dist/coverage/**/*.xml"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          coverageFile: "dist/coverage/**/*.xml"
