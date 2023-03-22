@@ -10,3 +10,21 @@ jobs:
         uses: actions/checkout@v3
       - name: List files
         run: ls ${{ github.workspace }}
+
+  Unit-Test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Pants
+        uses: pantsbuild/actions/init-pants@main
+        with:
+          named-caches-hash: ${{ hashFiles('**/*.lockfile') }}
+      - name: Run Unit Tests
+        run: |
+          pants test ::
+      - name: Report Unit Tests
+        uses: mikepenz/action-junit-report@v3
+        if: success() || failure()
+        with:
+          report_paths: "dist/**/*.tests.xml"

@@ -5,7 +5,25 @@ backend_packages = [
   "pants.backend.python",
 ]
 
-pants_ignore.add = [
+pants_ignore = [
+  # default
+  ".*/", "/dist/", "__pycache__",
+
   # ignore existing code
   "chain", "data", "examples", "strategy", "utils",
+]
+
+[test]
+report = true
+
+[pytest]
+version = "pytest~=7.2.2"
+lockfile = "pytest.lockfile"
+
+xdist_enabled = true
+
+extra_requirements = [
+  "pytest-asyncio",
+  "pytest-cov",
+  "pytest-xdist",
 ]
