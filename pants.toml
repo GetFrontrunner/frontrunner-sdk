@@ -15,6 +15,7 @@ pants_ignore = [
 
 [test]
 report = true
+use_coverage = true
 
 [pytest]
 version = "pytest~=7.2.2"
@@ -27,3 +28,6 @@ extra_requirements = [
   "pytest-cov",
   "pytest-xdist",
 ]
+
+[coverage-py]
+report = "xml"

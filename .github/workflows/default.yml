@@ -23,3 +23,7 @@ jobs:
         if: success() || failure()
         with:
           report_paths: "dist/**/*.tests.xml"
+      - name: Report Coverage
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: "dist/coverage/**/*.xml"
