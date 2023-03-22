@@ -1,6 +1,6 @@
 name: Build
 run-name: Default
-on: [push]
+on: [push, pull_request]
 
 jobs:
   Unit-Test:
