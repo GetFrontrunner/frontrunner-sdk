@@ -3,6 +3,11 @@ pants_version = "2.15.0"
 
 backend_packages = [
   "pants.backend.python",
+  "pants.backend.python.lint.black",
+  "pants.backend.python.lint.docformatter",  
+  "pants.backend.python.lint.flake8",
+  "pants.backend.python.lint.isort",
+  "pants.backend.python.typecheck.mypy",
 ]
 
 pants_ignore = [
@@ -15,6 +20,10 @@ pants_ignore = [
 
 [test]
 report = true
+
+[mypy]
+version = "mypy~=1.1.1"
+lockfile = "mypy.lockfile"
 
 [pytest]
 version = "pytest~=7.2.2"
