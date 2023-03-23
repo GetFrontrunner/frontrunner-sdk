@@ -1,20 +1,18 @@
 from frontrunner_sdk.commands.injective import CreateWalletOperation  # NOQA
 from frontrunner_sdk.commands.injective import CreateWalletRequest  # NOQA
-from frontrunner_sdk.commands.injective import CreateWalletResponse  # NOQA
+from frontrunner_sdk.commands.injective import CreateWalletResponse
+from frontrunner_sdk.facades.base import FrontrunnerFacadeMixin  # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.sync import SyncMixin
 
 
-class InjectiveAsync:
+class InjectiveAsync(FrontrunnerFacadeMixin):
 
   def __init__(self, deps: FrontrunnerIoC):
     self.deps = deps
 
   async def create_wallet(self) -> CreateWalletResponse:
-    req = CreateWalletRequest()
-    cmd = CreateWalletOperation(req)
-    cmd.validate(self.deps)
-    return await cmd.execute(self.deps)
+    return await self._run_operation(CreateWalletOperation, self.deps, CreateWalletRequest())
 
 
 class Injective(SyncMixin):
