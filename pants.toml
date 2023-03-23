@@ -21,6 +21,7 @@ pants_ignore = [
 
 [test]
 report = true
+use_coverage = true
 
 [flake8]
 version = "flake8~=5.0.4"
@@ -47,6 +48,9 @@ extra_requirements = [
   "pytest-cov",
   "pytest-xdist",
 ]
+
+[coverage-py]
+report = "xml"
 
 [anonymous-telemetry]
 enabled = false
