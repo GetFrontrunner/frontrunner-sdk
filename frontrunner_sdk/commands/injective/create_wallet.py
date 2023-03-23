@@ -20,6 +20,10 @@ class CreateWalletOperation(FrontrunnerOperation[CreateWalletRequest, CreateWall
   def __init__(self, request: CreateWalletRequest):
     super().__init__(request)
 
+  def validate(self, deps: FrontrunnerIoC) -> None:
+    # TODO
+    pass
+
   @log_operation(__name__)
   async def execute(self, deps: FrontrunnerIoC) -> CreateWalletResponse:
     # TODO

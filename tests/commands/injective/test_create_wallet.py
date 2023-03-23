@@ -14,6 +14,11 @@ class TestCreateWalletOperation(IsolatedAsyncioTestCase):
   def setUp(self) -> None:
     self.deps = TestIoC()
 
+  def test_validate_pass(self):
+    req = CreateWalletRequest()
+    cmd = CreateWalletOperation(req)
+    cmd.validate(self.deps)
+
   async def test_create_wallet(self):
     req = CreateWalletRequest()
     cmd = CreateWalletOperation(req)

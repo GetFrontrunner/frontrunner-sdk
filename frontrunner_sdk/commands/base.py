@@ -15,5 +15,9 @@ class FrontrunnerOperation(Generic[Request, Response], ABC):
     self.request = request
 
   @abstractmethod
+  def validate(self, deps: FrontrunnerIoC) -> None:
+    pass
+
+  @abstractmethod
   async def execute(self, deps: FrontrunnerIoC) -> Response:
     pass

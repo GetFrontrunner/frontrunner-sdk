@@ -13,6 +13,9 @@ class MockOperation(FrontrunnerOperation[str, str]):
   def __init__(self, request: str):
     self.request = request
 
+  def validate(self, deps: FrontrunnerIoC) -> None:
+    pass
+
   @log_operation(__name__)
   async def execute(self, deps: FrontrunnerIoC) -> str:
     await asyncio.sleep(1)
