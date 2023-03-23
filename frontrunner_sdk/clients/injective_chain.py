@@ -1,0 +1,2 @@
+class InjectiveChain:
+  pass
