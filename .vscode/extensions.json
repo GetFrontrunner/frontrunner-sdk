@@ -4,6 +4,8 @@
     "tamasfe.even-better-toml",
     "ms-python.isort",
     "ms-python.black-formatter",
-    "ms-python.flake8"
+    "ms-python.flake8",
+    "davidanson.vscode-markdownlint",
+    "yzhang.markdown-all-in-one"
   ]
 }
