@@ -1,8 +1,10 @@
 {
   "recommendations": [
-    "ms-python.python",
     "tamasfe.even-better-toml",
+    "ms-python.python",
     "ms-python.isort",
-    "ms-python.flake8"
+    "ms-python.flake8",
+    "davidanson.vscode-markdownlint",
+    "yzhang.markdown-all-in-one"
   ]
 }
