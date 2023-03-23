@@ -1,0 +1,2 @@
+class FrontrunnerError(Exception):
+  pass
