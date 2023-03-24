@@ -1,4 +1,5 @@
-from unittest import IsolatedAsyncioTestCase, skip
+from unittest import IsolatedAsyncioTestCase
+from unittest import skip
 from unittest.mock import MagicMock
 
 from frontrunner_sdk.commands.injective.fund_wallet_from_faucet import FundWalletFromFaucetOperation  # NOQA
