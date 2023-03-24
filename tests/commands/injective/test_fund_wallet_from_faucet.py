@@ -1,13 +1,12 @@
+from unittest import IsolatedAsyncioTestCase, skip
 from unittest.mock import MagicMock
-
-from aiohttp.test_utils import AioHTTPTestCase
 
 from frontrunner_sdk.commands.injective.fund_wallet_from_faucet import FundWalletFromFaucetOperation  # NOQA
 from frontrunner_sdk.commands.injective.fund_wallet_from_faucet import FundWalletFromFaucetRequest  # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
 
 
-class TestFundWalletFromFaucetOperation(AioHTTPTestCase):
+class TestFundWalletFromFaucetOperation(IsolatedAsyncioTestCase):
 
   def setUp(self) -> None:
     self.deps = MagicMock(spec=FrontrunnerIoC)
@@ -17,6 +16,7 @@ class TestFundWalletFromFaucetOperation(AioHTTPTestCase):
     cmd = FundWalletFromFaucetOperation(req)
     cmd.validate(self.deps)
 
+  @skip("no mock for real request yet")
   async def test_fund_wallet_from_faucet(self):
     req = FundWalletFromFaucetRequest(injective_address="hello")
     cmd = FundWalletFromFaucetOperation(req)
