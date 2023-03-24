@@ -11,3 +11,8 @@ dedent_closing_brackets = true
 continuation_indent_width = 2
 
 split_before_dict_set_generator = true
+
+[[tool.mypy.overrides]]
+# injective-py doesn't export usable type definitions, so mypy barfs on check
+module = ["pyinjective"]
+ignore_missing_imports = true

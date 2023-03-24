@@ -37,3 +37,7 @@ class ChainedFrontrunnerConfig(FrontrunnerConfig):
   @property
   def injective_rpc_endpoint(self) -> Optional[str]:
     return self._find_next(lambda config: config.injective_rpc_endpoint)
+
+  @property
+  def injective_faucet_base_url(self) -> Optional[str]:
+    return self._find_next(lambda config: config.injective_faucet_base_url)

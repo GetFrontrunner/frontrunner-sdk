@@ -10,5 +10,6 @@ DEFAULT_FRONTRUNNER_CONFIG: FrontrunnerConfig = ChainedFrontrunnerConfig([
     injective_grpc_endpoint="injective-node-v2-staging.grpc.getfrontrunner.com",
     injective_lcd_endpoint="injective-node-v2-staging.lcd.getfrontrunner.com",
     injective_rpc_endpoint="injective-node-v2-staging.tm.getfrontrunner.com",
+    injective_faucet_base_url="https://knroo5qf2e.execute-api.us-east-2.amazonaws.com/default/TestnetFaucetAPI",
   ),
 ])

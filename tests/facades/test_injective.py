@@ -11,6 +11,6 @@ class TestInjectiveAsync(IsolatedAsyncioTestCase):
     self.deps = MagicMock(spec=FrontrunnerIoC)
     self.injective = InjectiveAsync(self.deps)
 
-  async def test_create_wallet(self):
-    response = await self.injective.create_wallet()
+  async def test_fund_wallet_from_faucet(self):
+    response = await self.injective.fund_wallet_from_faucet(injective_address="hello")
     self.assertIsNotNone(response)
