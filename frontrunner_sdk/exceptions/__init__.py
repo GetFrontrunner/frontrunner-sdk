@@ -17,9 +17,12 @@ class FrontrunnerException(Exception):
     self.detail = FrontrunnerExceptionDetail(reason=reason, subjects=kwargs)
 
   def __str__(self) -> str:
-    reason = self.detail.reason
-    subjects = " ".join([f"{key}={repr(subject)}" for key, subject in self.detail.subjects.items()])
-    return f"{reason} {subjects}"
+    parts = [
+      self.detail.reason,
+      *[f"{key}={repr(subject)}" for key, subject in sorted(self.detail.subjects.items(), key=lambda item: item[0])],
+    ]
+
+    return " ".join(parts)
 
 
 class FrontrunnerConfigurationException(FrontrunnerException):
