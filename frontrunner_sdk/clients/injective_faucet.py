@@ -46,7 +46,7 @@ class InjectiveFaucet:
               address=address,
             )
 
-          logger.debug("Called Injective faucet yielding message=%s", body["message"])
+          logger.debug("Received response from Injective faucet yielding message=%s", body["message"])
 
           return body
 
