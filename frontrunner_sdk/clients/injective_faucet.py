@@ -8,6 +8,7 @@ from frontrunner_sdk.exceptions import FrontrunnerConfigurationException
 from frontrunner_sdk.exceptions import FrontrunnerException
 from frontrunner_sdk.exceptions import FrontrunnerInjectiveException
 from frontrunner_sdk.exceptions import FrontrunnerUnserviceableException
+from frontrunner_sdk.logging.log_external_exceptions import log_external_exceptions
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +21,7 @@ class InjectiveFaucet:
 
     self.base_url = base_url
 
+  @log_external_exceptions(__name__)
   async def fund_wallet(self, address: str) -> dict:
     async with aiohttp.ClientSession() as session:
       try:

@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 
 from frontrunner_sdk.commands.base import FrontrunnerOperation
 from frontrunner_sdk.ioc import FrontrunnerIoC
-from frontrunner_sdk.logging import log_operation
+from frontrunner_sdk.logging.log_operation import log_operation
 
 
 class MockOperation(FrontrunnerOperation[str, str]):
