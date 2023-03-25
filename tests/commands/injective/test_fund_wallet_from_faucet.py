@@ -13,7 +13,7 @@ class TestFundWalletFromFaucetOperation(IsolatedAsyncioTestCase):
   def setUp(self) -> None:
     self.deps = MagicMock(spec=FrontrunnerIoC)
 
-  async def test_validate_pass(self):
+  def test_validate_pass(self):
     req = FundWalletFromFaucetRequest(injective_address="<fake>")
     cmd = FundWalletFromFaucetOperation(req)
     cmd.validate(self.deps)
