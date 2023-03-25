@@ -30,6 +30,7 @@ class TestInjectiveFaucet(AioHTTPTestCase):
     return handle
 
   async def get_application(self):
+    # TODO this is an absolutely horrible way to configure tests; figure out something better
     app = web.Application()
     app.router.add_post("/", self.post_fund_wallet())
 
