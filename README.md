@@ -19,8 +19,10 @@ Install [`brew`][brew]. This will be used to install other required tooling.
 
 [brew]: https://brew.sh/
 
-Install [Visual Studio Code]. This repository has configuration for vscode to
-make the development experience uniform and smooth for everyone.
+Install [Visual Studio Code][vscode]. This repository has configuration for
+vscode to make the development experience uniform and smooth for everyone.
+
+[vscode]: https://code.visualstudio.com/
 
 ```sh
 brew install --cask visual-studio-code
