@@ -1,6 +1,6 @@
 from frontrunner_sdk.commands.injective.fund_wallet_from_faucet import FundWalletFromFaucetOperation  # NOQA
 from frontrunner_sdk.commands.injective.fund_wallet_from_faucet import FundWalletFromFaucetRequest  # NOQA
-from frontrunner_sdk.commands.injective.fund_wallet_from_faucet import FundWalletFromFaucetResponse
+from frontrunner_sdk.commands.injective.fund_wallet_from_faucet import FundWalletFromFaucetResponse  # NOQA
 from frontrunner_sdk.facades.base import FrontrunnerFacadeMixin  # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.sync import SyncMixin

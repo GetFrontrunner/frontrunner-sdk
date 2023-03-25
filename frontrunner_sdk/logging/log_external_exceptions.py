@@ -1,6 +1,7 @@
 import functools
 import logging
-from typing import Any, Awaitable
+from typing import Any
+from typing import Awaitable
 from typing import Callable
 from typing import TypeVar
 

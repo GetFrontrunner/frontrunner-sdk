@@ -8,7 +8,7 @@ from frontrunner_sdk.exceptions import FrontrunnerConfigurationException
 from frontrunner_sdk.exceptions import FrontrunnerException
 from frontrunner_sdk.exceptions import FrontrunnerInjectiveException
 from frontrunner_sdk.exceptions import FrontrunnerUnserviceableException
-from frontrunner_sdk.logging.log_external_exceptions import log_external_exceptions
+from frontrunner_sdk.logging.log_external_exceptions import log_external_exceptions  # NOQA
 
 logger = logging.getLogger(__name__)
 
