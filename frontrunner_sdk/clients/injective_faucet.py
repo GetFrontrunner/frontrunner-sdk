@@ -25,6 +25,8 @@ class InjectiveFaucet:
   async def fund_wallet(self, address: str) -> dict:
     async with aiohttp.ClientSession() as session:
       try:
+        logger.debug("Calling Injective faucet to fund wallet with address=%s", address)
+
         async with session.post(f"{self.base_url}?address={address}") as response:
           # content type is sometimes text/plain and sometimes application/json, but is always json. Using .json() fails
           # whenever it's text/plain, so decoding manually as a workaround.
@@ -43,6 +45,8 @@ class InjectiveFaucet:
               base_url=self.base_url,
               address=address,
             )
+
+          logger.debug("Called Injective faucet yielding message=%s", body["message"])
 
           return body
 
