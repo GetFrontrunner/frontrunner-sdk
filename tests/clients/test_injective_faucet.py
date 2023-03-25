@@ -4,7 +4,8 @@ from aiohttp import web
 from aiohttp.test_utils import AioHTTPTestCase
 
 from frontrunner_sdk.clients.injective_faucet import InjectiveFaucet
-from frontrunner_sdk.exceptions import FrontrunnerConfigurationException, FrontrunnerInjectiveException
+from frontrunner_sdk.exceptions import FrontrunnerConfigurationException
+from frontrunner_sdk.exceptions import FrontrunnerInjectiveException
 
 
 class TestInjectiveFaucet(AioHTTPTestCase):
@@ -18,6 +19,7 @@ class TestInjectiveFaucet(AioHTTPTestCase):
     self.injective_faucet = InjectiveFaucet(f"{self.server.scheme}://{self.server.host}:{self.server.port}")
 
   def post_fund_wallet(self):
+
     async def handle(request: web.Request) -> web.Response:
       return self.fund_wallet_response
 
