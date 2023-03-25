@@ -11,6 +11,7 @@ class FrontrunnerExceptionDetail:
 
 
 class FrontrunnerException(Exception):
+  """Base exception type."""
 
   def __init__(self, reason: str, **kwargs: Any):
     super().__init__(reason)
@@ -25,13 +26,39 @@ class FrontrunnerException(Exception):
     return " ".join(parts)
 
 
-class FrontrunnerConfigurationException(FrontrunnerException):
+class FrontrunnerUserException(FrontrunnerException):
+  """Exception where the user is at fault."""
+
+  def __init__(self, reason: str, **kwargs: Any):
+    if self.__class__ == FrontrunnerUserException:
+      raise TypeError(f"Do not directly instantiate {self.__class__.__name__}")
+
+    super().__init__(reason, **kwargs)
+
+
+class FrontrunnerExternalException(FrontrunnerException):
+  """Exception where the user is not at fault."""
+
+  def __init__(self, reason: str, **kwargs: Any):
+    if self.__class__ == FrontrunnerExternalException:
+      raise TypeError(f"Do not directly instantiate {self.__class__.__name__}")
+
+    super().__init__(reason, **kwargs)
+
+
+class FrontrunnerConfigurationException(FrontrunnerUserException):
 
   def __init__(self, reason: str, **kwargs: Any):
     super().__init__(reason, **kwargs)
 
 
-class FrontrunnerInjectiveException(FrontrunnerException):
+class FrontrunnerInjectiveException(FrontrunnerUserException):
+
+  def __init__(self, reason: str, **kwargs: Any):
+    super().__init__(reason, **kwargs)
+
+
+class FrontrunnerUnserviceableException(FrontrunnerExternalException):
 
   def __init__(self, reason: str, **kwargs: Any):
     super().__init__(reason, **kwargs)

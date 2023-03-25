@@ -5,7 +5,9 @@ from typing import Optional
 import aiohttp
 
 from frontrunner_sdk.exceptions import FrontrunnerConfigurationException
+from frontrunner_sdk.exceptions import FrontrunnerException
 from frontrunner_sdk.exceptions import FrontrunnerInjectiveException
+from frontrunner_sdk.exceptions import FrontrunnerUnserviceableException
 
 logger = logging.getLogger(__name__)
 
@@ -20,13 +22,34 @@ class InjectiveFaucet:
 
   async def fund_wallet(self, address: str) -> dict:
     async with aiohttp.ClientSession() as session:
-      async with session.post(f"{self.base_url}?address={address}") as response:
-        # content type is always text/plain, so .json() won't work
-        body = json.loads(await response.text())
+      try:
+        async with session.post(f"{self.base_url}?address={address}") as response:
+          # content type is sometimes text/plain and sometimes application/json, but is always json. Using .json() fails
+          # whenever it's text/plain, so decoding manually as a workaround.
+          body = json.loads(await response.text())
 
-        # TODO handle 500
+          if response.status >= 500:
+            raise FrontrunnerUnserviceableException(
+              body["message"],
+              base_url=self.base_url,
+              address=address,
+            )
 
-        if not response.ok:
-          raise FrontrunnerInjectiveException(body["message"], address=address)
+          if not response.ok:
+            raise FrontrunnerInjectiveException(
+              body["message"],
+              base_url=self.base_url,
+              address=address,
+            )
 
-        return body
+          return body
+
+      except FrontrunnerException as exception:
+        raise exception
+
+      except Exception as cause:
+        raise FrontrunnerUnserviceableException(
+          "Could not fund wallet from faucet",
+          base_url=self.base_url,
+          address=address,
+        ) from cause

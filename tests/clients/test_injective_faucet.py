@@ -1,11 +1,15 @@
 import json
+from unittest.mock import patch
 
+from aiohttp import ClientError
+from aiohttp import ClientSession
 from aiohttp import web
 from aiohttp.test_utils import AioHTTPTestCase
 
 from frontrunner_sdk.clients.injective_faucet import InjectiveFaucet
 from frontrunner_sdk.exceptions import FrontrunnerConfigurationException
 from frontrunner_sdk.exceptions import FrontrunnerInjectiveException
+from frontrunner_sdk.exceptions import FrontrunnerUnserviceableException
 
 
 class TestInjectiveFaucet(AioHTTPTestCase):
@@ -41,8 +45,21 @@ class TestInjectiveFaucet(AioHTTPTestCase):
     res = await self.injective_faucet.fund_wallet(address="<fake>")
     self.assertEquals(res, {"message": "Works"})
 
-  async def test_fund_wallet_error(self):
-    self.fund_wallet_response = web.Response(status=500, text=json.dumps({"message": "Works"}))
+  async def test_fund_wallet_failure(self):
+    self.fund_wallet_response = web.Response(status=400, text=json.dumps({"message": "Bad Request"}))
 
     with self.assertRaises(FrontrunnerInjectiveException):
       await self.injective_faucet.fund_wallet(address="<fake>")
+
+  async def test_fund_wallet_unserviceable_server_error(self):
+    self.fund_wallet_response = web.Response(status=500, text=json.dumps({"message": "Internal Server Error"}))
+
+    with self.assertRaises(FrontrunnerUnserviceableException):
+      await self.injective_faucet.fund_wallet(address="<fake>")
+
+  async def test_fund_wallet_unserviceable_infrastructure(self):
+    with patch.object(ClientSession, "post") as _post:
+      _post.side_effect = ClientError("Bad URL")
+
+      with self.assertRaises(FrontrunnerUnserviceableException):
+        await self.injective_faucet.fund_wallet(address="<fake>")
