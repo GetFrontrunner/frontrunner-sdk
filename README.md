@@ -64,6 +64,7 @@ brew install swagger-codegen
 Assuming your Frontrunner API key is stored in `$FRONTRUNNER_API_KEY`:
 ```shell
 swagger-codegen generate -a "Authorization: $FRONTRUNNER_API_KEY" -i https://partner-api.getfrontrunner.com/api/v1/openapi.json -l python -o codegen
+mv codegen/swagger_client swagger_client
 ```
 
 To see additional options:
