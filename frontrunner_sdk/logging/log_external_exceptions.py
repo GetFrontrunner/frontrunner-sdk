@@ -21,7 +21,7 @@ def log_external_exceptions(module_name: str):
         return await callable(*args, **kwargs)
 
       except FrontrunnerExternalException as exception:
-        logger.critical(exception.detail.reason, extra=exception.detail.subjects)
+        logger.critical(exception)
         raise exception
 
     return wrapped
