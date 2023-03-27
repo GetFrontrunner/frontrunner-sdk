@@ -51,6 +51,27 @@ pants check ::
 pants test ::
 ```
 
+### Codegen
+Generate Python code using the remote `openapi.json` and [swagger-codegen][swagger-codegen].
+
+[swagger-codegen]: https://github.com/swagger-api/swagger-codegen
+
+Install:
+```sh
+brew install swagger-codegen
+```
+
+Assuming your Frontrunner API key is stored in `$FRONTRUNNER_API_KEY`:
+```shell
+swagger-codegen generate -a "Authorization: $FRONTRUNNER_API_KEY" -i https://partner-api.getfrontrunner.com/api/v1/openapi.json -l python -o codegen
+```
+
+To see additional options:
+```shell
+swagger-codegen generate --help
+swagger-codegen config-help -l python
+```
+
 ### Running Tests
 
 To test everything, run...

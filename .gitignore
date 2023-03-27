@@ -9,3 +9,6 @@ test.py
 /.pants.*
 /dist/
 /.pids
+
+# IntelliJ
+.idea
