@@ -10,3 +10,4 @@ class StaticFrontrunnerConfig(FrontrunnerConfig):
   injective_grpc_endpoint: Optional[str] = None
   injective_lcd_endpoint: Optional[str] = None
   injective_rpc_endpoint: Optional[str] = None
+  injective_faucet_base_url: Optional[str] = None

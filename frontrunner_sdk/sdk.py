@@ -1,7 +1,7 @@
 from functools import cached_property
 
-from frontrunner_sdk.facades import Injective
-from frontrunner_sdk.facades import InjectiveAsync
+from frontrunner_sdk.facades.injective import Injective
+from frontrunner_sdk.facades.injective import InjectiveAsync
 from frontrunner_sdk.ioc import FrontrunnerIoC
 
 
