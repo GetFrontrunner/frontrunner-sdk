@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Any
 
 from frontrunner_sdk.commands.base import FrontrunnerOperation
 from frontrunner_sdk.ioc import FrontrunnerIoC
