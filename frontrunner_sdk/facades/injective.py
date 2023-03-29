@@ -32,8 +32,8 @@ class InjectiveAsync(FrontrunnerFacadeMixin):
     request = LoadWalletFromMnemonicRequest(mnemonic=mnemonic)
     return await self._run_operation(LoadWalletFromMnemonicOperation, self.deps, request)
 
-  async def fund_wallet_from_faucet(self, injective_address: str) -> FundWalletFromFaucetResponse:
-    request = FundWalletFromFaucetRequest(injective_address=injective_address)
+  async def fund_wallet_from_faucet(self, wallet: Wallet) -> FundWalletFromFaucetResponse:
+    request = FundWalletFromFaucetRequest(wallet=wallet)
     return await self._run_operation(FundWalletFromFaucetOperation, self.deps, request)
 
   async def create_orders(self, wallet: Wallet, orders: Iterable[Order]) -> CreateOrdersResponse:
@@ -52,8 +52,8 @@ class Injective(SyncMixin):
   def load_wallet_from_mnemonic(self, mnemonic: str) -> LoadWalletFromMnemonicResponse:
     return self._synchronously(self.impl.load_wallet_from_mnemonic, mnemonic)
 
-  def fund_wallet_from_faucet(self, injective_address: str) -> FundWalletFromFaucetResponse:
-    return self._synchronously(self.impl.fund_wallet_from_faucet, injective_address)
+  def fund_wallet_from_faucet(self, wallet: Wallet) -> FundWalletFromFaucetResponse:
+    return self._synchronously(self.impl.fund_wallet_from_faucet, wallet)
 
   def create_orders(self, wallet: Wallet, orders: Iterable[Order]) -> CreateOrdersResponse:
     return self._synchronously(self.impl.create_orders, wallet, orders)
