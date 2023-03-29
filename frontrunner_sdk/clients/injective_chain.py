@@ -29,12 +29,15 @@ class InjectiveChain:
   GAS_PRICE = 500_000_000
   ADDITIONAL_GAS_FEE = 20_000
 
-  # TODO this varies by market; we can't make this constant
   DENOM = Denom(
     description="Frontrunner",
     base=0,
     quote=6,
-    min_price_tick_size=10000,
+
+    # 1¢ in satoshis
+    min_price_tick_size=10_000,
+
+    # can't go below 1¢
     min_quantity_tick_size=1,
   )
 
