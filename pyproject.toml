@@ -14,6 +14,11 @@ continuation_indent_width = 2
 
 
 [[tool.mypy.overrides]]
-# injective-py doesn't export usable type definitions, so mypy barfs on check
-module = ["pyinjective.*"]
+module = [
+  # https://github.com/shabbyrobe/grpc-stubs/issues/22
+  "grpc.aio",
+
+  # injective-py doesn't export usable type definitions, so mypy barfs on check
+  "pyinjective.*",
+]
 ignore_missing_imports = true

@@ -5,7 +5,7 @@ from typing import Tuple
 from typing import cast
 
 from google.protobuf.message import Message
-from grpc.aio._call import AioRpcError
+from grpc.aio import AioRpcError
 from pyinjective.async_client import AsyncClient
 from pyinjective.composer import Composer
 from pyinjective.constant import Denom
