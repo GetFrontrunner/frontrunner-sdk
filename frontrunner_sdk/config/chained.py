@@ -23,20 +23,20 @@ class ChainedFrontrunnerConfig(FrontrunnerConfig):
     return None
 
   @property
-  def injective_exchange_endpoint(self) -> Optional[str]:
-    return self._find_next(lambda config: config.injective_exchange_endpoint)
+  def injective_exchange_base_url(self) -> Optional[str]:
+    return self._find_next(lambda config: config.injective_exchange_base_url)
 
   @property
-  def injective_grpc_endpoint(self) -> Optional[str]:
-    return self._find_next(lambda config: config.injective_grpc_endpoint)
+  def injective_grpc_base_url(self) -> Optional[str]:
+    return self._find_next(lambda config: config.injective_grpc_base_url)
 
   @property
-  def injective_lcd_endpoint(self) -> Optional[str]:
-    return self._find_next(lambda config: config.injective_lcd_endpoint)
+  def injective_lcd_base_url(self) -> Optional[str]:
+    return self._find_next(lambda config: config.injective_lcd_base_url)
 
   @property
-  def injective_rpc_endpoint(self) -> Optional[str]:
-    return self._find_next(lambda config: config.injective_rpc_endpoint)
+  def injective_rpc_base_url(self) -> Optional[str]:
+    return self._find_next(lambda config: config.injective_rpc_base_url)
 
   @property
   def injective_faucet_base_url(self) -> Optional[str]:

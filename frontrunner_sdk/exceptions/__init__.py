@@ -1,7 +1,6 @@
+from dataclasses import dataclass
 from typing import Any
 from typing import Mapping
-
-from attr import dataclass
 
 
 @dataclass(frozen=True)
