@@ -25,7 +25,3 @@ class Order:
   @classmethod
   def sell_against(clz, market_id: str, quantity: float, price: float) -> "Order":
     return clz("buy", "against", market_id, quantity, price)
-
-  @property
-  def note(self):
-    return f"{self.direction} {self.side} {self.market_id} quantity={self.quantity} @ price={self.price}"

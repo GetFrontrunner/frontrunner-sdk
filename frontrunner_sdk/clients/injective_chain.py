@@ -29,12 +29,12 @@ class InjectiveChain:
   GAS_PRICE = 500_000_000
   ADDITIONAL_GAS_FEE = 20_000
 
-  # TODO what are these values even?
+  # TODO this varies by market; we can't make this constant
   DENOM = Denom(
     description="Frontrunner",
     base=0,
     quote=6,
-    min_price_tick_size=31_000_000,
+    min_price_tick_size=10000,
     min_quantity_tick_size=1,
   )
 
@@ -113,7 +113,6 @@ class InjectiveChain:
     self,
     wallet: Wallet,
     messages: List[Message],
-    note: str,
     gas: int,
     fee: List[Coin],
   ) -> TxResponse:
@@ -124,7 +123,6 @@ class InjectiveChain:
         sequence=wallet.sequence,
         account_num=wallet.account_number,
         chain_id=self.network.chain_id,
-        memo=note,
         gas=gas,
         fee=fee,
       )
@@ -148,10 +146,10 @@ class InjectiveChain:
 
     return response
 
-  async def _execute_transaction(self, wallet: Wallet, messages: List[Message], note: str) -> TxResponse:
+  async def _execute_transaction(self, wallet: Wallet, messages: List[Message]) -> TxResponse:
     simulation = await self._simulate_transaction(wallet, messages)
     gas, fee = self._estimate_fee(simulation)
-    return await self._send_transaction(wallet, messages, note, gas, fee)
+    return await self._send_transaction(wallet, messages, gas, fee)
 
   @log_external_exceptions(__name__)
   async def create_orders(
@@ -160,11 +158,10 @@ class InjectiveChain:
     orders: Iterable[Order],
   ) -> TxResponse:
     order_messages = [self._injective_order_for(wallet, order) for order in orders]
-    note = f"[{', '.join([order.note for order in orders])}]"
 
     batch_message = self.composer.MsgBatchUpdateOrders(
       wallet.injective_address,
       binary_options_orders_to_create=order_messages,
     )
 
-    return await self._execute_transaction(wallet, [batch_message], note)
+    return await self._execute_transaction(wallet, [batch_message])
