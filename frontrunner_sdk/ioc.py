@@ -26,7 +26,7 @@ class FrontrunnerIoC:
       self.config.injective_exchange_authority,
       self.config.injective_explorer_authority,
       self.config.injective_chain_id,
-      "",
+      self.config.injective_network,
     )
 
   @cached_property
