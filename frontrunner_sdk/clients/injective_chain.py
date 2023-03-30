@@ -53,9 +53,9 @@ class InjectiveChain:
     return transaction.get_tx_data(signature, wallet.public_key)
 
   def _estimate_fee(self, simulation: SimulationResponse) -> Tuple[int, List[Coin]]:
-    limit = simulation.gas_info.gas_used + self.ADDITIONAL_GAS_FEE
+    limit = int(simulation.gas_info.gas_used) + self.ADDITIONAL_GAS_FEE
     amount = self.GAS_PRICE * limit
-    fee = [self.composer.Coin(amount=amount, denom=self.network.fee_denom)]
+    fee = [self.composer.Coin(amount=str(amount), denom=self.network.fee_denom)]
     return (limit, fee)
 
   def _injective_order_for(self, wallet: Wallet, order: Order) -> Message:
@@ -104,7 +104,13 @@ class InjectiveChain:
     result, success = await self.client.simulate_tx(transaction)
 
     if not success:
-      raise cast(AioRpcError, result)
+      cause = cast(AioRpcError, result)
+      raise FrontrunnerInjectiveException(
+        "Simulation failed",
+        code=cause.code,
+        message=cause.debug_error_string,
+        details=cause.details,
+      ) from cause
 
     response = cast(SimulationResponse, result)
 
