@@ -1,8 +1,9 @@
 import logging
+
+from typing import cast
 from typing import Iterable
 from typing import List
 from typing import Tuple
-from typing import cast
 
 from google.protobuf.message import Message
 from grpc.aio import AioRpcError

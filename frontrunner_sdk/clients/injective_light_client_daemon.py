@@ -1,4 +1,5 @@
 import logging
+
 from typing import Optional
 
 from frontrunner_sdk.exceptions import FrontrunnerConfigurationException

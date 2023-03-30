@@ -1,4 +1,5 @@
 import json
+
 from unittest.mock import patch
 
 from aiohttp import ClientError

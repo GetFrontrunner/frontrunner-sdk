@@ -1,11 +1,16 @@
+import typing
+
 from typing import Literal
 from typing import Optional
+
+NetworkEnvironment = Literal["devnet", "testnet", "mainnet"]
+NETWORK_ENVIRONMENTS = set(typing.get_args(NetworkEnvironment))
 
 
 class FrontrunnerConfig:
 
   @property
-  def injective_network(self) -> Optional[Literal["devnet", "testnet", "mainnet"]]:
+  def injective_network(self) -> Optional[NetworkEnvironment]:
     return None
 
   @property
