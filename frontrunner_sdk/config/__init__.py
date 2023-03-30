@@ -1,11 +1,15 @@
+import os
+
 from frontrunner_sdk.config.base import FrontrunnerConfig
 from frontrunner_sdk.config.chained import ChainedFrontrunnerConfig
+from frontrunner_sdk.config.environment_variable import EnvironmentVariableFrontrunnerConfig  # NOQA
 from frontrunner_sdk.config.static import StaticFrontrunnerConfig
 
 DEFAULT_FRONTRUNNER_CONFIG: FrontrunnerConfig = ChainedFrontrunnerConfig([
 
   # TODO hardcoding as proof of concept, will have other configs later. For
   # now, comment out what you need.
+  EnvironmentVariableFrontrunnerConfig(os.environ),
 
   # testnet
   StaticFrontrunnerConfig(
