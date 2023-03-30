@@ -1,4 +1,5 @@
 from typing import Iterable
+from typing import List
 
 from frontrunner_sdk.commands.injective.create_orders import CreateOrdersOperation  # NOQA
 from frontrunner_sdk.commands.injective.create_orders import CreateOrdersRequest  # NOQA
@@ -36,7 +37,7 @@ class InjectiveAsync(FrontrunnerFacadeMixin):
     request = FundWalletFromFaucetRequest(wallet=wallet)
     return await self._run_operation(FundWalletFromFaucetOperation, self.deps, request)
 
-  async def create_orders(self, wallet: Wallet, orders: Iterable[Order]) -> CreateOrdersResponse:
+  async def create_orders(self, wallet: Wallet, orders: List[Order]) -> CreateOrdersResponse:
     request = CreateOrdersRequest(wallet=wallet, orders=orders)
     return await self._run_operation(CreateOrdersOperation, self.deps, request)
 
