@@ -1,10 +1,10 @@
 from typing import Callable
 from typing import List
-from typing import Literal
 from typing import Optional
 from typing import TypeVar
 
 from frontrunner_sdk.config.base import FrontrunnerConfig
+from frontrunner_sdk.config.base import NetworkEnvironment
 
 T = TypeVar("T")
 
@@ -24,7 +24,7 @@ class ChainedFrontrunnerConfig(FrontrunnerConfig):
     return None
 
   @property
-  def injective_network(self) -> Optional[Literal["devnet", "testnet", "mainnet"]]:
+  def injective_network(self) -> Optional[NetworkEnvironment]:
     return self._find_next(lambda config: config.injective_network)
 
   @property
