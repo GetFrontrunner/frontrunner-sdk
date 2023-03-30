@@ -19,8 +19,16 @@ class FrontrunnerIoC:
 
   @cached_property
   def network(self) -> Network:
-    # TODO configuration, wiring
-    return Network.testnet()
+    return Network(
+      self.config.injective_lcd_base_url,
+      self.config.injective_rpc_base_url,
+      self.config.injective_grpc_authority,
+      self.config.injective_exchange_authority,
+      self.config.injective_explorer_authority,
+      self.config.injective_chain_id,
+      "inj",
+      "",
+    )
 
   @cached_property
   def injective_composer(self) -> Composer:
