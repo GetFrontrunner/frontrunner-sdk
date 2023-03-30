@@ -1,7 +1,6 @@
+from dataclasses import dataclass
 from typing import Any
 from typing import Mapping
-
-from attr import dataclass
 
 
 @dataclass(frozen=True)
@@ -47,6 +46,12 @@ class FrontrunnerExternalException(FrontrunnerException):
 
 
 class FrontrunnerConfigurationException(FrontrunnerUserException):
+
+  def __init__(self, reason: str, **kwargs: Any):
+    super().__init__(reason, **kwargs)
+
+
+class FrontrunnerArgumentError(FrontrunnerUserException):
 
   def __init__(self, reason: str, **kwargs: Any):
     super().__init__(reason, **kwargs)

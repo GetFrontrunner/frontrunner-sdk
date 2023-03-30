@@ -1,5 +1,6 @@
 from typing import Callable
 from typing import List
+from typing import Literal
 from typing import Optional
 from typing import TypeVar
 
@@ -23,20 +24,32 @@ class ChainedFrontrunnerConfig(FrontrunnerConfig):
     return None
 
   @property
-  def injective_exchange_endpoint(self) -> Optional[str]:
-    return self._find_next(lambda config: config.injective_exchange_endpoint)
+  def injective_network(self) -> Optional[Literal["devnet", "testnet", "mainnet"]]:
+    return self._find_next(lambda config: config.injective_network)
 
   @property
-  def injective_grpc_endpoint(self) -> Optional[str]:
-    return self._find_next(lambda config: config.injective_grpc_endpoint)
+  def injective_chain_id(self) -> Optional[str]:
+    return self._find_next(lambda config: config.injective_chain_id)
 
   @property
-  def injective_lcd_endpoint(self) -> Optional[str]:
-    return self._find_next(lambda config: config.injective_lcd_endpoint)
+  def injective_exchange_authority(self) -> Optional[str]:
+    return self._find_next(lambda config: config.injective_exchange_authority)
 
   @property
-  def injective_rpc_endpoint(self) -> Optional[str]:
-    return self._find_next(lambda config: config.injective_rpc_endpoint)
+  def injective_explorer_authority(self) -> Optional[str]:
+    return self._find_next(lambda config: config.injective_explorer_authority)
+
+  @property
+  def injective_grpc_authority(self) -> Optional[str]:
+    return self._find_next(lambda config: config.injective_grpc_authority)
+
+  @property
+  def injective_lcd_base_url(self) -> Optional[str]:
+    return self._find_next(lambda config: config.injective_lcd_base_url)
+
+  @property
+  def injective_rpc_base_url(self) -> Optional[str]:
+    return self._find_next(lambda config: config.injective_rpc_base_url)
 
   @property
   def injective_faucet_base_url(self) -> Optional[str]:

@@ -38,6 +38,10 @@ lockfile = "mypy.lockfile"
 
 args = ["--python-version 3.8"]
 
+extra_type_stubs = [
+  "types-protobuf",
+]
+
 [pytest]
 version = "pytest~=7.2.2"
 lockfile = "pytest.lockfile"
