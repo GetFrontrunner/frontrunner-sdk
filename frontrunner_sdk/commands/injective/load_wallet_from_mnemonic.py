@@ -16,11 +16,8 @@ class LoadWalletFromMnemonicResponse:
   wallet: Wallet
 
 
-# yapf: disable
-class LoadWalletFromMnemonicOperation(
-  FrontrunnerOperation[LoadWalletFromMnemonicRequest, LoadWalletFromMnemonicResponse]
-):
-  # yapf: enable
+class LoadWalletFromMnemonicOperation(FrontrunnerOperation[LoadWalletFromMnemonicRequest,
+                                                           LoadWalletFromMnemonicResponse]):
 
   def __init__(self, request: LoadWalletFromMnemonicRequest):
     super().__init__(request)
