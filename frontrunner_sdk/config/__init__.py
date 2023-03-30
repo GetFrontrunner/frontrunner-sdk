@@ -2,13 +2,11 @@ import os
 
 from frontrunner_sdk.config.base import FrontrunnerConfig
 from frontrunner_sdk.config.chained import ChainedFrontrunnerConfig
+from frontrunner_sdk.config.conditional import ConditionalFrontrunnerConfig
 from frontrunner_sdk.config.environment_variable import EnvironmentVariableFrontrunnerConfig  # NOQA
 from frontrunner_sdk.config.static import StaticFrontrunnerConfig
 
 DEFAULT_FRONTRUNNER_CONFIG: FrontrunnerConfig = ChainedFrontrunnerConfig([
-
-  # TODO hardcoding as proof of concept, will have other configs later. For
-  # now, comment out what you need.
   EnvironmentVariableFrontrunnerConfig(os.environ),
 
   # testnet
@@ -19,12 +17,15 @@ DEFAULT_FRONTRUNNER_CONFIG: FrontrunnerConfig = ChainedFrontrunnerConfig([
   ),
 
   # injective k8s network
-  StaticFrontrunnerConfig(
-    injective_exchange_authority="k8s.testnet.exchange.grpc.injective.network:443",
-    injective_explorer_authority="k8s.testnet.explorer.grpc.injective.network:443",
-    injective_grpc_authority="k8s.testnet.chain.grpc.injective.network:443",
-    injective_lcd_base_url="https://k8s.testnet.lcd.injective.network",
-    injective_rpc_base_url="wss://k8s.testnet.tm.injective.network/websocket",
+  ConditionalFrontrunnerConfig(
+    lambda: os.environ.get("FRONTRUNNER_PRESET_NODES") == "injective",
+    StaticFrontrunnerConfig(
+      injective_exchange_authority="k8s.testnet.exchange.grpc.injective.network:443",
+      injective_explorer_authority="k8s.testnet.explorer.grpc.injective.network:443",
+      injective_grpc_authority="k8s.testnet.chain.grpc.injective.network:443",
+      injective_lcd_base_url="https://k8s.testnet.lcd.injective.network",
+      injective_rpc_base_url="wss://k8s.testnet.tm.injective.network/websocket",
+    )
   ),
 
   # frontrunner network
