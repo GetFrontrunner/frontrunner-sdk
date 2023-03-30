@@ -7,21 +7,21 @@ class Order:
   direction: Literal["buy", "sell"]
   side: Literal["for", "against"]
   market_id: str
-  quantity: float
+  quantity: int
   price: float
 
   @classmethod
-  def buy_for(clz, market_id: str, quantity: float, price: float) -> "Order":
+  def buy_for(clz, market_id: str, quantity: int, price: float) -> "Order":
     return clz("buy", "for", market_id, quantity, price)
 
   @classmethod
-  def buy_against(clz, market_id: str, quantity: float, price: float) -> "Order":
+  def buy_against(clz, market_id: str, quantity: int, price: float) -> "Order":
     return clz("buy", "against", market_id, quantity, price)
 
   @classmethod
-  def sell_for(clz, market_id: str, quantity: float, price: float) -> "Order":
+  def sell_for(clz, market_id: str, quantity: int, price: float) -> "Order":
     return clz("buy", "for", market_id, quantity, price)
 
   @classmethod
-  def sell_against(clz, market_id: str, quantity: float, price: float) -> "Order":
+  def sell_against(clz, market_id: str, quantity: int, price: float) -> "Order":
     return clz("buy", "against", market_id, quantity, price)
