@@ -3,7 +3,7 @@ import json
 from aiohttp import web
 from aiohttp.test_utils import AioHTTPTestCase
 
-from frontrunner_sdk.clients.injective_light_client_daemon import InjectiveLightClientDaemon  # NOQA
+from frontrunner_sdk.clients.injective_light_client_daemon import InjectiveLightClientDaemon # NOQA
 from frontrunner_sdk.exceptions import FrontrunnerConfigurationException
 from frontrunner_sdk.exceptions import FrontrunnerInjectiveException
 from frontrunner_sdk.exceptions import FrontrunnerUnserviceableException

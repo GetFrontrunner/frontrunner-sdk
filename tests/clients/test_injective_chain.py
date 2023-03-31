@@ -7,10 +7,10 @@ from grpc.aio import AioRpcError
 from pyinjective.async_client import AsyncClient
 from pyinjective.composer import Composer
 from pyinjective.constant import Network
-from pyinjective.proto.cosmos.base.abci.v1beta1.abci_pb2 import GasInfo  # NOQA
-from pyinjective.proto.cosmos.base.abci.v1beta1.abci_pb2 import SimulationResponse  # NOQA
-from pyinjective.proto.cosmos.base.abci.v1beta1.abci_pb2 import TxResponse  # NOQA
-from pyinjective.proto.injective.exchange.v1beta1.exchange_pb2 import DerivativeOrder  # NOQA
+from pyinjective.proto.cosmos.base.abci.v1beta1.abci_pb2 import GasInfo # NOQA
+from pyinjective.proto.cosmos.base.abci.v1beta1.abci_pb2 import SimulationResponse # NOQA
+from pyinjective.proto.cosmos.base.abci.v1beta1.abci_pb2 import TxResponse # NOQA
+from pyinjective.proto.injective.exchange.v1beta1.exchange_pb2 import DerivativeOrder # NOQA
 from pyinjective.proto.injective.exchange.v1beta1.exchange_pb2 import OrderInfo
 from pyinjective.proto.injective.exchange.v1beta1.exchange_pb2 import OrderType
 from pyinjective.transaction import Transaction

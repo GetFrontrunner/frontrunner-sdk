@@ -6,7 +6,7 @@ from pyinjective.constant import Network
 
 from frontrunner_sdk.clients.injective_chain import InjectiveChain
 from frontrunner_sdk.clients.injective_faucet import InjectiveFaucet
-from frontrunner_sdk.clients.injective_light_client_daemon import InjectiveLightClientDaemon  # NOQA
+from frontrunner_sdk.clients.injective_light_client_daemon import InjectiveLightClientDaemon # NOQA
 from frontrunner_sdk.config import DEFAULT_FRONTRUNNER_CONFIG
 from frontrunner_sdk.config import FrontrunnerConfig
 

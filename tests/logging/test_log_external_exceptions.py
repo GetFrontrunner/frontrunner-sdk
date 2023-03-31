@@ -4,7 +4,7 @@ from unittest import IsolatedAsyncioTestCase
 from unittest.mock import patch
 
 from frontrunner_sdk.exceptions import FrontrunnerExternalException
-from frontrunner_sdk.logging.log_external_exceptions import log_external_exceptions  # NOQA
+from frontrunner_sdk.logging.log_external_exceptions import log_external_exceptions # NOQA
 
 
 class TestExternalException(FrontrunnerExternalException):

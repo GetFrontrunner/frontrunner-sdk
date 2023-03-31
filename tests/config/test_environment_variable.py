@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from frontrunner_sdk.config.environment_variable import EnvironmentVariableFrontrunnerConfig  # NOQA
+from frontrunner_sdk.config.environment_variable import EnvironmentVariableFrontrunnerConfig # NOQA
 
 
 class TestEnvironmentVariableFrontrunnerConfig(TestCase):

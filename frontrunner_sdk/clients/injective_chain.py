@@ -11,13 +11,13 @@ from pyinjective.async_client import AsyncClient
 from pyinjective.composer import Composer
 from pyinjective.constant import Denom
 from pyinjective.constant import Network
-from pyinjective.proto.cosmos.base.abci.v1beta1.abci_pb2 import SimulationResponse  # NOQA
-from pyinjective.proto.cosmos.base.abci.v1beta1.abci_pb2 import TxResponse  # NOQA
+from pyinjective.proto.cosmos.base.abci.v1beta1.abci_pb2 import SimulationResponse # NOQA
+from pyinjective.proto.cosmos.base.abci.v1beta1.abci_pb2 import TxResponse # NOQA
 from pyinjective.transaction import Coin
 from pyinjective.transaction import Transaction
 
 from frontrunner_sdk.exceptions import FrontrunnerInjectiveException
-from frontrunner_sdk.logging.log_external_exceptions import log_external_exceptions  # NOQA
+from frontrunner_sdk.logging.log_external_exceptions import log_external_exceptions # NOQA
 from frontrunner_sdk.models.order import Order
 from frontrunner_sdk.models.wallet import Wallet
 
