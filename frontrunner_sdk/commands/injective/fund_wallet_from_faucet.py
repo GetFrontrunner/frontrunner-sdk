@@ -26,5 +26,5 @@ class FundWalletFromFaucetOperation(FrontrunnerOperation[FundWalletFromFaucetReq
 
   @log_operation(__name__)
   async def execute(self, deps: FrontrunnerIoC) -> FundWalletFromFaucetResponse:
-    response = await deps.injective_faucet.fund_wallet(self.request.wallet.injective_address)
+    response = await deps.injective_faucet.fund_wallet(self.request.wallet)
     return FundWalletFromFaucetResponse(message=response["message"])
