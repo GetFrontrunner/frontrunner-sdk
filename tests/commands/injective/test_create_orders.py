@@ -2,9 +2,9 @@ from unittest import IsolatedAsyncioTestCase
 from unittest.mock import AsyncMock
 from unittest.mock import MagicMock
 
-from frontrunner_sdk.commands.injective.create_orders import CreateOrdersOperation  # NOQA
-from frontrunner_sdk.commands.injective.create_orders import CreateOrdersRequest  # NOQA
-from frontrunner_sdk.exceptions import FrontrunnerArgumentError  # NOQA
+from frontrunner_sdk.commands.injective.create_orders import CreateOrdersOperation # NOQA
+from frontrunner_sdk.commands.injective.create_orders import CreateOrdersRequest # NOQA
+from frontrunner_sdk.exceptions import FrontrunnerArgumentError # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.models.order import Order
 from frontrunner_sdk.models.wallet import Wallet
