@@ -51,6 +51,18 @@ pants check ::
 pants test ::
 ```
 
+To make vscode use the correct Python environment, in a terminal, run...
+
+```sh
+pants export ::
+```
+
+To activate the virtual environment in a shell, run...
+
+```sh
+bash ./dist/export/python/virtualenv/3.8.16/bin/activate
+```
+
 ### Codegen
 Generate Python code using the remote `openapi.json` and [swagger-codegen][swagger-codegen].
 
