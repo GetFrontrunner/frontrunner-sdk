@@ -17,6 +17,9 @@ pants_ignore = [
 
   # ignore existing code
   "chain", "data", "examples", "strategy", "utils",
+
+  # ignore codegen/swagger
+  "codegen", "swagger_client",
 ]
 
 [test]
