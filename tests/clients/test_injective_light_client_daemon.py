@@ -29,20 +29,6 @@ class TestInjectiveLightClientDaemon(AioHTTPTestCase):
 
     return handle
 
-  @staticmethod
-  def _wallet_info_for(account_number: int, sequence: int) -> web.Response:
-    return web.Response(
-      content_type="application/json",
-      body=json.dumps({
-        "account": {
-          "base_account": {
-            "account_number": str(account_number),
-            "sequence": str(sequence),
-          },
-        },
-      }),
-    )
-
   async def get_application(self):
     # TODO this is an absolutely horrible way to configure tests; figure out something better
     app = web.Application()
@@ -55,12 +41,22 @@ class TestInjectiveLightClientDaemon(AioHTTPTestCase):
       InjectiveLightClientDaemon(None)
 
   async def test_initialize_wallet_success(self):
-    self.wallet_info = self._wallet_info_for(1234, 2)
+    self.wallet_info = web.Response(
+      content_type="application/json",
+      body=json.dumps({
+        "account": {
+          "base_account": {
+            "account_number": "1234",
+            "sequence": "2",
+          },
+        },
+      }),
+    )
 
     await self.injective_lcd.initialize_wallet(self.wallet)
 
-    self.assertEqual(1234, self.wallet.account_number)
     self.assertEqual(2, self.wallet.sequence)
+    self.assertEqual(1234, self.wallet.account_number)
 
   async def test_initialize_wallet_failure_404(self):
     self.wallet_info = web.Response(status=404, text=json.dumps({"message": "Bad Request"}))

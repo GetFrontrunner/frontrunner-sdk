@@ -19,24 +19,27 @@ class Wallet:
   def address(self) -> Address:
     return self.public_key.to_address()
 
-  @cached_property
+  @property
   def ethereum_address(self) -> str:
     return "0x" + self.address.to_hex()
 
-  @cached_property
+  @property
   def injective_address(self) -> str:
     return self.address.to_acc_bech32()
 
   def subaccount_address(self, index: int = 0) -> str:
     return self.address.get_subaccount_id(index)
 
-  @cached_property
-  def sequence(self) -> str:
+  @property
+  def sequence(self) -> int:
+    return self.address.sequence
+
+  def get_and_increment_sequence(self) -> int:
     return self.address.get_sequence()
 
-  @cached_property
-  def account_number(self) -> str:
-    return self.address.get_number()
+  @property
+  def account_number(self) -> int:
+    return self.address.number
 
   @classmethod
   def _new(clz):

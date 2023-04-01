@@ -108,7 +108,7 @@ class TestInjectiveChain(IsolatedAsyncioTestCase):
 
     self.client.simulate_tx = AsyncMock(return_value=(expected, True))
 
-    response = await self.injective_chain._simulate_transaction(self.wallet, [self.order])
+    response = await self.injective_chain._simulate_transaction(self.wallet, 0, [self.order])
 
     self.assertEqual(expected, response)
 
@@ -116,13 +116,13 @@ class TestInjectiveChain(IsolatedAsyncioTestCase):
     self.client.simulate_tx = AsyncMock(return_value=(AioRpcError(StatusCode.UNKNOWN, None, None), False))
 
     with self.assertRaises(FrontrunnerInjectiveException):
-      await self.injective_chain._simulate_transaction(self.wallet, [self.order])
+      await self.injective_chain._simulate_transaction(self.wallet, 0, [self.order])
 
   async def test_send_transaction_success(self):
     expected = TxResponse(code=0)
     self.client.send_tx_sync_mode = AsyncMock(return_value=expected)
 
-    response = await self.injective_chain._send_transaction(self.wallet, [self.order], 100, [])
+    response = await self.injective_chain._send_transaction(self.wallet, 0, [self.order], 100, [])
 
     self.assertEqual(expected, response)
 
@@ -131,7 +131,7 @@ class TestInjectiveChain(IsolatedAsyncioTestCase):
     self.client.send_tx_sync_mode = AsyncMock(return_value=expected)
 
     with self.assertRaises(FrontrunnerInjectiveException):
-      await self.injective_chain._send_transaction(self.wallet, [self.order], 100, [])
+      await self.injective_chain._send_transaction(self.wallet, 0, [self.order], 100, [])
 
   async def test_execute_transaction(self):
     simulation = MagicMock(spec=SimulationResponse)
@@ -144,6 +144,7 @@ class TestInjectiveChain(IsolatedAsyncioTestCase):
     response = await self.injective_chain._execute_transaction(self.wallet, [self.order])
 
     self.assertEqual(expected, response)
+    self.assertEqual(1, self.wallet.sequence)
 
     self.injective_chain._simulate_transaction.assert_awaited_once()
     self.injective_chain._send_transaction.assert_awaited_once()

@@ -83,12 +83,12 @@ class InjectiveChain:
       denom=self.DENOM,
     )
 
-  async def _simulate_transaction(self, wallet: Wallet, messages: List[Message]) -> SimulationResponse:
+  async def _simulate_transaction(self, wallet: Wallet, sequence: int, messages: List[Message]) -> SimulationResponse:
     transaction = self._sign_transaction(
       wallet,
       Transaction(
         msgs=messages,
-        sequence=wallet.sequence,
+        sequence=sequence,
         account_num=wallet.account_number,
         chain_id=self.network.chain_id,
       )
@@ -96,7 +96,7 @@ class InjectiveChain:
 
     logger.debug(
       "Calling Injective chain to simulate transaction with messages=%s account=%s chain_id=%s",
-      messages,
+      str(messages),
       wallet.account_number,
       wallet.sequence,
       self.network.chain_id,
@@ -108,9 +108,9 @@ class InjectiveChain:
       cause = cast(AioRpcError, result)
       raise FrontrunnerInjectiveException(
         "Simulation failed",
-        code=cause.code,
-        message=cause.debug_error_string,
-        details=cause.details,
+        code=cause.code(),
+        message=cause.debug_error_string(),
+        details=cause.details(),
       ) from cause
 
     response = cast(SimulationResponse, result)
@@ -122,6 +122,7 @@ class InjectiveChain:
   async def _send_transaction(
     self,
     wallet: Wallet,
+    sequence: int,
     messages: List[Message],
     gas: int,
     fee: List[Coin],
@@ -130,7 +131,7 @@ class InjectiveChain:
       wallet,
       Transaction(
         msgs=messages,
-        sequence=wallet.sequence,
+        sequence=sequence,
         account_num=wallet.account_number,
         chain_id=self.network.chain_id,
         gas=gas,
@@ -140,7 +141,7 @@ class InjectiveChain:
 
     logger.debug(
       "Calling Injective chain to send sync transaction with messages=%s account=%s chain_id=%s gas=%d fee=%d",
-      messages,
+      str(messages),
       wallet.account_number,
       self.network.chain_id,
       gas,
@@ -157,9 +158,10 @@ class InjectiveChain:
     return response
 
   async def _execute_transaction(self, wallet: Wallet, messages: List[Message]) -> TxResponse:
-    simulation = await self._simulate_transaction(wallet, messages)
+    sequence = wallet.get_and_increment_sequence()
+    simulation = await self._simulate_transaction(wallet, sequence, messages)
     gas, fee = self._estimate_fee(simulation)
-    return await self._send_transaction(wallet, messages, gas, fee)
+    return await self._send_transaction(wallet, sequence, messages, gas, fee)
 
   @log_external_exceptions(__name__)
   async def create_orders(
