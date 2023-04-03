@@ -64,23 +64,28 @@ bash ./dist/export/python/virtualenv/3.8.16/bin/activate
 ```
 
 ### Codegen
+
 Generate Python code using the remote `openapi.json` and [swagger-codegen][swagger-codegen].
 
 [swagger-codegen]: https://github.com/swagger-api/swagger-codegen
 
-Install:
+#### Installation
+
 ```sh
 brew install swagger-codegen
 ```
 
-Assuming your Frontrunner API key is stored in `$FRONTRUNNER_API_KEY`:
-```shell
-swagger-codegen generate -a "Authorization: $FRONTRUNNER_API_KEY" -i https://partner-api.getfrontrunner.com/api/v1/openapi.json -l python -o codegen
-mv codegen/swagger_client swagger_client
-```
+#### Adding a Client
+
+1. Add a dir under `openapi`
+2. Put the API's `openapi.json` in that directory
+3. Run `./scripts/codegen.sh`
+
+#### Getting Help
 
 To see additional options:
-```shell
+
+```sh
 swagger-codegen generate --help
 swagger-codegen config-help -l python
 ```
@@ -96,7 +101,7 @@ pants test ::
 To test a single file, run...
 
 ```sh
-pants test ${file}
+pants test --no-use-coverage ${file}
 ```
 
 ### Local Testing via REPL
