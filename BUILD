@@ -4,6 +4,9 @@ python_sources(
 
 python_requirements(
     name="requirements",
+    module_mapping={
+        "injective-py": ["pyinjective"],
+    }
 )
 
 __defaults__({
