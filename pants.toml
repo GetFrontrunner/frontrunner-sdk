@@ -57,6 +57,9 @@ extra_requirements = [
   "pytest-aiohttp",
 ]
 
+[python-infer]
+unowned_dependency_behavior = "ignore"
+
 [coverage-py]
 report = "xml"
 
