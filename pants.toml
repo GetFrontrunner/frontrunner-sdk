@@ -21,7 +21,7 @@ pants_ignore = [
   "chain", "data", "examples", "strategy", "utils",
 
   # ignore codegen/swagger
-  "codegen", "swagger_client", "frontrunner_sdk/openapi/",
+  "frontrunner_sdk/openapi/",
 ]
 
 [test]
