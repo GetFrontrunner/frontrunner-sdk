@@ -17,28 +17,32 @@ class ExampleApi:
     self.name = name
 
   def __str__(self) -> str:
-    return self.__class___.__name__
+    return self.__class__.__name__
 
   async def respond_good(self, a: str, b: int, c: bool = False) -> dict:
-    return await self.respond_good_with_http_info(a, b, c=c)
+    (response, _, _) = await self.respond_good_with_http_info(a, b, c=c)
+    return response
 
   async def respond_good_with_http_info(self, a: str, b: int, c: bool = False) -> Tuple[dict, int, dict]:
     return ({"a": a, "b": b, "c": c}, 200, {})
 
   async def respond_server_error(self, a: str, b: int, c: bool = False) -> dict:
-    return await self.respond_server_error_with_http_info(a, b, c=c)
+    (response, _, _) = await self.respond_server_error_with_http_info(a, b, c=c)
+    return response
 
   async def respond_server_error_with_http_info(self, a: str, b: int, c: bool = False) -> Tuple[dict, int, dict]:
     return ({"a": a, "b": b, "c": c}, 500, {})
 
   async def respond_client_error(self, a: str, b: int, c: bool = False) -> dict:
-    return await self.respond_client_error_with_http_info(a, b, c=c)
+    (response, _, _) = await self.respond_client_error_with_http_info(a, b, c=c)
+    return response
 
   async def respond_client_error_with_http_info(self, a: str, b: int, c: bool = False) -> Tuple[dict, int, dict]:
     return ({"a": a, "b": b, "c": c}, 400, {})
 
   async def respond_exception(self) -> dict:
-    return await self.respond_exception_with_http_info()
+    (response, _, _) = await self.respond_exception_with_http_info()
+    return response
 
   async def respond_exception_with_http_info(self) -> Tuple[dict, int, dict]:
     raise Exception("BOOM")

@@ -51,7 +51,7 @@ def with_exception(
 
     return (result, headers)
 
-  wrapped.__wrapped__ = method
+  wrapped.__wrapped__ = method # type: ignore
 
   return wrapped
 
@@ -84,7 +84,7 @@ def with_debug_logging(
 
     return result
 
-  wrapped.__wrapped__ = method
+  wrapped.__wrapped__ = method # type: ignore
 
   return wrapped
 
