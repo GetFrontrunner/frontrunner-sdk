@@ -59,7 +59,16 @@ for api in "${APIS[@]}"; do
     "${REPO_ROOT}/dist/codegen/${api}/${package_dir}/" \
     "${REPO_ROOT}/${package_dir}/" \
     ;
+
+  while IFS= read -r -d '' python_file; do
+    echo "$(
+      echo "# flake8: noqa"
+      echo "# isort: skip_file"
+      cat "${python_file}"
+    )" >"${python_file}"
+  done < <(find "${REPO_ROOT}/${package_dir}" -name "*.py" -print0)
+
 done
 
 pants tailor ::
-pants export ::
+# pants export ::

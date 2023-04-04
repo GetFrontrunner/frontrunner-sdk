@@ -9,6 +9,7 @@ from frontrunner_sdk.clients.injective_faucet import InjectiveFaucet
 from frontrunner_sdk.clients.injective_light_client_daemon import InjectiveLightClientDaemon # NOQA
 from frontrunner_sdk.config import DEFAULT_FRONTRUNNER_CONFIG
 from frontrunner_sdk.config import FrontrunnerConfig
+from frontrunner_sdk.openapi.frontrunner_api import FrontrunnerApi
 
 
 class FrontrunnerIoC:
@@ -28,6 +29,20 @@ class FrontrunnerIoC:
       self.config.injective_chain_id,
       self.config.injective_network,
     )
+
+  @cached_property
+  def frontrunner_api(self) -> FrontrunnerApi:
+    api = FrontrunnerApi()
+
+    config = api.api_client.configuration
+
+    config.host = self.config.frontrunner_api_base_url
+
+    config.api_key = {
+      "Authorization": self.config.frontrunner_api_authn_token,
+    }
+
+    return api
 
   @cached_property
   def injective_composer(self) -> Composer:

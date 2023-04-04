@@ -1,3 +1,5 @@
+# flake8: noqa
+# isort: skip_file
 # coding: utf-8
 
 # flake8: noqa

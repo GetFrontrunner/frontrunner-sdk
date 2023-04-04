@@ -10,6 +10,14 @@ NETWORK_ENVIRONMENTS = set(typing.get_args(NetworkEnvironment))
 class FrontrunnerConfig:
 
   @property
+  def frontrunner_api_base_url(self) -> Optional[str]:
+    return None
+
+  @property
+  def frontrunner_api_authn_token(self) -> Optional[str]:
+    return None
+
+  @property
   def injective_network(self) -> Optional[NetworkEnvironment]:
     return None
 
