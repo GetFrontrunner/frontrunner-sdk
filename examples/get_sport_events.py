@@ -3,10 +3,9 @@ import argparse
 from os import environ
 from argparse import Namespace
 from pprint import pprint
-import swagger_client
-from swagger_client.rest import ApiException
-from swagger_client import Configuration
-
+from frontrunner_sdk.openapi.frontrunner_api import FrontrunnerApi, ApiClient
+from frontrunner_sdk.openapi.frontrunner_api.rest import ApiException
+from frontrunner_sdk.openapi.frontrunner_api import Configuration, MarketStatus
 
 def parse_cli_arguments() -> Namespace:
   parser = argparse.ArgumentParser()
@@ -19,7 +18,7 @@ def parse_cli_arguments() -> Namespace:
 
 
 async def run_get_sport_events(namespace: Namespace, configuration: Configuration):
-  api_instance = swagger_client.FrontrunnerApi(swagger_client.ApiClient(configuration))
+  api_instance = FrontrunnerApi(ApiClient(configuration))
 
   kwargs = {}
   for arg in vars(namespace):
@@ -35,7 +34,7 @@ async def run_get_sport_events(namespace: Namespace, configuration: Configuratio
 
 async def main():
   frontrunner_api_key = environ.get('FRONTRUNNER_API_KEY')
-  configuration = swagger_client.Configuration()
+  configuration = Configuration()
   configuration.api_key['Authorization'] = frontrunner_api_key
   namespace = parse_cli_arguments()
   await run_get_sport_events(namespace, configuration)

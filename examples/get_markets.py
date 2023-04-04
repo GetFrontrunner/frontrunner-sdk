@@ -4,9 +4,9 @@ from os import environ
 from argparse import Namespace
 from typing import Optional
 from pprint import pprint
-import swagger_client
-from swagger_client.rest import ApiException
-from swagger_client import Configuration, MarketStatus
+from frontrunner_sdk.openapi.frontrunner_api import FrontrunnerApi, ApiClient
+from frontrunner_sdk.openapi.frontrunner_api.rest import ApiException
+from frontrunner_sdk.openapi.frontrunner_api import Configuration, MarketStatus
 
 
 def parse_cli_arguments() -> Namespace:
@@ -26,7 +26,7 @@ def valid_args(args):
     raise Exception("Need to provide at least one of id, inj_id, prop_id, event_id, league_id when market status is closed")
 
 async def run_get_markets(namespace: Namespace, configuration: Configuration):
-  api_instance = swagger_client.FrontrunnerApi(swagger_client.ApiClient(configuration))
+  api_instance = FrontrunnerApi(ApiClient(configuration))
 
   kwargs = {}
 
@@ -34,9 +34,9 @@ async def run_get_markets(namespace: Namespace, configuration: Configuration):
     if getattr(namespace, arg):
       if arg == 'status':
         if getattr(namespace, arg) == 'active':
-          kwargs[arg] = swagger_client.MarketStatus.ACTIVE
+          kwargs[arg] = MarketStatus.ACTIVE
         else:
-          kwargs[arg] = swagger_client.MarketStatus.CLOSED
+          kwargs[arg] = MarketStatus.CLOSED
       else:
         kwargs[arg] = getattr(namespace, arg)
 
@@ -51,7 +51,7 @@ async def run_get_markets(namespace: Namespace, configuration: Configuration):
 
 async def main():
   frontrunner_api_key = environ.get('FRONTRUNNER_API_KEY')
-  configuration = swagger_client.Configuration()
+  configuration = Configuration()
   configuration.api_key['Authorization'] = frontrunner_api_key
   namespace = parse_cli_arguments()
   if getattr(namespace, 'status')=="active":
