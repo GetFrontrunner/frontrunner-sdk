@@ -8,20 +8,20 @@ from frontrunner_sdk.ioc import FrontrunnerIoC
 class FrontrunnerSDKAsync:
 
   @cached_property
-  def _dependencies(self):
+  def dependencies(self):
     return FrontrunnerIoC()
 
   @cached_property
   def injective(self) -> InjectiveAsync:
-    return InjectiveAsync(self._dependencies)
+    return InjectiveAsync(self.dependencies)
 
 
 class FrontrunnerSDK:
 
   @cached_property
-  def _dependencies(self):
+  def dependencies(self):
     return FrontrunnerIoC()
 
   @cached_property
   def injective(self) -> Injective:
-    return Injective(self._dependencies)
+    return Injective(self.dependencies)
