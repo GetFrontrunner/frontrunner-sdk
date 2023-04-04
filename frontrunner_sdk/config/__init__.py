@@ -15,7 +15,9 @@ DEFAULT_FRONTRUNNER_CONFIG: FrontrunnerConfig = ChainedFrontrunnerConfig([
     injective_chain_id="injective-888",
     injective_faucet_base_url="https://knroo5qf2e.execute-api.us-east-2.amazonaws.com/default/TestnetFaucetAPI",
   ),
-  StaticFrontrunnerConfig(frontrunner_api_base_url="https://partner-api-staging.getfrontrunner.com/api/v1",),
+
+  # frontrunner api
+  StaticFrontrunnerConfig(frontrunner_api_base_url="https://partner-api-staging.getfrontrunner.com/api/v1"),
 
   # injective k8s network
   ConditionalFrontrunnerConfig(
