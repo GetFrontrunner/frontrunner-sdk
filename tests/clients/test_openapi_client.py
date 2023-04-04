@@ -81,27 +81,27 @@ class TestOpenAPIClient(IsolatedAsyncioTestCase):
     self.assertEqual(method.__wrapped__, self.api.respond_good_with_http_info)
 
   async def test_with_exception_server_error(self):
-    method = with_exception(self.api.respond_server_error)
+    method = with_exception(self.api.respond_server_error_with_http_info)
 
     with self.assertRaises(FrontrunnerUnserviceableException):
       await method("hello", 123, c=True)
 
   async def test_with_exception_client_error(self):
-    method = with_exception(self.api.respond_client_error)
+    method = with_exception(self.api.respond_client_error_with_http_info)
 
     with self.assertRaises(FrontrunnerArgumentException):
       await method("hello", 123, c=True)
 
   async def test_with_exception_exception(self):
-    method = with_exception(self.api.respond_exception)
+    method = with_exception(self.api.respond_exception_with_http_info)
 
     with self.assertRaises(FrontrunnerUnserviceableException):
       await method("hello", 123, c=True)
 
   async def test_with_debug_logging(self):
-    method = with_debug_logging(self.api, self.api.respond_good)
+    method = with_debug_logging(self.api, self.api.respond_good_with_http_info)
 
-    self.assertEqual(method.__wrapped__, self.api.respond_good)
+    self.assertEqual(method.__wrapped__, self.api.respond_good_with_http_info)
 
     with self.assertLogs(level=logging.DEBUG) as logs:
       await method("hello", 123, c=True)
