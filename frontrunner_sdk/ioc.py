@@ -31,7 +31,7 @@ class FrontrunnerIoC:
     )
 
   @cached_property
-  def frontrunner_api(self) -> FrontrunnerApi:
+  def openapi_frontrunner_api(self) -> FrontrunnerApi:
     api = FrontrunnerApi()
 
     config = api.api_client.configuration

@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from swagger_client.api.frontrunner_api import FrontrunnerApi
+from frontrunner_sdk.openapi.frontrunner_api import FrontrunnerApi
 
 from frontrunner_sdk.clients.injective_chain import InjectiveChain
 from frontrunner_sdk.clients.injective_faucet import InjectiveFaucet
@@ -17,8 +17,8 @@ class TestFrontrunnerIoC(TestCase):
   def test_config(self):
     self.assertIsInstance(self.ioc.config, FrontrunnerConfig)
 
-  def test_frontrunner_api(self):
-    self.assertIsInstance(self.ioc.frontrunner_api, FrontrunnerApi)
+  def test_openapi_frontrunner_api(self):
+    self.assertIsInstance(self.ioc.openapi_frontrunner_api, FrontrunnerApi)
 
   def test_injective_chain(self):
     self.assertIsInstance(self.ioc.injective_chain, InjectiveChain)
