@@ -9,6 +9,8 @@ backend_packages = [
   "pants.backend.python.lint.yapf",
   "pants.backend.python.typecheck.mypy",
   "pants.backend.shell",
+  "pants.backend.shell.lint.shellcheck",
+  "pants.backend.shell.lint.shfmt",
 ]
 
 pants_ignore = [
@@ -62,6 +64,12 @@ extra_requirements = [
 
 [coverage-py]
 report = "xml"
+
+[shfmt]
+
+args = [
+  "-i", "2",
+]
 
 [anonymous-telemetry]
 enabled = false

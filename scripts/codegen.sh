@@ -4,9 +4,9 @@ set -ueo pipefail
 REPO_ROOT="$(realpath "$(dirname "$0")/../")"
 
 APIS="$(
-  find openapi -name openapi.json \
-  | xargs dirname \
-  | sed -e 's/openapi\///' \
+  find openapi -name openapi.json -exec dirname {} \; |
+    sed -e 's/openapi\///' \
+    ;
 )"
 
 function check_required_command() {
@@ -31,7 +31,7 @@ function to_python_package_name() {
   echo "${package_name}"
 }
 
-for api in ${APIS[@]}; do
+for api in "${APIS[@]}"; do
   rm -rf "${REPO_ROOT}/dist/codegen/${api}"
 
   package_name="$(to_python_package_name "${api}")"
