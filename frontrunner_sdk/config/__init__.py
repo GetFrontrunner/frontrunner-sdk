@@ -16,6 +16,9 @@ DEFAULT_FRONTRUNNER_CONFIG: FrontrunnerConfig = ChainedFrontrunnerConfig([
     injective_faucet_base_url="https://knroo5qf2e.execute-api.us-east-2.amazonaws.com/default/TestnetFaucetAPI",
   ),
 
+  # frontrunner api
+  StaticFrontrunnerConfig(frontrunner_api_base_url="https://partner-api-staging.getfrontrunner.com/api/v1"),
+
   # injective k8s network
   ConditionalFrontrunnerConfig(
     lambda: os.environ.get("FRONTRUNNER_PRESET_NODES") == "injective",

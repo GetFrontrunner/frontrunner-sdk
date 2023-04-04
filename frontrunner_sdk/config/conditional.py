@@ -12,6 +12,14 @@ class ConditionalFrontrunnerConfig(FrontrunnerConfig):
     self.config = config
 
   @property
+  def frontrunner_api_base_url(self) -> Optional[str]:
+    return self.config.frontrunner_api_base_url if self.condition() else None
+
+  @property
+  def frontrunner_api_authn_token(self) -> Optional[str]:
+    return self.config.frontrunner_api_authn_token if self.condition() else None
+
+  @property
   def injective_network(self) -> Optional[NetworkEnvironment]:
     return self.config.injective_network if self.condition() else None
 

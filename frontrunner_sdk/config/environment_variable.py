@@ -13,6 +13,14 @@ class EnvironmentVariableFrontrunnerConfig(FrontrunnerConfig):
     self.vars = vars
 
   @property
+  def frontrunner_api_base_url(self) -> Optional[str]:
+    return self.vars.get("FRONTRUNNER_FRONTRUNNER_API_BASE_URL", None)
+
+  @property
+  def frontrunner_api_authn_token(self) -> Optional[str]:
+    return self.vars.get("FRONTRUNNER_FRONTRUNNER_API_AUTHN_TOKEN", None)
+
+  @property
   def injective_network(self) -> Optional[NetworkEnvironment]:
     value = self.vars.get("FRONTRUNNER_INJECTIVE_NETWORK", None)
 

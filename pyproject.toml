@@ -20,6 +20,7 @@ ignore_patterns = [
 ]
 
 [[tool.mypy.overrides]]
+
 module = [
   # grpc-stubs exists, but it's missing stuff (can't find AioRpcSupport) and
   # doesn't support aio yet. Instead, we'll just blanket ignore grpc because
@@ -32,4 +33,23 @@ module = [
   # injective-py doesn't export usable type definitions, so mypy barfs on check
   "pyinjective.*",
 ]
+
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+
+module = [
+  # swagger-codegen doesn't generate type stubs/hints for python. It looks like
+  # anything helpful is dead.
+  #
+  # https://github.com/swagger-api/swagger-codegen/issues/5429
+  "frontrunner_sdk.openapi.*",
+]
+
+ignore_errors = true
+
+[tool.coverage.run]
+
+omit = [
+  "frontrunner_sdk/openapi/*",
+]
