@@ -4,11 +4,13 @@ pants_version = "2.15.0"
 backend_packages = [
   "pants.core",
   "pants.backend.python",
-  "pants.backend.python.lint.docformatter",
   "pants.backend.python.lint.flake8",
   "pants.backend.python.lint.isort",
   "pants.backend.python.lint.yapf",
   "pants.backend.python.typecheck.mypy",
+  "pants.backend.shell",
+  "pants.backend.shell.lint.shellcheck",
+  "pants.backend.shell.lint.shfmt",
 ]
 
 pants_ignore = [
@@ -19,7 +21,7 @@ pants_ignore = [
   "chain", "data", "examples", "strategy", "utils",
 
   # ignore codegen/swagger
-  "codegen", "swagger_client",
+  "codegen", "swagger_client", "frontrunner_sdk/openapi/",
 ]
 
 [test]
@@ -42,7 +44,10 @@ lockfile = "mypy.lockfile"
 args = ["--python-version 3.8"]
 
 extra_type_stubs = [
+  "types-python-dateutil",
   "types-protobuf",
+  "types-six",
+  "types-urllib3",
 ]
 
 [pytest]
@@ -59,6 +64,12 @@ extra_requirements = [
 
 [coverage-py]
 report = "xml"
+
+[shfmt]
+
+args = [
+  "-i", "2",
+]
 
 [anonymous-telemetry]
 enabled = false

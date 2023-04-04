@@ -13,6 +13,11 @@ coalesce_brackets = true
 dedent_closing_brackets = true
 continuation_indent_width = 2
 
+[tool.yapfignore]
+
+ignore_patterns = [
+  "frontrunner_sdk/openapi/**/*",
+]
 
 [[tool.mypy.overrides]]
 module = [
