@@ -71,4 +71,4 @@ for api in "${APIS[@]}"; do
 done
 
 pants tailor ::
-# pants export ::
+pants export ::
