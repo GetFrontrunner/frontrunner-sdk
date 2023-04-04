@@ -36,11 +36,13 @@ class FrontrunnerIoC:
 
     config = api.api_client.configuration
 
-    config.host = self.config.frontrunner_api_base_url
+    if self.config.frontrunner_api_base_url:
+      config.host = self.config.frontrunner_api_base_url
 
-    config.api_key = {
-      "Authorization": self.config.frontrunner_api_authn_token,
-    }
+    if self.config.frontrunner_api_authn_token:
+      config.api_key = {
+        "Authorization": self.config.frontrunner_api_authn_token,
+      }
 
     return api
 
