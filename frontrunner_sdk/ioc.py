@@ -7,6 +7,7 @@ from pyinjective.constant import Network
 from frontrunner_sdk.clients.injective_chain import InjectiveChain
 from frontrunner_sdk.clients.injective_faucet import InjectiveFaucet
 from frontrunner_sdk.clients.injective_light_client_daemon import InjectiveLightClientDaemon # NOQA
+from frontrunner_sdk.clients.openapi_client import openapi_client # NOQA
 from frontrunner_sdk.config import DEFAULT_FRONTRUNNER_CONFIG
 from frontrunner_sdk.config import FrontrunnerConfig
 from frontrunner_sdk.openapi.frontrunner_api import FrontrunnerApi
@@ -32,7 +33,7 @@ class FrontrunnerIoC:
 
   @cached_property
   def openapi_frontrunner_api(self) -> FrontrunnerApi:
-    api = FrontrunnerApi()
+    api = openapi_client(FrontrunnerApi)
 
     config = api.api_client.configuration
 
