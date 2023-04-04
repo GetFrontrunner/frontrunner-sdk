@@ -11,11 +11,11 @@ from typing import TypeVar
 from frontrunner_sdk.exceptions import FrontrunnerArgumentException
 from frontrunner_sdk.exceptions import FrontrunnerUnserviceableException
 
-OpenAPIType = TypeVar("OpenAPIType")
+OpenAPI = TypeVar("OpenAPI")
 Result = TypeVar("Result")
 
 
-def api_methods(api: Type[OpenAPIType]):
+def api_methods(api: Type[OpenAPI]):
   for name in dir(api):
     if name.startswith("__"):
       continue
@@ -40,16 +40,18 @@ def with_exception(
     try:
       (result, status, headers) = await method(*args, **kwargs)
 
-      if status >= 500:
-        raise FrontrunnerUnserviceableException("Service Exception", status=status, result=result)
-
-      if status >= 400:
-        raise FrontrunnerArgumentException("Client Exception", status=status, result=result)
-
-      return (result, headers)
-
     except Exception as cause:
       raise FrontrunnerUnserviceableException("OpenAPI Framework Exception") from cause
+
+    if status >= 500:
+      raise FrontrunnerUnserviceableException("Service Exception", status=status, result=result)
+
+    if status >= 400:
+      raise FrontrunnerArgumentException("Client Exception", status=status, result=result)
+
+    return (result, headers)
+
+  wrapped.__wrapped__ = method
 
   return wrapped
 
@@ -82,10 +84,12 @@ def with_debug_logging(
 
     return result
 
+  wrapped.__wrapped__ = method
+
   return wrapped
 
 
-def openapi_client(api_type: Type[OpenAPIType], *args, **kwargs) -> OpenAPIType:
+def openapi_client(api_type: Type[OpenAPI], *args, **kwargs) -> OpenAPI:
 
   # There's no good way around dynamic base types. Just ask mypy to overlook.
   # https://stackoverflow.com/a/59636248
