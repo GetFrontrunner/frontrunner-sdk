@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 
 from frontrunner_sdk.commands.injective.create_orders import CreateOrdersOperation # NOQA
 from frontrunner_sdk.commands.injective.create_orders import CreateOrdersRequest # NOQA
-from frontrunner_sdk.exceptions import FrontrunnerArgumentError # NOQA
+from frontrunner_sdk.exceptions import FrontrunnerArgumentException # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.models.order import Order
 from frontrunner_sdk.models.wallet import Wallet
@@ -23,39 +23,39 @@ class TestCreateOrdersOperation(IsolatedAsyncioTestCase):
     cmd.validate(self.deps)
 
   def test_validate_empty_orders_exception(self):
-    with self.assertRaises(FrontrunnerArgumentError):
+    with self.assertRaises(FrontrunnerArgumentException):
       CreateOrdersOperation(CreateOrdersRequest(
         wallet=self.wallet,
         orders=[],
       )).validate(self.deps)
 
   def test_validate_order_quantity_invalid_exception(self):
-    with self.assertRaises(FrontrunnerArgumentError):
+    with self.assertRaises(FrontrunnerArgumentException):
       CreateOrdersOperation(CreateOrdersRequest(
         wallet=self.wallet,
         orders=[Order.buy_for("<market-id>", -2, 0.75)],
       )).validate(self.deps)
 
   def test_validate_order_price_invalid_exception(self):
-    with self.assertRaises(FrontrunnerArgumentError):
+    with self.assertRaises(FrontrunnerArgumentException):
       CreateOrdersOperation(CreateOrdersRequest(
         wallet=self.wallet,
         orders=[Order.buy_for("<market-id>", 1, -0.25)],
       )).validate(self.deps)
 
-    with self.assertRaises(FrontrunnerArgumentError):
+    with self.assertRaises(FrontrunnerArgumentException):
       CreateOrdersOperation(CreateOrdersRequest(
         wallet=self.wallet,
         orders=[Order.buy_for("<market-id>", 1, 0)],
       )).validate(self.deps)
 
-    with self.assertRaises(FrontrunnerArgumentError):
+    with self.assertRaises(FrontrunnerArgumentException):
       CreateOrdersOperation(CreateOrdersRequest(
         wallet=self.wallet,
         orders=[Order.buy_for("<market-id>", 1, 1)],
       )).validate(self.deps)
 
-    with self.assertRaises(FrontrunnerArgumentError):
+    with self.assertRaises(FrontrunnerArgumentException):
       CreateOrdersOperation(CreateOrdersRequest(
         wallet=self.wallet,
         orders=[Order.buy_for("<market-id>", 1, 1.25)],

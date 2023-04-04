@@ -51,7 +51,7 @@ class FrontrunnerConfigurationException(FrontrunnerUserException):
     super().__init__(reason, **kwargs)
 
 
-class FrontrunnerArgumentError(FrontrunnerUserException):
+class FrontrunnerArgumentException(FrontrunnerUserException):
 
   def __init__(self, reason: str, **kwargs: Any):
     super().__init__(reason, **kwargs)
