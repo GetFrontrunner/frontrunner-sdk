@@ -34,5 +34,5 @@ class ListMarketsOperation(FrontrunnerOperation[ListMarketsRequest, ListMarketsR
 
   @log_operation(__name__)
   async def execute(self, deps: FrontrunnerIoC) -> ListMarketsResponse:
-    response = await deps.openapi_frontrunner_api.get_markets()
+    response, _ = await deps.openapi_frontrunner_api.get_markets()
     return ListMarketsResponse(markets=response)
