@@ -1,6 +1,7 @@
 import asyncio
 
 from dataclasses import dataclass
+from typing import Collection
 from typing import FrozenSet
 from typing import Iterable
 from typing import Optional
@@ -39,19 +40,19 @@ class FindMarketsRequest:
 
 @dataclass
 class FindMarketsResponse:
-  league_ids: Set[str]
+  league_ids: Collection[str]
   leagues: Iterable[League]
 
-  sport_event_ids: Set[str]
+  sport_event_ids: Collection[str]
   sport_events: Iterable[SportEvent]
 
-  sport_entity_ids: Set[str]
+  sport_entity_ids: Collection[str]
   sport_entities: Iterable[SportEntity]
 
-  prop_ids: Set[str]
+  prop_ids: Collection[str]
   props: Iterable[Prop]
 
-  market_ids: Set[str]
+  market_ids: Collection[str]
   markets: Iterable[Market]
 
 
@@ -164,15 +165,15 @@ class FindMarketsOperation(FrontrunnerOperation[FindMarketsRequest, FindMarketsR
 
     if not league_ids:
       return FindMarketsResponse(
-        league_ids=set(league_ids),
+        league_ids=list(league_ids),
         leagues=leagues,
-        sport_event_ids=set([]),
+        sport_event_ids=list([]),
         sport_events=[],
-        sport_entity_ids=set([]),
+        sport_entity_ids=list([]),
         sport_entities=[],
-        prop_ids=set([]),
+        prop_ids=list([]),
         props=[],
-        market_ids=set([]),
+        market_ids=list([]),
         markets=[],
       )
 
@@ -188,15 +189,15 @@ class FindMarketsOperation(FrontrunnerOperation[FindMarketsRequest, FindMarketsR
 
     if not sport_event_ids or not sport_entity_ids:
       return FindMarketsResponse(
-        league_ids=set(league_ids),
+        league_ids=list(league_ids),
         leagues=leagues,
-        sport_event_ids=set(sport_event_ids),
+        sport_event_ids=list(sport_event_ids),
         sport_events=sport_events,
-        sport_entity_ids=set(sport_entity_ids),
+        sport_entity_ids=list(sport_entity_ids),
         sport_entities=sport_entities,
-        prop_ids=set([]),
+        prop_ids=list([]),
         props=[],
-        market_ids=set([]),
+        market_ids=list([]),
         markets=[],
       )
 
@@ -204,15 +205,15 @@ class FindMarketsOperation(FrontrunnerOperation[FindMarketsRequest, FindMarketsR
 
     if not prop_ids:
       return FindMarketsResponse(
-        league_ids=set(league_ids),
+        league_ids=list(league_ids),
         leagues=leagues,
-        sport_event_ids=set(sport_event_ids),
+        sport_event_ids=list(sport_event_ids),
         sport_events=sport_events,
-        sport_entity_ids=set(sport_entity_ids),
+        sport_entity_ids=list(sport_entity_ids),
         sport_entities=sport_entities,
-        prop_ids=set(prop_ids),
+        prop_ids=list(prop_ids),
         props=props,
-        market_ids=set([]),
+        market_ids=list([]),
         markets=[],
       )
 
@@ -221,12 +222,12 @@ class FindMarketsOperation(FrontrunnerOperation[FindMarketsRequest, FindMarketsR
     return FindMarketsResponse(
       league_ids=set(league_ids),
       leagues=leagues,
-      sport_event_ids=set(sport_event_ids),
+      sport_event_ids=list(sport_event_ids),
       sport_events=sport_events,
-      sport_entity_ids=set(sport_entity_ids),
+      sport_entity_ids=list(sport_entity_ids),
       sport_entities=sport_entities,
-      prop_ids=set(prop_ids),
+      prop_ids=list(prop_ids),
       props=props,
-      market_ids=set(market_ids),
+      market_ids=list(market_ids),
       markets=markets,
     )
