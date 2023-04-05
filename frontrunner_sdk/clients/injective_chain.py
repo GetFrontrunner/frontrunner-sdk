@@ -179,7 +179,7 @@ class InjectiveChain:
       if not temp_result or not temp_result.orders or len(temp_result.orders) == 0:
         break
       results.extend(temp_result.orders)
-      skip += 1
+      skip += len(temp_result.orders)
       if temp_result.paging.to == temp_result.paging.total:
         break
 
