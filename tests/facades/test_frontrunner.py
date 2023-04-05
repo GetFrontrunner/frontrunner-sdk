@@ -5,15 +5,15 @@ from unittest.mock import patch
 
 from frontrunner_sdk.commands.frontrunner.list_markets import ListMarketsOperation # NOQA
 from frontrunner_sdk.commands.frontrunner.list_markets import ListMarketsResponse # NOQA
-from frontrunner_sdk.facades.frontrunner import FrontrunnerAsync
+from frontrunner_sdk.facades.frontrunner import FrontrunnerFacadeAsync
 from frontrunner_sdk.ioc import FrontrunnerIoC
 
 
-class TestInjectiveAsync(IsolatedAsyncioTestCase):
+class TestFrontrunnerFacadeAsync(IsolatedAsyncioTestCase):
 
   def setUp(self) -> None:
     self.deps = MagicMock(spec=FrontrunnerIoC)
-    self.frontrunner = FrontrunnerAsync(self.deps)
+    self.facade = FrontrunnerFacadeAsync(self.deps)
 
   @patch.object(
     ListMarketsOperation,
@@ -22,5 +22,5 @@ class TestInjectiveAsync(IsolatedAsyncioTestCase):
     return_value=ListMarketsResponse(markets=[]),
   )
   async def test_create_wallet(self, _execute: AsyncMock):
-    await self.frontrunner.list_markets()
+    await self.facade.list_markets()
     _execute.assert_awaited_once()

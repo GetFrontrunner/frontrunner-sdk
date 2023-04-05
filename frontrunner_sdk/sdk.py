@@ -1,9 +1,9 @@
 from functools import cached_property
 
-from frontrunner_sdk.facades.frontrunner import Frontrunner
-from frontrunner_sdk.facades.frontrunner import FrontrunnerAsync
-from frontrunner_sdk.facades.injective import Injective
-from frontrunner_sdk.facades.injective import InjectiveAsync
+from frontrunner_sdk.facades.frontrunner import FrontrunnerFacade
+from frontrunner_sdk.facades.frontrunner import FrontrunnerFacadeAsync
+from frontrunner_sdk.facades.injective import InjectiveFacade
+from frontrunner_sdk.facades.injective import InjectiveFacadeAsync
 from frontrunner_sdk.ioc import FrontrunnerIoC
 
 
@@ -14,12 +14,12 @@ class FrontrunnerSDKAsync:
     return FrontrunnerIoC()
 
   @cached_property
-  def frontrunner(self) -> FrontrunnerAsync:
-    return FrontrunnerAsync(self.dependencies)
+  def frontrunner(self) -> FrontrunnerFacadeAsync:
+    return FrontrunnerFacadeAsync(self.dependencies)
 
   @cached_property
-  def injective(self) -> InjectiveAsync:
-    return InjectiveAsync(self.dependencies)
+  def injective(self) -> InjectiveFacadeAsync:
+    return InjectiveFacadeAsync(self.dependencies)
 
 
 class FrontrunnerSDK:
@@ -29,9 +29,9 @@ class FrontrunnerSDK:
     return FrontrunnerIoC()
 
   @cached_property
-  def frontrunner(self) -> Frontrunner:
-    return Frontrunner(self.dependencies)
+  def frontrunner(self) -> FrontrunnerFacade:
+    return FrontrunnerFacade(self.dependencies)
 
   @cached_property
-  def injective(self) -> Injective:
-    return Injective(self.dependencies)
+  def injective(self) -> InjectiveFacade:
+    return InjectiveFacade(self.dependencies)

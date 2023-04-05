@@ -9,7 +9,7 @@ from frontrunner_sdk.openapi.frontrunner_api.models.market_status import MarketS
 from frontrunner_sdk.sync import SyncMixin
 
 
-class FrontrunnerAsync(FrontrunnerFacadeMixin):
+class FrontrunnerFacadeAsync(FrontrunnerFacadeMixin):
 
   def __init__(self, deps: FrontrunnerIoC):
     self.deps = deps
@@ -35,10 +35,10 @@ class FrontrunnerAsync(FrontrunnerFacadeMixin):
     return await self._run_operation(ListMarketsOperation, self.deps, request)
 
 
-class Frontrunner(SyncMixin):
+class FrontrunnerFacade(SyncMixin):
 
   def __init__(self, deps: FrontrunnerIoC):
-    self.impl = FrontrunnerAsync(deps)
+    self.impl = FrontrunnerFacadeAsync(deps)
 
   def list_markets(
     self,
