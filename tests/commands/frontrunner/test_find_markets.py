@@ -65,7 +65,7 @@ class TestFindMarketsOperation(IsolatedAsyncioTestCase):
     cmd = FindMarketsOperation(req)
     res = await cmd.execute(self.deps)
 
-    self.assertEqual(res.market_ids, set(["injective-market"]))
+    self.assertEqual(res.market_ids, ["injective-market"])
 
   async def test_find_markets_short_circuit(self):
     self.setup_frontrunner_api(leagues=[])
@@ -83,6 +83,6 @@ class TestFindMarketsOperation(IsolatedAsyncioTestCase):
     cmd = FindMarketsOperation(req)
     res = await cmd.execute(self.deps)
 
-    self.assertEqual(res.market_ids, set([]))
+    self.assertEqual(res.market_ids, [])
 
     self.deps.openapi_frontrunner_api.get_markets.assert_not_awaited()
