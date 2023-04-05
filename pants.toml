@@ -21,6 +21,9 @@ pants_ignore = [
   "chain", "data", "examples", "strategy", "utils",
 ]
 
+[python]
+interpreter_constraints = ["CPython==3.8.*"]
+
 [test]
 report = true
 use_coverage = true
@@ -47,6 +50,12 @@ extra_type_stubs = [
   "types-urllib3",
 ]
 
+[isort]
+interpreter_constraints =[ "CPython==3.8.*" ]
+
+[yapf]
+interpreter_constraints =[ "CPython==3.8.*" ]
+
 [pytest]
 version = "pytest~=7.2.2"
 lockfile = "pytest.lockfile"
@@ -61,6 +70,7 @@ extra_requirements = [
 
 [coverage-py]
 report = "xml"
+interpreter_constraints =[ "CPython==3.8.*" ]
 
 [shfmt]
 
