@@ -95,7 +95,7 @@ class InjectiveChain:
     )
 
     logger.debug(
-      "Calling Injective chain to simulate transaction with messages=%s account=%s chain_id=%s",
+      "Calling Injective chain to simulate transaction with messages=%s account=%s sequence=%s chain_id=%s",
       str(messages),
       wallet.account_number,
       wallet.sequence,
@@ -164,6 +164,28 @@ class InjectiveChain:
     return await self._send_transaction(wallet, sequence, messages, gas, fee)
 
   @log_external_exceptions(__name__)
+  async def get_all_open_orders(
+    self,
+    wallet: Wallet,
+  ):
+    results = []
+    skip = 0
+    while True:
+      temp_result = await self.client.get_derivative_subaccount_orders(
+        wallet.subaccount_address(),
+        skip=skip,
+        limit=100
+      )
+      if not temp_result or not temp_result.orders or len(temp_result.orders) == 0:
+        break
+      results.extend(temp_result.orders)
+      skip += 1
+      if temp_result.paging.to == temp_result.paging.total:
+        break
+
+    return results
+
+  @log_external_exceptions(__name__)
   async def create_orders(
     self,
     wallet: Wallet,
@@ -174,6 +196,20 @@ class InjectiveChain:
     batch_message = self.composer.MsgBatchUpdateOrders(
       wallet.injective_address,
       binary_options_orders_to_create=order_messages,
+    )
+
+    return await self._execute_transaction(wallet, [batch_message])
+
+  @log_external_exceptions(__name__)
+  async def cancel_all_orders(
+    self,
+    wallet: Wallet,
+  ) -> TxResponse:
+    open_orders = await self.get_all_open_orders(wallet)
+    injective_market_ids = list({order.market_id for order in open_orders})
+    batch_message = self.composer.MsgBatchUpdateOrders(
+      wallet.injective_address,
+      binary_options_market_ids_to_cancel_all=injective_market_ids,
     )
 
     return await self._execute_transaction(wallet, [batch_message])
