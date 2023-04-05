@@ -1,6 +1,7 @@
 import functools
 import logging
 
+from typing import Any
 from typing import Awaitable
 from typing import Callable
 from typing import Mapping
@@ -32,11 +33,11 @@ def api_methods(api: Type[OpenAPI]):
 
 
 def with_exception(
-  method: Callable[..., Awaitable[Tuple[dict, int, Mapping[str, str]]]]
-) -> Callable[..., Awaitable[Tuple[dict, Mapping[str, str]]]]:
+  method: Callable[..., Awaitable[Tuple[Any, int, Mapping[str, str]]]]
+) -> Callable[..., Awaitable[Tuple[Any, int, Mapping[str, str]]]]:
 
   @functools.wraps(method)
-  async def wrapped(*args, **kwargs) -> Tuple[dict, Mapping[str, str]]:
+  async def wrapped(*args, **kwargs) -> Tuple[Any, int, Mapping[str, str]]:
     try:
       (result, status, headers) = await method(*args, **kwargs)
 
@@ -49,7 +50,21 @@ def with_exception(
     if status >= 400:
       raise FrontrunnerArgumentException("Client Exception", status=status, result=result)
 
-    return (result, headers)
+    return (result, status, headers)
+
+  wrapped.__wrapped__ = method # type: ignore
+
+  return wrapped
+
+
+def with_response_only(
+  method: Callable[..., Awaitable[Tuple[Any, int, Mapping[str, str]]]],
+) -> Callable[..., Awaitable[Any]]:
+
+  @functools.wraps(method)
+  async def wrapped(*args, **kwargs) -> Tuple[Any]:
+    (response, _, _) = await method(*args, **kwargs)
+    return response
 
   wrapped.__wrapped__ = method # type: ignore
 
@@ -102,6 +117,7 @@ def openapi_client(api_type: Type[OpenAPI], *args, **kwargs) -> OpenAPI:
     replacement = method_with_http_info
     replacement = with_exception(replacement)
     replacement = with_debug_logging(api_type, replacement)
+    replacement = with_response_only(replacement)
 
     setattr(OpenAPIClientWrapper, name, replacement)
 

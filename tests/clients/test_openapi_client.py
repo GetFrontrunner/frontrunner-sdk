@@ -7,6 +7,7 @@ from frontrunner_sdk.clients.openapi_client import api_methods
 from frontrunner_sdk.clients.openapi_client import openapi_client
 from frontrunner_sdk.clients.openapi_client import with_debug_logging
 from frontrunner_sdk.clients.openapi_client import with_exception
+from frontrunner_sdk.clients.openapi_client import with_response_only
 from frontrunner_sdk.exceptions import FrontrunnerArgumentException
 from frontrunner_sdk.exceptions import FrontrunnerUnserviceableException
 
@@ -70,13 +71,16 @@ class TestOpenAPIClient(IsolatedAsyncioTestCase):
 
   async def test_with_exception_good(self):
     method = with_exception(self.api.respond_good_with_http_info)
-    result, _ = await method("hello", 123, True)
+    result, status, headers = await method("hello", 123, True)
 
     self.assertEqual(result, {
       "a": "hello",
       "b": 123,
       "c": True,
     })
+
+    self.assertEqual(status, 200)
+    self.assertEqual(headers, {})
 
     self.assertEqual(method.__wrapped__, self.api.respond_good_with_http_info)
 
@@ -98,6 +102,17 @@ class TestOpenAPIClient(IsolatedAsyncioTestCase):
     with self.assertRaises(FrontrunnerUnserviceableException):
       await method("hello", 123, c=True)
 
+  async def test_with_response_only(self):
+    method = with_response_only(self.api.respond_good_with_http_info)
+
+    result = await method("hello", 123, c=True)
+
+    self.assertEqual(result, {
+      "a": "hello",
+      "b": 123,
+      "c": True,
+    })
+
   async def test_with_debug_logging(self):
     method = with_debug_logging(self.api, self.api.respond_good_with_http_info)
 
@@ -108,8 +123,8 @@ class TestOpenAPIClient(IsolatedAsyncioTestCase):
 
       messages = [record.getMessage() for record in logs.records]
 
-      self.assertRegexpMatches(messages[0], r"^Calling OpenAPI\[ExampleApi\] to respond_good")
-      self.assertRegexpMatches(messages[1], r"^Received response from OpenAPI\[ExampleApi\] respond_good")
+      self.assertRegex(messages[0], r"^Calling OpenAPI\[ExampleApi\] to respond_good")
+      self.assertRegex(messages[1], r"^Received response from OpenAPI\[ExampleApi\] respond_good")
 
   async def test_openapi_client(self):
     wrapped = openapi_client(ExampleApi, "a-name")
