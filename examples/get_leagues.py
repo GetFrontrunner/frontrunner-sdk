@@ -8,6 +8,7 @@ from pprint import pprint
 from frontrunner_sdk.openapi.frontrunner_api import FrontrunnerApi, ApiClient
 from frontrunner_sdk.openapi.frontrunner_api.rest import ApiException
 from frontrunner_sdk.openapi.frontrunner_api import Configuration, MarketStatus
+from frontrunner_sdk.ioc import FrontrunnerIoC
 
 def parse_cli_arguments() -> Namespace:
 
@@ -19,6 +20,8 @@ def parse_cli_arguments() -> Namespace:
 
 
 async def run_get_leagues(namespace: Namespace, configuration: Configuration):
+  app = FrontrunnerIoC()
+  api_instance = app.openapi_frontrunner_api
   api_instance = FrontrunnerApi(ApiClient(configuration))
 
   kwargs = {}
