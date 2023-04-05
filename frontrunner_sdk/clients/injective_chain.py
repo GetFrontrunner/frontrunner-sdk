@@ -172,9 +172,7 @@ class InjectiveChain:
     skip = 0
     while True:
       temp_result = await self.client.get_derivative_subaccount_orders(
-        wallet.subaccount_address(),
-        skip=skip,
-        limit=100
+        wallet.subaccount_address(), skip=skip, limit=100
       )
       if not temp_result or not temp_result.orders or len(temp_result.orders) == 0:
         break

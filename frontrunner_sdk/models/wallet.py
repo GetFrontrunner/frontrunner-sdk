@@ -51,7 +51,7 @@ class Wallet:
   def _from_mnemonic(clz, mnemonic: str):
     private_key = PrivateKey.from_mnemonic(mnemonic)
     return clz(mnemonic=mnemonic, private_key=private_key)
-  
+
   @classmethod
   def _from_private_key(clz, private_key_hex: str):
     private_key = PrivateKey.from_hex(private_key_hex)
