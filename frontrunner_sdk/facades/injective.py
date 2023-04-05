@@ -20,7 +20,7 @@ from frontrunner_sdk.models.wallet import Wallet
 from frontrunner_sdk.sync import SyncMixin
 
 
-class InjectiveAsync(FrontrunnerFacadeMixin):
+class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
 
   def __init__(self, deps: FrontrunnerIoC):
     self.deps = deps
@@ -42,10 +42,10 @@ class InjectiveAsync(FrontrunnerFacadeMixin):
     return await self._run_operation(CreateOrdersOperation, self.deps, request)
 
 
-class Injective(SyncMixin):
+class InjectiveFacade(SyncMixin):
 
   def __init__(self, deps: FrontrunnerIoC):
-    self.impl = InjectiveAsync(deps)
+    self.impl = InjectiveFacadeAsync(deps)
 
   def create_wallet(self) -> CreateWalletResponse:
     return self._synchronously(self.impl.create_wallet)

@@ -11,17 +11,17 @@ from frontrunner_sdk.commands.injective.fund_wallet_from_faucet import FundWalle
 from frontrunner_sdk.commands.injective.fund_wallet_from_faucet import FundWalletFromFaucetResponse # NOQA
 from frontrunner_sdk.commands.injective.load_wallet_from_mnemonic import LoadWalletFromMnemonicOperation # NOQA
 from frontrunner_sdk.commands.injective.load_wallet_from_mnemonic import LoadWalletFromMnemonicResponse # NOQA
-from frontrunner_sdk.facades.injective import InjectiveAsync
+from frontrunner_sdk.facades.injective import InjectiveFacadeAsync
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.models.order import Order
 from frontrunner_sdk.models.wallet import Wallet
 
 
-class TestInjectiveAsync(IsolatedAsyncioTestCase):
+class TestInjectiveFacadeAsync(IsolatedAsyncioTestCase):
 
   def setUp(self) -> None:
     self.deps = MagicMock(spec=FrontrunnerIoC)
-    self.injective = InjectiveAsync(self.deps)
+    self.facade = InjectiveFacadeAsync(self.deps)
 
     self.wallet = Wallet._new()
 
@@ -32,7 +32,7 @@ class TestInjectiveAsync(IsolatedAsyncioTestCase):
     return_value=CreateWalletResponse(wallet=Wallet._new()),
   )
   async def test_create_wallet(self, _execute: AsyncMock):
-    await self.injective.create_wallet()
+    await self.facade.create_wallet()
     _execute.assert_awaited_once()
 
   @patch.object(
@@ -43,7 +43,7 @@ class TestInjectiveAsync(IsolatedAsyncioTestCase):
   )
   async def test_load_wallet_from_mnemonic(self, _execute: AsyncMock):
     mnemonic = Wallet._new().mnemonic
-    await self.injective.load_wallet_from_mnemonic(mnemonic)
+    await self.facade.load_wallet_from_mnemonic(mnemonic)
     _execute.assert_awaited_once()
 
   @patch.object(
@@ -53,7 +53,7 @@ class TestInjectiveAsync(IsolatedAsyncioTestCase):
     return_value=FundWalletFromFaucetResponse(message="Works"),
   )
   async def test_fund_wallet_from_faucet(self, _execute: AsyncMock):
-    await self.injective.fund_wallet_from_faucet(self.wallet)
+    await self.facade.fund_wallet_from_faucet(self.wallet)
     _execute.assert_awaited_once()
 
   @patch.object(
@@ -63,5 +63,5 @@ class TestInjectiveAsync(IsolatedAsyncioTestCase):
     return_value=CreateOrdersResponse(transaction="<hash>"),
   )
   async def test_create_orders(self, _execute: AsyncMock):
-    await self.injective.create_orders(self.wallet, [Order.buy_against("<marketid>", 10, 0.7)])
+    await self.facade.create_orders(self.wallet, [Order.buy_against("<marketid>", 10, 0.7)])
     _execute.assert_awaited_once()
