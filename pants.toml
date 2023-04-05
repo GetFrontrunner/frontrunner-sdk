@@ -68,6 +68,8 @@ extra_requirements = [
   "pytest-aiohttp",
 ]
 
+# interpreter_constraints = ["CPython==3.8.*"]
+
 [coverage-py]
 report = "xml"
 interpreter_constraints = ["CPython==3.8.*"]
