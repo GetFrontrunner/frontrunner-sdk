@@ -28,6 +28,8 @@ interpreter_constraints = ["CPython==3.8.*"]
 report = true
 use_coverage = true
 
+interpreter_constraints = ["CPython==3.8.*"]
+
 [flake8]
 version = "flake8~=5.0.4"
 lockfile = "flake8.lockfile"
@@ -67,8 +69,6 @@ extra_requirements = [
   "pytest-xdist",
   "pytest-aiohttp",
 ]
-
-interpreter_constraints = ["CPython==3.8.*"]
 
 [coverage-py]
 report = "xml"
