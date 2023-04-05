@@ -1,8 +1,9 @@
+from typing import Iterable
 from typing import Optional
 
-from frontrunner_sdk.commands.frontrunner.list_markets import ListMarketsOperation # NOQA
-from frontrunner_sdk.commands.frontrunner.list_markets import ListMarketsRequest # NOQA
-from frontrunner_sdk.commands.frontrunner.list_markets import ListMarketsResponse # NOQA
+from frontrunner_sdk.commands.frontrunner.find_markets import FindMarketsOperation # NOQA
+from frontrunner_sdk.commands.frontrunner.find_markets import FindMarketsRequest # NOQA
+from frontrunner_sdk.commands.frontrunner.find_markets import FindMarketsResponse # NOQA
 from frontrunner_sdk.facades.base import FrontrunnerFacadeMixin # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.openapi.frontrunner_api.models.market_status import MarketStatus # NOQA
@@ -14,25 +15,27 @@ class FrontrunnerFacadeAsync(FrontrunnerFacadeMixin):
   def __init__(self, deps: FrontrunnerIoC):
     self.deps = deps
 
-  async def list_markets(
+  async def find_markets(
     self,
-    id: Optional[str] = None,
-    injective_id: Optional[str] = None,
-    prop_id: Optional[str] = None,
-    event_id: Optional[str] = None,
-    league_id: Optional[str] = None,
-    status: Optional[MarketStatus] = None,
-  ) -> ListMarketsResponse:
-    request = ListMarketsRequest(
-      id=id,
-      injective_id=injective_id,
-      prop_id=prop_id,
-      event_id=event_id,
-      league_id=league_id,
-      status=status,
+    sports: Optional[Iterable[str]] = None,
+    league_names: Optional[Iterable[str]] = None,
+    event_types: Optional[Iterable[str]] = None,
+    sport_entity_names: Optional[Iterable[str]] = None,
+    sport_entity_abbreviations: Optional[Iterable[str]] = None,
+    prop_types: Optional[Iterable[str]] = None,
+    market_statuses: Optional[Iterable[str]] = None,
+  ) -> FindMarketsResponse:
+    request = FindMarketsRequest(
+      sports=sports,
+      league_names=league_names,
+      event_types=event_types,
+      sport_entity_names=sport_entity_names,
+      sport_entity_abbreviations=sport_entity_abbreviations,
+      prop_types=prop_types,
+      market_statuses=market_statuses or [MarketStatus.ACTIVE],
     )
 
-    return await self._run_operation(ListMarketsOperation, self.deps, request)
+    return await self._run_operation(FindMarketsOperation, self.deps, request)
 
 
 class FrontrunnerFacade(SyncMixin):
@@ -40,21 +43,23 @@ class FrontrunnerFacade(SyncMixin):
   def __init__(self, deps: FrontrunnerIoC):
     self.impl = FrontrunnerFacadeAsync(deps)
 
-  def list_markets(
+  def find_markets(
     self,
-    id: Optional[str] = None,
-    injective_id: Optional[str] = None,
-    prop_id: Optional[str] = None,
-    event_id: Optional[str] = None,
-    league_id: Optional[str] = None,
-    status: Optional[MarketStatus] = None,
-  ) -> ListMarketsResponse:
+    sports: Optional[Iterable[str]] = None,
+    league_names: Optional[Iterable[str]] = None,
+    event_types: Optional[Iterable[str]] = None,
+    sport_entity_names: Optional[Iterable[str]] = None,
+    sport_entity_abbreviations: Optional[Iterable[str]] = None,
+    prop_types: Optional[Iterable[str]] = None,
+    market_statuses: Optional[Iterable[MarketStatus]] = None,
+  ) -> FindMarketsResponse:
     return self._synchronously(
-      self.impl.list_markets,
-      id=id,
-      injective_id=injective_id,
-      prop_id=prop_id,
-      event_id=event_id,
-      league_id=league_id,
-      status=status,
+      self.impl.find_markets,
+      sports=sports,
+      league_names=league_names,
+      event_types=event_types,
+      sport_entity_names=sport_entity_names,
+      sport_entity_abbreviations=sport_entity_abbreviations,
+      prop_types=prop_types,
+      market_statuses=market_statuses,
     )
