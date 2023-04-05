@@ -9,8 +9,8 @@ from frontrunner_sdk.commands.injective.create_wallet import CreateWalletOperati
 from frontrunner_sdk.commands.injective.create_wallet import CreateWalletResponse # NOQA
 from frontrunner_sdk.commands.injective.fund_wallet_from_faucet import FundWalletFromFaucetOperation # NOQA
 from frontrunner_sdk.commands.injective.fund_wallet_from_faucet import FundWalletFromFaucetResponse # NOQA
-from frontrunner_sdk.commands.injective.load_wallet_from_mnemonic import LoadWalletFromMnemonicOperation # NOQA
-from frontrunner_sdk.commands.injective.load_wallet_from_mnemonic import LoadWalletFromMnemonicResponse # NOQA
+from frontrunner_sdk.commands.injective.load_wallet import LoadWalletFromMnemonicOperation # NOQA
+from frontrunner_sdk.commands.injective.load_wallet import LoadWalletFromMnemonicResponse # NOQA
 from frontrunner_sdk.facades.injective import InjectiveFacadeAsync
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.models.order import Order

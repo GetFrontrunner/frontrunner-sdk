@@ -15,6 +15,15 @@ class LoadWalletFromMnemonicRequest:
 class LoadWalletFromMnemonicResponse:
   wallet: Wallet
 
+@dataclass
+class LoadWalletFromPrivateKeyRequest:
+  private_key: str
+
+
+@dataclass
+class LoadWalletFromPrivateKeyResponse:
+  wallet: Wallet
+
 
 class LoadWalletFromMnemonicOperation(FrontrunnerOperation[LoadWalletFromMnemonicRequest,
                                                            LoadWalletFromMnemonicResponse]):
@@ -30,3 +39,18 @@ class LoadWalletFromMnemonicOperation(FrontrunnerOperation[LoadWalletFromMnemoni
     wallet = Wallet._from_mnemonic(self.request.mnemonic)
     await deps.injective_light_client_daemon.initialize_wallet(wallet)
     return LoadWalletFromMnemonicResponse(wallet=wallet)
+
+class LoadWalletFromPrivateKeyOperation(FrontrunnerOperation[LoadWalletFromPrivateKeyRequest,
+                                                           LoadWalletFromPrivateKeyResponse]):
+
+  def __init__(self, request: LoadWalletFromPrivateKeyRequest):
+    super().__init__(request)
+
+  def validate(self, deps: FrontrunnerIoC) -> None:
+    pass
+
+  @log_operation(__name__)
+  async def execute(self, deps: FrontrunnerIoC) -> LoadWalletFromPrivateKeyResponse:
+    wallet = Wallet._from_mnemonic(self.request.private_key)
+    # await deps.injective_light_client_daemon.initialize_wallet(wallet)
+    return LoadWalletFromPrivateKeyResponse(wallet=wallet)

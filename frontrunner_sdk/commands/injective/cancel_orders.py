@@ -16,7 +16,7 @@ class CancelOrdersResponse:
   transaction: str
 
 
-class CreateOrdersOperation(FrontrunnerOperation[CancelOrdersRequest, CancelOrdersResponse]):
+class CancelAllOrdersOperation(FrontrunnerOperation[CancelOrdersRequest, CancelOrdersResponse]):
 
   def __init__(self, request: CancelOrdersRequest):
     super().__init__(request)

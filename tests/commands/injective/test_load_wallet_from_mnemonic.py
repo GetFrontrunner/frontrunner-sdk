@@ -2,9 +2,9 @@ from unittest import IsolatedAsyncioTestCase
 from unittest.mock import AsyncMock
 from unittest.mock import MagicMock
 
-from frontrunner_sdk.commands.injective.load_wallet_from_mnemonic import LoadWalletFromMnemonicOperation # NOQA
-from frontrunner_sdk.commands.injective.load_wallet_from_mnemonic import LoadWalletFromMnemonicRequest # NOQA
-from frontrunner_sdk.commands.injective.load_wallet_from_mnemonic import LoadWalletFromMnemonicResponse # NOQA
+from frontrunner_sdk.commands.injective.load_wallet import LoadWalletFromMnemonicOperation # NOQA
+from frontrunner_sdk.commands.injective.load_wallet import LoadWalletFromMnemonicRequest # NOQA
+from frontrunner_sdk.commands.injective.load_wallet import LoadWalletFromMnemonicResponse # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.models.wallet import Wallet
 

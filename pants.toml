@@ -80,3 +80,6 @@ args = [
 
 [anonymous-telemetry]
 enabled = false
+
+[repl]
+shell = "ipython"
