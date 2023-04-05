@@ -13,6 +13,7 @@ jobs:
         uses: pantsbuild/actions/init-pants@main
         with:
           named-caches-hash: ${{ hashFiles('**/*.lockfile') }}
+          setup-python-for-plugins: "true"
       - name: Run Lint
         run: |
           pants lint ::
