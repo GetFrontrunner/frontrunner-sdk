@@ -2,8 +2,8 @@ from unittest import IsolatedAsyncioTestCase
 from unittest.mock import AsyncMock
 from unittest.mock import MagicMock
 
-from frontrunner_sdk.commands.injective.cancel_orders import CancelOrdersRequest # NOQA
 from frontrunner_sdk.commands.injective.cancel_orders import CancelAllOrdersOperation # NOQA
+from frontrunner_sdk.commands.injective.cancel_orders import CancelOrdersRequest # NOQA
 from frontrunner_sdk.exceptions import FrontrunnerArgumentException # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.models.order import Order
