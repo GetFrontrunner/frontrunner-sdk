@@ -14,7 +14,7 @@ class TestCancelOrdersOperation(IsolatedAsyncioTestCase):
   def setUp(self) -> None:
     self.deps = MagicMock(spec=FrontrunnerIoC)
     self.wallet = Wallet._new()
-    self.market_ids = ["0x1234", "0x5678"]
+    self.market_ids = {"0x1234", "0x5678"}
     self.order_responses = [MagicMock(market_id=id) for id in self.market_ids]
 
   def test_validate(self):

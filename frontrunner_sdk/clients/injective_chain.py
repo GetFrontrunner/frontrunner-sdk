@@ -3,6 +3,7 @@ import logging
 from typing import cast
 from typing import Iterable
 from typing import List
+from typing import Set
 from typing import Tuple
 
 from google.protobuf.message import Message
@@ -202,9 +203,8 @@ class InjectiveChain:
   async def cancel_all_orders_for_markets(
     self,
     wallet: Wallet,
-    injective_market_ids: List[str],
+    injective_market_ids: Set[str],
   ) -> TxResponse:
-    injective_market_ids = list({id for id in injective_market_ids})
     batch_message = self.composer.MsgBatchUpdateOrders(
       wallet.injective_address,
       subaccount_id=wallet.subaccount_address(),
