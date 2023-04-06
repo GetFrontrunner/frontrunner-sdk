@@ -22,13 +22,11 @@ pants_ignore = [
 ]
 
 [python]
-interpreter_constraints = ["CPython==3.8.*"]
+interpreter_constraints = ["CPython>=3.8.*,<4"]
 
 [test]
 report = true
 use_coverage = true
-
-interpreter_constraints = ["CPython==3.8.*"]
 
 [flake8]
 version = "flake8~=5.0.4"
@@ -53,10 +51,10 @@ extra_type_stubs = [
 ]
 
 [isort]
-interpreter_constraints = ["CPython==3.8.*"]
+interpreter_constraints = ["CPython>=3.8.*,<4"]
 
 [yapf]
-interpreter_constraints = ["CPython==3.8.*"]
+interpreter_constraints = ["CPython>=3.8.*,<4"]
 
 [pytest]
 version = "pytest~=7.2.2"
@@ -72,7 +70,7 @@ extra_requirements = [
 
 [coverage-py]
 report = "xml"
-interpreter_constraints = ["CPython==3.8.*"]
+interpreter_constraints = ["CPython>=3.8.*,<4"]
 
 [shfmt]
 
