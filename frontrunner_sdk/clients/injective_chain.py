@@ -3,6 +3,7 @@ import logging
 from typing import cast
 from typing import Iterable
 from typing import List
+from typing import Set
 from typing import Tuple
 
 from google.protobuf.message import Message
@@ -95,7 +96,7 @@ class InjectiveChain:
     )
 
     logger.debug(
-      "Calling Injective chain to simulate transaction with messages=%s account=%s chain_id=%s",
+      "Calling Injective chain to simulate transaction with messages=%s account=%s sequence=%s chain_id=%s",
       str(messages),
       wallet.account_number,
       wallet.sequence,
@@ -164,6 +165,26 @@ class InjectiveChain:
     return await self._send_transaction(wallet, sequence, messages, gas, fee)
 
   @log_external_exceptions(__name__)
+  async def get_all_open_orders(
+    self,
+    wallet: Wallet,
+  ):
+    results = []
+    skip = 0
+    while True:
+      temp_result = await self.client.get_derivative_subaccount_orders(
+        wallet.subaccount_address(), skip=skip, limit=100
+      )
+      if not temp_result or not temp_result.orders or len(temp_result.orders) == 0:
+        break
+      results.extend(temp_result.orders)
+      skip += len(temp_result.orders)
+      if temp_result.paging.to == temp_result.paging.total:
+        break
+
+    return results
+
+  @log_external_exceptions(__name__)
   async def create_orders(
     self,
     wallet: Wallet,
@@ -174,6 +195,20 @@ class InjectiveChain:
     batch_message = self.composer.MsgBatchUpdateOrders(
       wallet.injective_address,
       binary_options_orders_to_create=order_messages,
+    )
+
+    return await self._execute_transaction(wallet, [batch_message])
+
+  @log_external_exceptions(__name__)
+  async def cancel_all_orders_for_markets(
+    self,
+    wallet: Wallet,
+    injective_market_ids: Set[str],
+  ) -> TxResponse:
+    batch_message = self.composer.MsgBatchUpdateOrders(
+      wallet.injective_address,
+      subaccount_id=wallet.subaccount_address(),
+      binary_options_market_ids_to_cancel_all=injective_market_ids,
     )
 
     return await self._execute_transaction(wallet, [batch_message])
