@@ -207,6 +207,7 @@ class InjectiveChain:
     injective_market_ids = list({order.market_id for order in open_orders})
     batch_message = self.composer.MsgBatchUpdateOrders(
       wallet.injective_address,
+      subaccount_id=wallet.subaccount_address(),
       binary_options_market_ids_to_cancel_all=injective_market_ids,
     )
 
