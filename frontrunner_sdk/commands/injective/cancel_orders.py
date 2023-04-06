@@ -26,5 +26,7 @@ class CancelAllOrdersOperation(FrontrunnerOperation[CancelOrdersRequest, CancelO
 
   @log_operation(__name__)
   async def execute(self, deps: FrontrunnerIoC) -> CancelOrdersResponse:
-    response = await deps.injective_chain.cancel_all_orders(self.request.wallet)
+    open_orders = await deps.injective_chain.get_all_open_orders(self.request.wallet)
+    injective_market_ids = list({order.market_id for order in open_orders})
+    response = await deps.injective_chain.cancel_all_orders_for_markets(self.request.wallet, injective_market_ids)
     return CancelOrdersResponse(transaction=response.txhash)

@@ -199,12 +199,12 @@ class InjectiveChain:
     return await self._execute_transaction(wallet, [batch_message])
 
   @log_external_exceptions(__name__)
-  async def cancel_all_orders(
-    self,
-    wallet: Wallet,
+  async def cancel_all_orders_for_markets(
+          self,
+          wallet: Wallet,
+          injective_market_ids: List[str],
   ) -> TxResponse:
-    open_orders = await self.get_all_open_orders(wallet)
-    injective_market_ids = list({order.market_id for order in open_orders})
+    injective_market_ids = list({id for id in injective_market_ids})
     batch_message = self.composer.MsgBatchUpdateOrders(
       wallet.injective_address,
       subaccount_id=wallet.subaccount_address(),
