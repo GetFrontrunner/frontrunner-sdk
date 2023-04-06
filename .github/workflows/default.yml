@@ -6,16 +6,11 @@ jobs:
 
   Code-Quality:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.8, 3.11]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Setup Python
         uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
       - name: Setup Pants
         uses: pantsbuild/actions/init-pants@main
         with:
@@ -32,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8, 3.11]
+        python-version: [3.8, 3.9, 3.10, 3.11]
     permissions:
       contents: read
       checks: write
