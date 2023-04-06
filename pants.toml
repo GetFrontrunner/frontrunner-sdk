@@ -21,12 +21,9 @@ pants_ignore = [
   "chain", "data", "examples", "strategy", "utils",
 ]
 
-<<<<<<< HEAD
 [python]
 interpreter_constraints = ["CPython>=3.8.*,<4"]
 
-=======
->>>>>>> parent of 3a0069e (pin Python versions to 3.8.* to fix local environment (#30))
 [test]
 report = true
 use_coverage = true
@@ -44,8 +41,6 @@ extra_requirements = [
 version = "mypy~=1.1.1"
 lockfile = "mypy.lockfile"
 
-args = ["--python-version 3.8"]
-
 extra_type_stubs = [
   "types-python-dateutil",
   "types-protobuf",
@@ -53,15 +48,6 @@ extra_type_stubs = [
   "types-urllib3",
 ]
 
-<<<<<<< HEAD
-[isort]
-interpreter_constraints = ["CPython>=3.8.*,<4"]
-
-[yapf]
-interpreter_constraints = ["CPython>=3.8.*,<4"]
-
-=======
->>>>>>> parent of 3a0069e (pin Python versions to 3.8.* to fix local environment (#30))
 [pytest]
 version = "pytest~=7.2.2"
 lockfile = "pytest.lockfile"
@@ -76,10 +62,6 @@ extra_requirements = [
 
 [coverage-py]
 report = "xml"
-<<<<<<< HEAD
-interpreter_constraints = ["CPython>=3.8.*,<4"]
-=======
->>>>>>> parent of 3a0069e (pin Python versions to 3.8.* to fix local environment (#30))
 
 [shfmt]
 
