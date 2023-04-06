@@ -22,7 +22,7 @@ pants_ignore = [
 ]
 
 [python]
-interpreter_constraints = ["CPython==3.8.*"]
+interpreter_constraints = ["CPython>=3.8.*,<4"]
 
 [test]
 report = true
@@ -41,20 +41,12 @@ extra_requirements = [
 version = "mypy~=1.1.1"
 lockfile = "mypy.lockfile"
 
-args = ["--python-version 3.8"]
-
 extra_type_stubs = [
   "types-python-dateutil",
   "types-protobuf",
   "types-six",
   "types-urllib3",
 ]
-
-[isort]
-interpreter_constraints =[ "CPython==3.8.*" ]
-
-[yapf]
-interpreter_constraints =[ "CPython==3.8.*" ]
 
 [pytest]
 version = "pytest~=7.2.2"
@@ -70,7 +62,6 @@ extra_requirements = [
 
 [coverage-py]
 report = "xml"
-interpreter_constraints =[ "CPython==3.8.*" ]
 
 [shfmt]
 
