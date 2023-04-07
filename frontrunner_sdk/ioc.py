@@ -9,7 +9,7 @@ from frontrunner_sdk.clients.injective_chain import InjectiveChain
 from frontrunner_sdk.clients.injective_faucet import InjectiveFaucet
 from frontrunner_sdk.clients.injective_light_client_daemon import InjectiveLightClientDaemon # NOQA
 from frontrunner_sdk.clients.openapi_client import openapi_client # NOQA
-from frontrunner_sdk.config import DEFAULT_FRONTRUNNER_CONFIG
+from frontrunner_sdk.config import DEFAULT
 from frontrunner_sdk.config.base import FrontrunnerConfig
 from frontrunner_sdk.exceptions import FrontrunnerConfigurationException
 from frontrunner_sdk.models.wallet import Wallet
@@ -23,7 +23,7 @@ class FrontrunnerIoC(SyncMixin):
 
   @property
   def config(self) -> FrontrunnerConfig:
-    return DEFAULT_FRONTRUNNER_CONFIG
+    return DEFAULT
 
   @cached_property
   def network(self) -> Network:
