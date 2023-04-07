@@ -1,46 +1,54 @@
 import asyncio
-import argparse
-from os import environ
-from argparse import Namespace
-from typing import Optional
+import click
 from pprint import pprint
-from frontrunner_sdk.openapi.frontrunner_api import FrontrunnerApi, ApiClient
+
+from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.openapi.frontrunner_api.rest import ApiException
-from frontrunner_sdk.openapi.frontrunner_api import Configuration, MarketStatus
 
 
-def parse_cli_arguments() -> Namespace:
-  parser = argparse.ArgumentParser()
+@click.group()
+def cli():
+    pass
 
-  parser.add_argument("--id", help="frontrunner market id")
-  parser.add_argument("--inj_id", help="injective market id")
-  parser.add_argument("--prop_id", help="frontrunner prop id")
-  parser.add_argument("--event_id", help="frontrunner sport event id")
-  parser.add_argument("--league_id", help="frontrunner league id")
-  parser.add_argument("--status", help="frontrunner market status",choices=['active', 'closed'], default='active')
-  args = parser.parse_args()
-  return args
 
-def valid_args(args):
-  if (args['status']=='closed' and len(args)==1):
-    raise Exception("Need to provide at least one of id, inj_id, prop_id, event_id, league_id when market status is closed")
+@click.command()
+@click.option("--id", help="frontrunner market id", type=str)
+@click.option("--inj_id", help="injective market id", type=str)
+@click.option("--prop_id", help="frontrunner prop id", type=str)
+@click.option("--event_id", help="frontrunner sport event id", type=str)
+@click.option("--league_id", help="frontrunner league id", type=str)
+def active(**kwargs):
+  parameters = {}
+  for key, value in kwargs.items():
+    if value is not None:
+      parameters[key] = value
+  return parameters
 
-async def run_get_markets(namespace: Namespace, configuration: Configuration):
-  api_instance = FrontrunnerApi(ApiClient(configuration))
 
-  kwargs = {}
+@click.command()
+@click.option("--id", help="frontrunner market id", type=str)
+@click.option("--inj_id", help="injective market id", type=str)
+@click.option("--prop_id", help="frontrunner prop id", type=str)
+@click.option("--event_id", help="frontrunner sport event id", type=str)
+@click.option("--league_id", help="frontrunner league id", type=str)
+def closed(**kwargs):
+    if any(value is not None for value in kwargs.values()):
+        parameters = {}
+        for key, value in kwargs.items():
+            if value is not None:
+                parameters[key]=value
+        return parameters
+    else:
+        raise click.exceptions.MissingParameter("closed market requires at least 1 option")
 
-  for arg in vars(namespace):
-    if getattr(namespace, arg):
-      if arg == 'status':
-        if getattr(namespace, arg) == 'active':
-          kwargs[arg] = MarketStatus.ACTIVE
-        else:
-          kwargs[arg] = MarketStatus.CLOSED
-      else:
-        kwargs[arg] = getattr(namespace, arg)
 
-  valid_args(kwargs)
+cli.add_command(active)
+cli.add_command(closed)
+
+
+async def run_get_markets(**kwargs):
+  app = FrontrunnerIoC()
+  api_instance = app.openapi_frontrunner_api
 
   try:
     api_response = api_instance.get_markets(**kwargs)
@@ -50,17 +58,8 @@ async def run_get_markets(namespace: Namespace, configuration: Configuration):
 
 
 async def main():
-  frontrunner_api_key = environ.get('FRONTRUNNER_API_KEY')
-  configuration = Configuration()
-  configuration.api_key['Authorization'] = frontrunner_api_key
-  namespace = parse_cli_arguments()
-  if getattr(namespace, 'status')=="active":
-    pass
-  else:
-    pass
-
-    
-  await run_get_markets(namespace, configuration)
+  cli_params = cli(standalone_mode=False)
+  await run_get_markets(**cli_params)
 
 
 if __name__ == "__main__":

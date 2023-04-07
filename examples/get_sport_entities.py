@@ -1,29 +1,25 @@
 import asyncio
-import argparse
-from os import environ
-from argparse import Namespace
+import click
 from pprint import pprint
-from frontrunner_sdk.openapi.frontrunner_api import FrontrunnerApi, ApiClient
+from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.openapi.frontrunner_api.rest import ApiException
-from frontrunner_sdk.openapi.frontrunner_api import Configuration, MarketStatus
 
 
-def parse_cli_arguments() -> Namespace:
-  parser = argparse.ArgumentParser()
-  parser.add_argument("--id", help="frontrunner market id")
-  parser.add_argument("--sport", help="frontrunner sport example")
-  parser.add_argument("--league_id", help="frontrunner league id")
-  args = parser.parse_args()
-  return args
+@click.command()
+@click.option("--id", help="frontrunner market id", type=str)
+@click.option("--sport", help="frontrunner sport", type=str)
+@click.option("--league_id", help="frontrunner league id", type=str)
+def cli(**kwargs):
+  parameters = {}
+  for key, value in kwargs.items():
+    if value is not None:
+      parameters[key] = value
+  return parameters
 
 
-async def run_get_sport_entities(namespace: Namespace, configuration: Configuration):
-  api_instance = FrontrunnerApi(ApiClient(configuration))
-
-  kwargs = {}
-  for arg in vars(namespace):
-    if getattr(namespace, arg):
-      kwargs[arg] = getattr(namespace, arg)
+async def run_get_sport_entities(**kwargs):
+  app = FrontrunnerIoC()
+  api_instance = app.openapi_frontrunner_api
 
   try:
     api_response = api_instance.get_sport_events(**kwargs)
@@ -33,11 +29,8 @@ async def run_get_sport_entities(namespace: Namespace, configuration: Configurat
 
 
 async def main():
-  frontrunner_api_key = environ.get('FRONTRUNNER_API_KEY')
-  configuration = Configuration()
-  configuration.api_key['Authorization'] = frontrunner_api_key
-  namespace = parse_cli_arguments()
-  await run_get_sport_entities(namespace, configuration)
+  cli_params = cli(standalone_mode=False)
+  await run_get_sport_entities(**cli_params)
 
 
 if __name__ == "__main__":
