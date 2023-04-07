@@ -38,6 +38,15 @@ extra_requirements = [
   "flake8-tidy-imports",
 ]
 
+[autoflake]
+
+args = [
+  # doesn't look like pyproject.toml is supported in the plugin side, so we'll
+  # directly configure here instead.
+  "--exclude", "frontrunner_sdk/openapi/*",
+  "--remove-all-unused-imports",
+]
+
 [mypy]
 version = "mypy~=1.1.1"
 lockfile = "mypy.lockfile"
