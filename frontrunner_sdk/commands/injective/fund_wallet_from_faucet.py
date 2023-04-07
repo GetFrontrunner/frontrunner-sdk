@@ -8,7 +8,7 @@ from frontrunner_sdk.models.wallet import Wallet
 
 @dataclass
 class FundWalletFromFaucetRequest:
-  wallet: Wallet
+  pass
 
 
 @dataclass
@@ -26,5 +26,5 @@ class FundWalletFromFaucetOperation(FrontrunnerOperation[FundWalletFromFaucetReq
 
   @log_operation(__name__)
   async def execute(self, deps: FrontrunnerIoC) -> FundWalletFromFaucetResponse:
-    response = await deps.injective_faucet.fund_wallet(self.request.wallet)
+    response = await deps.injective_faucet.fund_wallet(deps.wallet)
     return FundWalletFromFaucetResponse(message=response["message"])

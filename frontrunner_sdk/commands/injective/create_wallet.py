@@ -27,6 +27,9 @@ class CreateWalletOperation(FrontrunnerOperation[CreateWalletRequest, CreateWall
   @log_operation(__name__)
   async def execute(self, deps: FrontrunnerIoC) -> CreateWalletResponse:
     wallet = Wallet._new()
+    deps.wallet = wallet
+
     await deps.injective_faucet.fund_wallet(wallet)
     await deps.injective_light_client_daemon.initialize_wallet(wallet)
+
     return CreateWalletResponse(wallet=wallet)

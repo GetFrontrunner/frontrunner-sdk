@@ -13,12 +13,6 @@ from frontrunner_sdk.commands.injective.create_wallet import CreateWalletRespons
 from frontrunner_sdk.commands.injective.fund_wallet_from_faucet import FundWalletFromFaucetOperation # NOQA
 from frontrunner_sdk.commands.injective.fund_wallet_from_faucet import FundWalletFromFaucetRequest # NOQA
 from frontrunner_sdk.commands.injective.fund_wallet_from_faucet import FundWalletFromFaucetResponse # NOQA
-from frontrunner_sdk.commands.injective.load_wallet import LoadWalletFromMnemonicOperation # NOQA
-from frontrunner_sdk.commands.injective.load_wallet import LoadWalletFromMnemonicRequest # NOQA
-from frontrunner_sdk.commands.injective.load_wallet import LoadWalletFromMnemonicResponse # NOQA
-from frontrunner_sdk.commands.injective.load_wallet import LoadWalletFromPrivateKeyOperation # NOQA
-from frontrunner_sdk.commands.injective.load_wallet import LoadWalletFromPrivateKeyRequest # NOQA
-from frontrunner_sdk.commands.injective.load_wallet import LoadWalletFromPrivateKeyResponse # NOQA
 from frontrunner_sdk.facades.base import FrontrunnerFacadeMixin # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.models.order import Order
@@ -35,24 +29,16 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     request = CreateWalletRequest()
     return await self._run_operation(CreateWalletOperation, self.deps, request)
 
-  async def load_wallet_from_mnemonic(self, mnemonic: str) -> LoadWalletFromMnemonicResponse:
-    request = LoadWalletFromMnemonicRequest(mnemonic=mnemonic)
-    return await self._run_operation(LoadWalletFromMnemonicOperation, self.deps, request)
-
-  async def load_wallet_from_private_key(self, private_key_hex: str) -> LoadWalletFromPrivateKeyResponse:
-    request = LoadWalletFromPrivateKeyRequest(private_key=private_key_hex)
-    return await self._run_operation(LoadWalletFromPrivateKeyOperation, self.deps, request)
-
-  async def fund_wallet_from_faucet(self, wallet: Wallet) -> FundWalletFromFaucetResponse:
-    request = FundWalletFromFaucetRequest(wallet=wallet)
+  async def fund_wallet_from_faucet(self) -> FundWalletFromFaucetResponse:
+    request = FundWalletFromFaucetRequest()
     return await self._run_operation(FundWalletFromFaucetOperation, self.deps, request)
 
-  async def create_orders(self, wallet: Wallet, orders: List[Order]) -> CreateOrdersResponse:
-    request = CreateOrdersRequest(wallet=wallet, orders=orders)
+  async def create_orders(self, orders: List[Order]) -> CreateOrdersResponse:
+    request = CreateOrdersRequest(orders=orders)
     return await self._run_operation(CreateOrdersOperation, self.deps, request)
 
-  async def cancel_all_orders(self, wallet: Wallet) -> CancelAllOrdersResponse:
-    request = CancelAllOrdersRequest(wallet=wallet)
+  async def cancel_all_orders(self) -> CancelAllOrdersResponse:
+    request = CancelAllOrdersRequest()
     return await self._run_operation(CancelAllOrdersOperation, self.deps, request)
 
 
@@ -64,17 +50,11 @@ class InjectiveFacade(SyncMixin):
   def create_wallet(self) -> CreateWalletResponse:
     return self._synchronously(self.impl.create_wallet)
 
-  def load_wallet_from_mnemonic(self, mnemonic: str) -> LoadWalletFromMnemonicResponse:
-    return self._synchronously(self.impl.load_wallet_from_mnemonic, mnemonic)
+  def fund_wallet_from_faucet(self) -> FundWalletFromFaucetResponse:
+    return self._synchronously(self.impl.fund_wallet_from_faucet)
 
-  def load_wallet_from_private_key(self, private_key_hex: str) -> LoadWalletFromPrivateKeyResponse:
-    return self._synchronously(self.impl.load_wallet_from_private_key, private_key_hex)
+  def create_orders(self, orders: Iterable[Order]) -> CreateOrdersResponse:
+    return self._synchronously(self.impl.create_orders, orders)
 
-  def fund_wallet_from_faucet(self, wallet: Wallet) -> FundWalletFromFaucetResponse:
-    return self._synchronously(self.impl.fund_wallet_from_faucet, wallet)
-
-  def create_orders(self, wallet: Wallet, orders: Iterable[Order]) -> CreateOrdersResponse:
-    return self._synchronously(self.impl.create_orders, wallet, orders)
-
-  def cancel_all_orders(self, wallet: Wallet) -> CancelAllOrdersResponse:
-    return self._synchronously(self.impl.cancel_all_orders, wallet)
+  def cancel_all_orders(self) -> CancelAllOrdersResponse:
+    return self._synchronously(self.impl.cancel_all_orders)

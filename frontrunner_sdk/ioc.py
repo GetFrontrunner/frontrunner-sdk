@@ -20,6 +20,7 @@ Result = TypeVar("Result")
 
 
 class FrontrunnerIoC(SyncMixin):
+  _wallet: Wallet
 
   def __init__(self, config: FrontrunnerConfig = DEFAULT):
     self.config = config
@@ -36,22 +37,27 @@ class FrontrunnerIoC(SyncMixin):
       self.config.injective_network,
     )
 
-  @cached_property
+  @property
   def wallet(self) -> Wallet:
-    value = None
+    if self._wallet:
+      return self._wallet
 
     if self.config.wallet_mnemonic:
-      value = Wallet._from_mnemonic(self.config.wallet_mnemonic)
+      self.wallet = Wallet._from_mnemonic(self.config.wallet_mnemonic)
 
     elif self.config.wallet_private_key_hex:
-      value = Wallet._from_private_key(self.config.wallet_private_key_hex)
+      self.wallet = Wallet._from_private_key(self.config.wallet_private_key_hex)
 
-    if value is None:
+    if self._wallet is None:
       raise FrontrunnerConfigurationException("No wallet configured")
 
-    self._synchronously(self.injective_light_client_daemon.initialize_wallet, value)
+    self._synchronously(self.injective_light_client_daemon.initialize_wallet, self._wallet)
 
-    return value
+    return self._wallet
+
+  @wallet.setter
+  def wallet(self, wallet: Wallet) -> None:
+    self._wallet = wallet
 
   @cached_property
   def openapi_frontrunner_api(self) -> FrontrunnerApi:
