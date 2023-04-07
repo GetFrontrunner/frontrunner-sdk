@@ -24,8 +24,8 @@ class ChainedFrontrunnerConfig(FrontrunnerConfig):
     return None
 
   @property
-  def wallet_mnenomic(self) -> Optional[str]:
-    return self._find_next(lambda config: config.wallet_mnenomic)
+  def wallet_mnemonic(self) -> Optional[str]:
+    return self._find_next(lambda config: config.wallet_mnemonic)
 
   @property
   def wallet_private_key_hex(self) -> Optional[str]:

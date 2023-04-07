@@ -13,7 +13,7 @@ class EnvironmentVariableFrontrunnerConfig(FrontrunnerConfig):
     self.vars = vars
 
   @property
-  def wallet_mnenomic(self) -> Optional[str]:
+  def wallet_mnemonic(self) -> Optional[str]:
     return self.vars.get("FRONTRUNNER_WALLET_MNEMONIC", None)
 
   @property
