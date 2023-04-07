@@ -6,12 +6,10 @@ from frontrunner_sdk.exceptions import FrontrunnerArgumentException
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.logging.log_operation import log_operation
 from frontrunner_sdk.models.order import Order
-from frontrunner_sdk.models.wallet import Wallet
 
 
 @dataclass
 class CreateOrdersRequest:
-  wallet: Wallet
   orders: List[Order]
 
 
@@ -38,5 +36,6 @@ class CreateOrdersOperation(FrontrunnerOperation[CreateOrdersRequest, CreateOrde
 
   @log_operation(__name__)
   async def execute(self, deps: FrontrunnerIoC) -> CreateOrdersResponse:
-    response = await deps.injective_chain.create_orders(self.request.wallet, self.request.orders)
+    response = await deps.injective_chain.create_orders(deps.wallet, self.request.orders)
+
     return CreateOrdersResponse(transaction=response.txhash)

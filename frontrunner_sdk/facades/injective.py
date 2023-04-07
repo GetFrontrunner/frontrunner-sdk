@@ -2,8 +2,8 @@ from typing import Iterable
 from typing import List
 
 from frontrunner_sdk.commands.injective.cancel_orders import CancelAllOrdersOperation # NOQA
-from frontrunner_sdk.commands.injective.cancel_orders import CancelOrdersRequest # NOQA
-from frontrunner_sdk.commands.injective.cancel_orders import CancelOrdersResponse # NOQA
+from frontrunner_sdk.commands.injective.cancel_orders import CancelAllOrdersRequest # NOQA
+from frontrunner_sdk.commands.injective.cancel_orders import CancelAllOrdersResponse # NOQA
 from frontrunner_sdk.commands.injective.create_orders import CreateOrdersOperation # NOQA
 from frontrunner_sdk.commands.injective.create_orders import CreateOrdersRequest # NOQA
 from frontrunner_sdk.commands.injective.create_orders import CreateOrdersResponse # NOQA
@@ -51,8 +51,8 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     request = CreateOrdersRequest(wallet=wallet, orders=orders)
     return await self._run_operation(CreateOrdersOperation, self.deps, request)
 
-  async def cancel_all_orders(self, wallet: Wallet) -> CancelOrdersResponse:
-    request = CancelOrdersRequest(wallet=wallet)
+  async def cancel_all_orders(self, wallet: Wallet) -> CancelAllOrdersResponse:
+    request = CancelAllOrdersRequest(wallet=wallet)
     return await self._run_operation(CancelAllOrdersOperation, self.deps, request)
 
 
@@ -76,5 +76,5 @@ class InjectiveFacade(SyncMixin):
   def create_orders(self, wallet: Wallet, orders: Iterable[Order]) -> CreateOrdersResponse:
     return self._synchronously(self.impl.create_orders, wallet, orders)
 
-  def cancel_all_orders(self, wallet: Wallet) -> CancelOrdersResponse:
+  def cancel_all_orders(self, wallet: Wallet) -> CancelAllOrdersResponse:
     return self._synchronously(self.impl.cancel_all_orders, wallet)

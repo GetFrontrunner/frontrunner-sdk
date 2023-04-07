@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock
 from unittest.mock import MagicMock
 
 from frontrunner_sdk.commands.injective.cancel_orders import CancelAllOrdersOperation # NOQA
-from frontrunner_sdk.commands.injective.cancel_orders import CancelOrdersRequest # NOQA
+from frontrunner_sdk.commands.injective.cancel_orders import CancelAllOrdersRequest # NOQA
 from frontrunner_sdk.exceptions import FrontrunnerArgumentException # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.models.wallet import Wallet
@@ -18,7 +18,7 @@ class TestCancelOrdersOperation(IsolatedAsyncioTestCase):
     self.order_responses = [MagicMock(market_id=id) for id in self.market_ids]
 
   def test_validate(self):
-    req = CancelOrdersRequest(wallet=self.wallet)
+    req = CancelAllOrdersRequest(wallet=self.wallet)
     cmd = CancelAllOrdersOperation(req)
     cmd.validate(self.deps)
 
@@ -26,7 +26,7 @@ class TestCancelOrdersOperation(IsolatedAsyncioTestCase):
     self.deps.injective_chain.get_all_open_orders = AsyncMock(return_value=self.order_responses)
     self.deps.injective_chain.cancel_all_orders_for_markets = AsyncMock(return_value=MagicMock(txhash="<txhash>"))
 
-    req = CancelOrdersRequest(wallet=self.wallet)
+    req = CancelAllOrdersRequest(wallet=self.wallet)
     cmd = CancelAllOrdersOperation(req)
     res = await cmd.execute(self.deps)
 
