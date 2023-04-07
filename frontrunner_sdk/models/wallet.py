@@ -7,7 +7,7 @@ from pyinjective import PrivateKey
 from pyinjective import PublicKey
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, repr=False)
 class Wallet:
   private_key: PrivateKey
   mnemonic: Optional[str] = None
