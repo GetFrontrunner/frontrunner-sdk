@@ -1,4 +1,5 @@
 from functools import cached_property
+from frontrunner_sdk.config import DEFAULT
 
 from frontrunner_sdk.facades.frontrunner import FrontrunnerFacade
 from frontrunner_sdk.facades.frontrunner import FrontrunnerFacadeAsync
@@ -11,7 +12,7 @@ class FrontrunnerSDKAsync:
 
   @cached_property
   def dependencies(self):
-    return FrontrunnerIoC()
+    return FrontrunnerIoC(DEFAULT)
 
   @cached_property
   def frontrunner(self) -> FrontrunnerFacadeAsync:
@@ -26,7 +27,7 @@ class FrontrunnerSDK:
 
   @cached_property
   def dependencies(self):
-    return FrontrunnerIoC()
+    return FrontrunnerIoC(DEFAULT)
 
   @cached_property
   def frontrunner(self) -> FrontrunnerFacade:
