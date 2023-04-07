@@ -3,6 +3,7 @@ import logging
 from typing import Optional
 
 from frontrunner_sdk.exceptions import FrontrunnerConfigurationException
+from frontrunner_sdk.exceptions import FrontrunnerInjectiveException
 from frontrunner_sdk.exceptions import FrontrunnerUnserviceableException
 from frontrunner_sdk.logging.log_external_exceptions import log_external_exceptions # NOQA
 from frontrunner_sdk.models.wallet import Wallet
@@ -31,6 +32,13 @@ class InjectiveLightClientDaemon:
       if status >= 500:
         raise FrontrunnerUnserviceableException(
           "Injective light client daemon (lcd) endpoint unavailable",
+          base_url=self.base_url,
+          address=wallet.injective_address,
+        ) from cause
+
+      else:
+        raise FrontrunnerInjectiveException(
+          "Could not initialize wallet",
           base_url=self.base_url,
           address=wallet.injective_address,
         ) from cause

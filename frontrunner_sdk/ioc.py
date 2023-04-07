@@ -1,4 +1,5 @@
 from functools import cached_property
+from typing import Optional
 from typing import TypeVar
 
 from pyinjective.async_client import AsyncClient
@@ -20,7 +21,7 @@ Result = TypeVar("Result")
 
 
 class FrontrunnerIoC(SyncMixin):
-  _wallet: Wallet
+  _wallet: Optional[Wallet] = None
 
   def __init__(self, config: FrontrunnerConfig = DEFAULT):
     self.config = config
