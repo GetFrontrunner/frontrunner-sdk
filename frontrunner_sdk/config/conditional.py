@@ -12,6 +12,14 @@ class ConditionalFrontrunnerConfig(FrontrunnerConfig):
     self.config = config
 
   @property
+  def wallet_mnenomic(self) -> Optional[str]:
+    return self.config.wallet_mnenomic if self.condition() else None
+
+  @property
+  def wallet_private_key_hex(self) -> Optional[str]:
+    return self.config.wallet_private_key_hex if self.condition() else None
+
+  @property
   def frontrunner_api_base_url(self) -> Optional[str]:
     return self.config.frontrunner_api_base_url if self.condition() else None
 
