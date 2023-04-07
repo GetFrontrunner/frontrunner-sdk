@@ -1,5 +1,6 @@
 from unittest import TestCase
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock
+from unittest.mock import patch
 
 from frontrunner_sdk.clients.injective_chain import InjectiveChain
 from frontrunner_sdk.clients.injective_faucet import InjectiveFaucet
@@ -74,15 +75,11 @@ class TestFrontrunnerIoC(TestCase):
     self.assertIsInstance(ioc.injective_chain, InjectiveChain)
 
   def test_injective_faucet(self):
-    ioc = self.ioc_for(
-      injective_faucet_base_url="https://faucet.injective.example",
-    )
+    ioc = self.ioc_for(injective_faucet_base_url="https://faucet.injective.example",)
 
     self.assertIsInstance(ioc.injective_faucet, InjectiveFaucet)
 
   def test_injective_light_client_daemon(self):
-    ioc = self.ioc_for(
-      injective_lcd_base_url="https://lcd.injective.example",
-    )
+    ioc = self.ioc_for(injective_lcd_base_url="https://lcd.injective.example",)
 
     self.assertIsInstance(ioc.injective_light_client_daemon, InjectiveLightClientDaemon)
