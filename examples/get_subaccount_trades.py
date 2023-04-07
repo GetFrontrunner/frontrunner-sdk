@@ -1,12 +1,8 @@
-import sys
-import asyncio
-import logging
 import argparse
 from os import environ
 from argparse import Namespace
-from typing import Optional, Tuple
 from chain.injective_client import async_injective_chain_client_factory
-from utils.objects import SubaccountTradesRequest, BinarySideMap, BiStateMarketMap
+from utils.objects import SubaccountTradesRequest, BiStateMarketMap
 
 
 def parse_cli_argments() -> Namespace:
