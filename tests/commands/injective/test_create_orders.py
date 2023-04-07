@@ -7,7 +7,6 @@ from frontrunner_sdk.commands.injective.create_orders import CreateOrdersRequest
 from frontrunner_sdk.exceptions import FrontrunnerArgumentException # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.models.order import Order
-from frontrunner_sdk.models.wallet import Wallet
 
 
 class TestCreateOrdersOperation(IsolatedAsyncioTestCase):

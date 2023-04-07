@@ -16,7 +16,6 @@ from frontrunner_sdk.commands.injective.fund_wallet_from_faucet import FundWalle
 from frontrunner_sdk.facades.base import FrontrunnerFacadeMixin # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.models.order import Order
-from frontrunner_sdk.models.wallet import Wallet
 from frontrunner_sdk.sync import SyncMixin
 
 
