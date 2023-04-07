@@ -1,4 +1,5 @@
 from functools import cached_property
+from typing import TypeVar
 
 from pyinjective.async_client import AsyncClient
 from pyinjective.composer import Composer
@@ -9,11 +10,16 @@ from frontrunner_sdk.clients.injective_faucet import InjectiveFaucet
 from frontrunner_sdk.clients.injective_light_client_daemon import InjectiveLightClientDaemon # NOQA
 from frontrunner_sdk.clients.openapi_client import openapi_client # NOQA
 from frontrunner_sdk.config import DEFAULT_FRONTRUNNER_CONFIG
-from frontrunner_sdk.config import FrontrunnerConfig
+from frontrunner_sdk.config.base import FrontrunnerConfig
+from frontrunner_sdk.exceptions import FrontrunnerConfigurationException
+from frontrunner_sdk.models.wallet import Wallet
 from frontrunner_sdk.openapi.frontrunner_api import FrontrunnerApi
+from frontrunner_sdk.sync import SyncMixin
+
+Result = TypeVar("Result")
 
 
-class FrontrunnerIoC:
+class FrontrunnerIoC(SyncMixin):
 
   @property
   def config(self) -> FrontrunnerConfig:
@@ -30,6 +36,23 @@ class FrontrunnerIoC:
       self.config.injective_chain_id,
       self.config.injective_network,
     )
+
+  @cached_property
+  def wallet(self) -> Wallet:
+    value = None
+
+    if self.config.wallet_mnemonic:
+      value = Wallet._from_mnemonic(self.config.wallet_mnemonic)
+
+    elif self.config.wallet_private_key_hex:
+      value = Wallet._from_private_key(self.config.wallet_private_key_hex)
+
+    if value is None:
+      raise FrontrunnerConfigurationException("No wallet configured")
+
+    self._synchronously(self.injective_light_client_daemon.initialize_wallet, value)
+
+    return value
 
   @cached_property
   def openapi_frontrunner_api(self) -> FrontrunnerApi:

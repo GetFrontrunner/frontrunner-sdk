@@ -5,9 +5,6 @@ from typing import Awaitable
 from typing import Callable
 from typing import TypeVar
 
-from frontrunner_sdk.commands.base import FrontrunnerOperation
-
-Operation = TypeVar("Operation", bound=FrontrunnerOperation)
 Response = TypeVar("Response")
 
 
