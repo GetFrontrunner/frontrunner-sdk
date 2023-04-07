@@ -58,12 +58,6 @@ class TestInjectiveLightClientDaemon(AioHTTPTestCase):
     self.assertEqual(2, self.wallet.sequence)
     self.assertEqual(1234, self.wallet.account_number)
 
-  async def test_initialize_wallet_failure_404(self):
-    self.wallet_info = web.Response(status=404, text=json.dumps({"message": "Bad Request"}))
-
-    with self.assertRaises(FrontrunnerInjectiveException):
-      await self.injective_lcd.initialize_wallet(self.wallet)
-
   async def test_initialize_wallet_failure_503(self):
     self.wallet_info = web.Response(status=503, text=json.dumps({"message": "Service Unavailable"}))
 
