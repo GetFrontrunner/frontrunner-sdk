@@ -20,7 +20,7 @@ class TestCreateWalletOperation(IsolatedAsyncioTestCase):
 
   async def test_create_wallet(self):
     self.deps.injective_faucet.fund_wallet = AsyncMock()
-    self.deps.injective_light_client_daemon.initialize_wallet = AsyncMock()
+    self.deps.use_wallet = AsyncMock()
 
     req = CreateWalletRequest()
     cmd = CreateWalletOperation(req)
@@ -29,4 +29,4 @@ class TestCreateWalletOperation(IsolatedAsyncioTestCase):
     self.assertIsInstance(res.wallet, Wallet)
 
     self.deps.injective_faucet.fund_wallet.assert_awaited_once()
-    self.deps.injective_light_client_daemon.initialize_wallet.assert_awaited_once()
+    self.deps.use_wallet.assert_awaited_once_with(res.wallet)

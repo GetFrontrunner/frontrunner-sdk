@@ -6,7 +6,7 @@ from frontrunner_sdk.config.conditional import ConditionalFrontrunnerConfig
 from frontrunner_sdk.config.environment_variable import EnvironmentVariableFrontrunnerConfig # NOQA
 from frontrunner_sdk.config.static import StaticFrontrunnerConfig
 
-DEFAULT_FRONTRUNNER_CONFIG: FrontrunnerConfig = ChainedFrontrunnerConfig([
+DEFAULT: FrontrunnerConfig = ChainedFrontrunnerConfig([
   EnvironmentVariableFrontrunnerConfig(os.environ),
 
   # testnet

@@ -1,4 +1,6 @@
 from functools import cached_property
+from typing import Optional
+from typing import TypeVar
 
 from pyinjective.async_client import AsyncClient
 from pyinjective.composer import Composer
@@ -8,16 +10,21 @@ from frontrunner_sdk.clients.injective_chain import InjectiveChain
 from frontrunner_sdk.clients.injective_faucet import InjectiveFaucet
 from frontrunner_sdk.clients.injective_light_client_daemon import InjectiveLightClientDaemon # NOQA
 from frontrunner_sdk.clients.openapi_client import openapi_client # NOQA
-from frontrunner_sdk.config import DEFAULT_FRONTRUNNER_CONFIG
-from frontrunner_sdk.config import FrontrunnerConfig
+from frontrunner_sdk.config import DEFAULT
+from frontrunner_sdk.config.base import FrontrunnerConfig
+from frontrunner_sdk.exceptions import FrontrunnerConfigurationException
+from frontrunner_sdk.models.wallet import Wallet
 from frontrunner_sdk.openapi.frontrunner_api import FrontrunnerApi
+from frontrunner_sdk.sync import SyncMixin
+
+Result = TypeVar("Result")
 
 
-class FrontrunnerIoC:
+class FrontrunnerIoC(SyncMixin):
+  _wallet: Optional[Wallet] = None
 
-  @property
-  def config(self) -> FrontrunnerConfig:
-    return DEFAULT_FRONTRUNNER_CONFIG
+  def __init__(self, config: FrontrunnerConfig = DEFAULT):
+    self.config = config
 
   @cached_property
   def network(self) -> Network:
@@ -30,6 +37,25 @@ class FrontrunnerIoC:
       self.config.injective_chain_id,
       self.config.injective_network,
     )
+
+  async def wallet(self) -> Wallet:
+    if self._wallet:
+      return self._wallet
+
+    if self.config.wallet_mnemonic:
+      await self.use_wallet(Wallet._from_mnemonic(self.config.wallet_mnemonic))
+
+    elif self.config.wallet_private_key_hex:
+      await self.use_wallet(Wallet._from_private_key(self.config.wallet_private_key_hex))
+
+    if self._wallet is None:
+      raise FrontrunnerConfigurationException("No wallet configured")
+
+    return self._wallet
+
+  async def use_wallet(self, wallet: Wallet):
+    await self.injective_light_client_daemon.initialize_wallet(wallet)
+    self._wallet = wallet
 
   @cached_property
   def openapi_frontrunner_api(self) -> FrontrunnerApi:

@@ -104,6 +104,15 @@ To test a single file, run...
 pants test --no-use-coverage ${file}
 ```
 
+### Auto Format Code
+
+To format everything and fix the code for Flake8, run...
+
+```sh
+pants fmt ::
+pants fix ::
+```
+
 ### Local Testing via REPL
 
 To get a Python shell to test code, run...

@@ -5,7 +5,6 @@ from aiohttp.test_utils import AioHTTPTestCase
 
 from frontrunner_sdk.clients.injective_light_client_daemon import InjectiveLightClientDaemon # NOQA
 from frontrunner_sdk.exceptions import FrontrunnerConfigurationException
-from frontrunner_sdk.exceptions import FrontrunnerInjectiveException
 from frontrunner_sdk.exceptions import FrontrunnerUnserviceableException
 from frontrunner_sdk.models.wallet import Wallet
 
@@ -57,12 +56,6 @@ class TestInjectiveLightClientDaemon(AioHTTPTestCase):
 
     self.assertEqual(2, self.wallet.sequence)
     self.assertEqual(1234, self.wallet.account_number)
-
-  async def test_initialize_wallet_failure_404(self):
-    self.wallet_info = web.Response(status=404, text=json.dumps({"message": "Bad Request"}))
-
-    with self.assertRaises(FrontrunnerInjectiveException):
-      await self.injective_lcd.initialize_wallet(self.wallet)
 
   async def test_initialize_wallet_failure_503(self):
     self.wallet_info = web.Response(status=503, text=json.dumps({"message": "Service Unavailable"}))

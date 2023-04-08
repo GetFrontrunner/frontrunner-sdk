@@ -13,6 +13,14 @@ class EnvironmentVariableFrontrunnerConfig(FrontrunnerConfig):
     self.vars = vars
 
   @property
+  def wallet_mnemonic(self) -> Optional[str]:
+    return self.vars.get("FRONTRUNNER_WALLET_MNEMONIC", None)
+
+  @property
+  def wallet_private_key_hex(self) -> Optional[str]:
+    return self.vars.get("FRONTRUNNER_WALLET_PRIVATE_KEY_HEX", None)
+
+  @property
   def frontrunner_api_base_url(self) -> Optional[str]:
     return self.vars.get("FRONTRUNNER_FRONTRUNNER_API_BASE_URL", None)
 

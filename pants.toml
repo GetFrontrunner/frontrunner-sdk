@@ -4,6 +4,7 @@ pants_version = "2.15.0"
 backend_packages = [
   "pants.core",
   "pants.backend.python",
+  "pants.backend.python.lint.autoflake",
   "pants.backend.python.lint.flake8",
   "pants.backend.python.lint.isort",
   "pants.backend.python.lint.yapf",
@@ -35,6 +36,15 @@ lockfile = "flake8.lockfile"
 extra_requirements = [
   "flake8-quotes",
   "flake8-tidy-imports",
+]
+
+[autoflake]
+
+args = [
+  # doesn't look like pyproject.toml is supported in the plugin side, so we'll
+  # directly configure here instead.
+  "--exclude", "frontrunner_sdk/openapi/*",
+  "--remove-all-unused-imports",
 ]
 
 [mypy]

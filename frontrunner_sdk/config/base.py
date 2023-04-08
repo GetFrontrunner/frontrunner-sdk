@@ -10,6 +10,14 @@ NETWORK_ENVIRONMENTS = set(typing.get_args(NetworkEnvironment))
 class FrontrunnerConfig:
 
   @property
+  def wallet_mnemonic(self) -> Optional[str]:
+    return None
+
+  @property
+  def wallet_private_key_hex(self) -> Optional[str]:
+    return None
+
+  @property
   def frontrunner_api_base_url(self) -> Optional[str]:
     return None
 
