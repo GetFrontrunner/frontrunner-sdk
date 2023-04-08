@@ -1,4 +1,4 @@
-from unittest import TestCase
+from unittest import IsolatedAsyncioTestCase
 from unittest.mock import AsyncMock
 from unittest.mock import patch
 
@@ -14,7 +14,7 @@ from frontrunner_sdk.models.wallet import Wallet
 from frontrunner_sdk.openapi.frontrunner_api import FrontrunnerApi
 
 
-class TestFrontrunnerIoC(TestCase):
+class TestFrontrunnerIoC(IsolatedAsyncioTestCase):
 
   @staticmethod
   def ioc_for(**kwargs) -> FrontrunnerIoC:
@@ -24,14 +24,14 @@ class TestFrontrunnerIoC(TestCase):
     ioc = FrontrunnerIoC()
     self.assertIsInstance(ioc.config, FrontrunnerConfig)
 
-  def test_wallet_not_configured(self):
+  async def test_wallet_not_configured(self):
     ioc = self.ioc_for()
 
     with self.assertRaises(FrontrunnerConfigurationException):
-      ioc.wallet
+      await ioc.wallet()
 
   @patch.object(InjectiveLightClientDaemon, "initialize_wallet", new_callable=AsyncMock)
-  def test_wallet_configured_with_mnemonic(self, _initialize_wallet):
+  async def test_wallet_configured_with_mnemonic(self, _initialize_wallet):
     wallet = Wallet._new()
 
     ioc = self.ioc_for(
@@ -39,12 +39,12 @@ class TestFrontrunnerIoC(TestCase):
       injective_lcd_base_url="https://lcd.injective.example",
     )
 
-    self.assertIsInstance(ioc.wallet, Wallet)
+    self.assertIsInstance(await ioc.wallet(), Wallet)
 
     _initialize_wallet.assert_awaited_once()
 
   @patch.object(InjectiveLightClientDaemon, "initialize_wallet", new_callable=AsyncMock)
-  def test_wallet_configured_with_private_key_hex(self, _initialize_wallet):
+  async def test_wallet_configured_with_private_key_hex(self, _initialize_wallet):
     wallet = Wallet._new()
 
     ioc = self.ioc_for(
@@ -52,7 +52,7 @@ class TestFrontrunnerIoC(TestCase):
       injective_lcd_base_url="https://lcd.injective.example",
     )
 
-    self.assertIsInstance(ioc.wallet, Wallet)
+    self.assertIsInstance(await ioc.wallet(), Wallet)
 
     _initialize_wallet.assert_awaited_once()
 

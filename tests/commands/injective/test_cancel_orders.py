@@ -23,8 +23,8 @@ class TestCancelOrdersOperation(IsolatedAsyncioTestCase):
 
   async def test_cancel_orders(self):
     wallet = Wallet._new()
-    self.deps.wallet = wallet
 
+    self.deps.wallet = AsyncMock(return_value=wallet)
     self.deps.injective_chain.get_all_open_orders = AsyncMock(return_value=self.order_responses)
     self.deps.injective_chain.cancel_all_orders_for_markets = AsyncMock(return_value=MagicMock(txhash="<txhash>"))
 

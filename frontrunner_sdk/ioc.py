@@ -38,26 +38,23 @@ class FrontrunnerIoC(SyncMixin):
       self.config.injective_network,
     )
 
-  @property
-  def wallet(self) -> Wallet:
+  async def wallet(self) -> Wallet:
     if self._wallet:
       return self._wallet
 
     if self.config.wallet_mnemonic:
-      self.wallet = Wallet._from_mnemonic(self.config.wallet_mnemonic)
+      await self.use_wallet(Wallet._from_mnemonic(self.config.wallet_mnemonic))
 
     elif self.config.wallet_private_key_hex:
-      self.wallet = Wallet._from_private_key(self.config.wallet_private_key_hex)
+      await self.use_wallet(Wallet._from_private_key(self.config.wallet_private_key_hex))
 
     if self._wallet is None:
       raise FrontrunnerConfigurationException("No wallet configured")
 
-    self._synchronously(self.injective_light_client_daemon.initialize_wallet, self._wallet)
-
     return self._wallet
 
-  @wallet.setter
-  def wallet(self, wallet: Wallet) -> None:
+  async def use_wallet(self, wallet: Wallet):
+    await self.injective_light_client_daemon.initialize_wallet(wallet)
     self._wallet = wallet
 
   @cached_property

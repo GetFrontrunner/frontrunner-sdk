@@ -17,9 +17,4 @@ class SyncMixin:
     **kwargs: Any,
   ) -> Response:
     loop = asyncio.get_event_loop()
-    coroutine = operation(*args, **kwargs)
-
-    if loop.is_running():
-      return loop.call_soon_threadsafe(coroutine, loop)
-
-    return loop.run_until_complete(coroutine)
+    return loop.run_until_complete(operation(*args, **kwargs))

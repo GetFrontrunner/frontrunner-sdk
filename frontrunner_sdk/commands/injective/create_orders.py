@@ -36,6 +36,6 @@ class CreateOrdersOperation(FrontrunnerOperation[CreateOrdersRequest, CreateOrde
 
   @log_operation(__name__)
   async def execute(self, deps: FrontrunnerIoC) -> CreateOrdersResponse:
-    response = await deps.injective_chain.create_orders(deps.wallet, self.request.orders)
+    response = await deps.injective_chain.create_orders(await deps.wallet(), self.request.orders)
 
     return CreateOrdersResponse(transaction=response.txhash)
