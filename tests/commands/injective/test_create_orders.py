@@ -22,24 +22,24 @@ class TestCreateOrdersOperation(IsolatedAsyncioTestCase):
 
   def test_validate_empty_orders_exception(self):
     with self.assertRaises(FrontrunnerArgumentException):
-      CreateOrdersOperation(CreateOrdersRequest(orders=[],)).validate(self.deps)
+      CreateOrdersOperation(CreateOrdersRequest(orders=[])).validate(self.deps)
 
   def test_validate_order_quantity_invalid_exception(self):
     with self.assertRaises(FrontrunnerArgumentException):
-      CreateOrdersOperation(CreateOrdersRequest(orders=[Order.buy_for("<market-id>", -2, 0.75)],)).validate(self.deps)
+      CreateOrdersOperation(CreateOrdersRequest(orders=[Order.buy_for("<market-id>", -2, 0.75)])).validate(self.deps)
 
   def test_validate_order_price_invalid_exception(self):
     with self.assertRaises(FrontrunnerArgumentException):
-      CreateOrdersOperation(CreateOrdersRequest(orders=[Order.buy_for("<market-id>", 1, -0.25)],)).validate(self.deps)
+      CreateOrdersOperation(CreateOrdersRequest(orders=[Order.buy_for("<market-id>", 1, -0.25)])).validate(self.deps)
 
     with self.assertRaises(FrontrunnerArgumentException):
-      CreateOrdersOperation(CreateOrdersRequest(orders=[Order.buy_for("<market-id>", 1, 0)],)).validate(self.deps)
+      CreateOrdersOperation(CreateOrdersRequest(orders=[Order.buy_for("<market-id>", 1, 0)])).validate(self.deps)
 
     with self.assertRaises(FrontrunnerArgumentException):
-      CreateOrdersOperation(CreateOrdersRequest(orders=[Order.buy_for("<market-id>", 1, 1)],)).validate(self.deps)
+      CreateOrdersOperation(CreateOrdersRequest(orders=[Order.buy_for("<market-id>", 1, 1)])).validate(self.deps)
 
     with self.assertRaises(FrontrunnerArgumentException):
-      CreateOrdersOperation(CreateOrdersRequest(orders=[Order.buy_for("<market-id>", 1, 1.25)],)).validate(self.deps)
+      CreateOrdersOperation(CreateOrdersRequest(orders=[Order.buy_for("<market-id>", 1, 1.25)])).validate(self.deps)
 
   async def test_create_orders(self):
     self.deps.injective_chain.create_orders = AsyncMock(return_value=MagicMock(txhash="<txhash>"))
