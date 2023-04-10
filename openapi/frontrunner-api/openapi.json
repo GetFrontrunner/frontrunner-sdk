@@ -470,7 +470,8 @@
       "propType": {
         "type": "string",
         "enum": [
-          "winner"
+          "winner",
+          "other"
         ]
       },
       "leagueId": {
