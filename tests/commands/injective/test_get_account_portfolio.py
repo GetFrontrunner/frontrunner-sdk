@@ -19,7 +19,9 @@ class TestCreateWalletOperation(IsolatedAsyncioTestCase):
 
   async def test_create_wallet(self):
     portfolio = MagicMock()
-    self.deps.injective_client.get_account_portfolio = AsyncMock(return_value=portfolio)
+    response = MagicMock(portfolio=portfolio)
+
+    self.deps.injective_client.get_account_portfolio = AsyncMock(return_value=response)
 
     req = GetAccountPortfolioRequest()
     cmd = GetAccountPortfolioOperation(req)

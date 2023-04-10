@@ -31,6 +31,6 @@ class GetAccountPortfolioOperation(FrontrunnerOperation[GetAccountPortfolioReque
 
     # for now, this is a straight proxy call, and we return the raw result;
     # return may be augmented in the future.
-    portfolio = await deps.injective_client.get_account_portfolio(wallet.injective_address)
+    get_account_portfolio = await deps.injective_client.get_account_portfolio(wallet.injective_address)
 
-    return GetAccountPortfolioResponse(portfolio=portfolio)
+    return GetAccountPortfolioResponse(portfolio=get_account_portfolio.portfolio)
