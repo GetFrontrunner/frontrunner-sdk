@@ -31,8 +31,8 @@ class Market(object):
     """
     swagger_types = {
         'id': 'str',
-        'league_id': 'str',
-        'league_name': 'str',
+        'league_id': 'LeagueId',
+        'league_name': 'LeagueName',
         'injective_id': 'str',
         'created': 'datetime',
         'updated': 'datetime',
@@ -43,11 +43,12 @@ class Market(object):
         'short_entity_name': 'str',
         'short_entity_abbreviation': 'str',
         'status': 'MarketStatus',
-        'prop_id': 'str',
-        'prop_name': 'ProppropertiespropType',
-        'sport_event_id': 'SportEventpropertiesid',
-        'sport_event_name': 'SportEventpropertiesname',
-        'sport_event_type': 'SportEventpropertieseventType'
+        'prop_id': 'PropId',
+        'prop_name': 'PropName',
+        'prop_type': 'PropType',
+        'sport_event_id': 'SportEventId',
+        'sport_event_name': 'SportEventName',
+        'sport_event_type': 'SportEventType'
     }
 
     attribute_map = {
@@ -66,12 +67,13 @@ class Market(object):
         'status': 'status',
         'prop_id': 'propId',
         'prop_name': 'propName',
+        'prop_type': 'propType',
         'sport_event_id': 'sportEventId',
         'sport_event_name': 'sportEventName',
         'sport_event_type': 'sportEventType'
     }
 
-    def __init__(self, id=None, league_id=None, league_name=None, injective_id=None, created=None, updated=None, long_entity_id=None, long_entity_name=None, long_entity_abbreviation=None, short_entity_id=None, short_entity_name=None, short_entity_abbreviation=None, status=None, prop_id=None, prop_name=None, sport_event_id=None, sport_event_name=None, sport_event_type=None):  # noqa: E501
+    def __init__(self, id=None, league_id=None, league_name=None, injective_id=None, created=None, updated=None, long_entity_id=None, long_entity_name=None, long_entity_abbreviation=None, short_entity_id=None, short_entity_name=None, short_entity_abbreviation=None, status=None, prop_id=None, prop_name=None, prop_type=None, sport_event_id=None, sport_event_name=None, sport_event_type=None):  # noqa: E501
         """Market - a model defined in Swagger"""  # noqa: E501
         self._id = None
         self._league_id = None
@@ -88,6 +90,7 @@ class Market(object):
         self._status = None
         self._prop_id = None
         self._prop_name = None
+        self._prop_type = None
         self._sport_event_id = None
         self._sport_event_name = None
         self._sport_event_type = None
@@ -119,6 +122,8 @@ class Market(object):
             self.prop_id = prop_id
         if prop_name is not None:
             self.prop_name = prop_name
+        if prop_type is not None:
+            self.prop_type = prop_type
         if sport_event_id is not None:
             self.sport_event_id = sport_event_id
         if sport_event_name is not None:
@@ -155,7 +160,7 @@ class Market(object):
 
 
         :return: The league_id of this Market.  # noqa: E501
-        :rtype: str
+        :rtype: LeagueId
         """
         return self._league_id
 
@@ -165,7 +170,7 @@ class Market(object):
 
 
         :param league_id: The league_id of this Market.  # noqa: E501
-        :type: str
+        :type: LeagueId
         """
 
         self._league_id = league_id
@@ -176,7 +181,7 @@ class Market(object):
 
 
         :return: The league_name of this Market.  # noqa: E501
-        :rtype: str
+        :rtype: LeagueName
         """
         return self._league_name
 
@@ -186,7 +191,7 @@ class Market(object):
 
 
         :param league_name: The league_name of this Market.  # noqa: E501
-        :type: str
+        :type: LeagueName
         """
 
         self._league_name = league_name
@@ -425,7 +430,7 @@ class Market(object):
 
 
         :return: The prop_id of this Market.  # noqa: E501
-        :rtype: str
+        :rtype: PropId
         """
         return self._prop_id
 
@@ -435,7 +440,7 @@ class Market(object):
 
 
         :param prop_id: The prop_id of this Market.  # noqa: E501
-        :type: str
+        :type: PropId
         """
 
         self._prop_id = prop_id
@@ -446,7 +451,7 @@ class Market(object):
 
 
         :return: The prop_name of this Market.  # noqa: E501
-        :rtype: ProppropertiespropType
+        :rtype: PropName
         """
         return self._prop_name
 
@@ -456,10 +461,31 @@ class Market(object):
 
 
         :param prop_name: The prop_name of this Market.  # noqa: E501
-        :type: ProppropertiespropType
+        :type: PropName
         """
 
         self._prop_name = prop_name
+
+    @property
+    def prop_type(self):
+        """Gets the prop_type of this Market.  # noqa: E501
+
+
+        :return: The prop_type of this Market.  # noqa: E501
+        :rtype: PropType
+        """
+        return self._prop_type
+
+    @prop_type.setter
+    def prop_type(self, prop_type):
+        """Sets the prop_type of this Market.
+
+
+        :param prop_type: The prop_type of this Market.  # noqa: E501
+        :type: PropType
+        """
+
+        self._prop_type = prop_type
 
     @property
     def sport_event_id(self):
@@ -467,7 +493,7 @@ class Market(object):
 
 
         :return: The sport_event_id of this Market.  # noqa: E501
-        :rtype: SportEventpropertiesid
+        :rtype: SportEventId
         """
         return self._sport_event_id
 
@@ -477,7 +503,7 @@ class Market(object):
 
 
         :param sport_event_id: The sport_event_id of this Market.  # noqa: E501
-        :type: SportEventpropertiesid
+        :type: SportEventId
         """
 
         self._sport_event_id = sport_event_id
@@ -488,7 +514,7 @@ class Market(object):
 
 
         :return: The sport_event_name of this Market.  # noqa: E501
-        :rtype: SportEventpropertiesname
+        :rtype: SportEventName
         """
         return self._sport_event_name
 
@@ -498,7 +524,7 @@ class Market(object):
 
 
         :param sport_event_name: The sport_event_name of this Market.  # noqa: E501
-        :type: SportEventpropertiesname
+        :type: SportEventName
         """
 
         self._sport_event_name = sport_event_name
@@ -509,7 +535,7 @@ class Market(object):
 
 
         :return: The sport_event_type of this Market.  # noqa: E501
-        :rtype: SportEventpropertieseventType
+        :rtype: SportEventType
         """
         return self._sport_event_type
 
@@ -519,7 +545,7 @@ class Market(object):
 
 
         :param sport_event_type: The sport_event_type of this Market.  # noqa: E501
-        :type: SportEventpropertieseventType
+        :type: SportEventType
         """
 
         self._sport_event_type = sport_event_type

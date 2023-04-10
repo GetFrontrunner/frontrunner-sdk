@@ -30,16 +30,16 @@ class Prop(object):
                             and the value is json key in definition.
     """
     swagger_types = {
-        'id': 'str',
-        'league_id': 'Leaguepropertiesid',
-        'league_name': 'Leaguepropertiesname',
-        'name': 'str',
-        'prop_type': 'str',
+        'id': 'PropId',
+        'league_id': 'LeagueId',
+        'league_name': 'LeagueName',
+        'name': 'PropName',
+        'prop_type': 'PropType',
         'created': 'datetime',
         'updated': 'datetime',
-        'sport_event_id': 'SportEventpropertiesid',
-        'sport_event_name': 'SportEventpropertiesname',
-        'sport_event_type': 'SportEventpropertieseventType'
+        'sport_event_id': 'SportEventId',
+        'sport_event_name': 'SportEventName',
+        'sport_event_type': 'SportEventType'
     }
 
     attribute_map = {
@@ -93,7 +93,7 @@ class Prop(object):
 
 
         :return: The id of this Prop.  # noqa: E501
-        :rtype: str
+        :rtype: PropId
         """
         return self._id
 
@@ -103,7 +103,7 @@ class Prop(object):
 
 
         :param id: The id of this Prop.  # noqa: E501
-        :type: str
+        :type: PropId
         """
         if id is None:
             raise ValueError("Invalid value for `id`, must not be `None`")  # noqa: E501
@@ -116,7 +116,7 @@ class Prop(object):
 
 
         :return: The league_id of this Prop.  # noqa: E501
-        :rtype: Leaguepropertiesid
+        :rtype: LeagueId
         """
         return self._league_id
 
@@ -126,7 +126,7 @@ class Prop(object):
 
 
         :param league_id: The league_id of this Prop.  # noqa: E501
-        :type: Leaguepropertiesid
+        :type: LeagueId
         """
 
         self._league_id = league_id
@@ -137,7 +137,7 @@ class Prop(object):
 
 
         :return: The league_name of this Prop.  # noqa: E501
-        :rtype: Leaguepropertiesname
+        :rtype: LeagueName
         """
         return self._league_name
 
@@ -147,7 +147,7 @@ class Prop(object):
 
 
         :param league_name: The league_name of this Prop.  # noqa: E501
-        :type: Leaguepropertiesname
+        :type: LeagueName
         """
 
         self._league_name = league_name
@@ -158,7 +158,7 @@ class Prop(object):
 
 
         :return: The name of this Prop.  # noqa: E501
-        :rtype: str
+        :rtype: PropName
         """
         return self._name
 
@@ -168,7 +168,7 @@ class Prop(object):
 
 
         :param name: The name of this Prop.  # noqa: E501
-        :type: str
+        :type: PropName
         """
         if name is None:
             raise ValueError("Invalid value for `name`, must not be `None`")  # noqa: E501
@@ -181,7 +181,7 @@ class Prop(object):
 
 
         :return: The prop_type of this Prop.  # noqa: E501
-        :rtype: str
+        :rtype: PropType
         """
         return self._prop_type
 
@@ -191,14 +191,8 @@ class Prop(object):
 
 
         :param prop_type: The prop_type of this Prop.  # noqa: E501
-        :type: str
+        :type: PropType
         """
-        allowed_values = ["winner", "team_prop", "player_prop", "other"]  # noqa: E501
-        if prop_type not in allowed_values:
-            raise ValueError(
-                "Invalid value for `prop_type` ({0}), must be one of {1}"  # noqa: E501
-                .format(prop_type, allowed_values)
-            )
 
         self._prop_type = prop_type
 
@@ -250,7 +244,7 @@ class Prop(object):
 
 
         :return: The sport_event_id of this Prop.  # noqa: E501
-        :rtype: SportEventpropertiesid
+        :rtype: SportEventId
         """
         return self._sport_event_id
 
@@ -260,7 +254,7 @@ class Prop(object):
 
 
         :param sport_event_id: The sport_event_id of this Prop.  # noqa: E501
-        :type: SportEventpropertiesid
+        :type: SportEventId
         """
 
         self._sport_event_id = sport_event_id
@@ -271,7 +265,7 @@ class Prop(object):
 
 
         :return: The sport_event_name of this Prop.  # noqa: E501
-        :rtype: SportEventpropertiesname
+        :rtype: SportEventName
         """
         return self._sport_event_name
 
@@ -281,7 +275,7 @@ class Prop(object):
 
 
         :param sport_event_name: The sport_event_name of this Prop.  # noqa: E501
-        :type: SportEventpropertiesname
+        :type: SportEventName
         """
 
         self._sport_event_name = sport_event_name
@@ -292,7 +286,7 @@ class Prop(object):
 
 
         :return: The sport_event_type of this Prop.  # noqa: E501
-        :rtype: SportEventpropertieseventType
+        :rtype: SportEventType
         """
         return self._sport_event_type
 
@@ -302,7 +296,7 @@ class Prop(object):
 
 
         :param sport_event_type: The sport_event_type of this Prop.  # noqa: E501
-        :type: SportEventpropertieseventType
+        :type: SportEventType
         """
 
         self._sport_event_type = sport_event_type

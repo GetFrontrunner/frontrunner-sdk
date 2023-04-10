@@ -30,14 +30,14 @@ class SportEvent(object):
                             and the value is json key in definition.
     """
     swagger_types = {
-        'id': 'str',
-        'name': 'str',
-        'event_type': 'str',
+        'id': 'SportEventId',
+        'name': 'SportEventName',
+        'event_type': 'SportEventType',
         'start_time': 'datetime',
         'created': 'datetime',
         'updated': 'datetime',
-        'league_id': 'Leaguepropertiesid',
-        'league_name': 'Leaguepropertiesname'
+        'league_id': 'LeagueId',
+        'league_name': 'LeagueName'
     }
 
     attribute_map = {
@@ -83,7 +83,7 @@ class SportEvent(object):
 
 
         :return: The id of this SportEvent.  # noqa: E501
-        :rtype: str
+        :rtype: SportEventId
         """
         return self._id
 
@@ -93,7 +93,7 @@ class SportEvent(object):
 
 
         :param id: The id of this SportEvent.  # noqa: E501
-        :type: str
+        :type: SportEventId
         """
         if id is None:
             raise ValueError("Invalid value for `id`, must not be `None`")  # noqa: E501
@@ -106,7 +106,7 @@ class SportEvent(object):
 
 
         :return: The name of this SportEvent.  # noqa: E501
-        :rtype: str
+        :rtype: SportEventName
         """
         return self._name
 
@@ -116,7 +116,7 @@ class SportEvent(object):
 
 
         :param name: The name of this SportEvent.  # noqa: E501
-        :type: str
+        :type: SportEventName
         """
         if name is None:
             raise ValueError("Invalid value for `name`, must not be `None`")  # noqa: E501
@@ -129,7 +129,7 @@ class SportEvent(object):
 
 
         :return: The event_type of this SportEvent.  # noqa: E501
-        :rtype: str
+        :rtype: SportEventType
         """
         return self._event_type
 
@@ -139,14 +139,8 @@ class SportEvent(object):
 
 
         :param event_type: The event_type of this SportEvent.  # noqa: E501
-        :type: str
+        :type: SportEventType
         """
-        allowed_values = ["game", "future"]  # noqa: E501
-        if event_type not in allowed_values:
-            raise ValueError(
-                "Invalid value for `event_type` ({0}), must be one of {1}"  # noqa: E501
-                .format(event_type, allowed_values)
-            )
 
         self._event_type = event_type
 
@@ -221,7 +215,7 @@ class SportEvent(object):
 
 
         :return: The league_id of this SportEvent.  # noqa: E501
-        :rtype: Leaguepropertiesid
+        :rtype: LeagueId
         """
         return self._league_id
 
@@ -231,7 +225,7 @@ class SportEvent(object):
 
 
         :param league_id: The league_id of this SportEvent.  # noqa: E501
-        :type: Leaguepropertiesid
+        :type: LeagueId
         """
 
         self._league_id = league_id
@@ -242,7 +236,7 @@ class SportEvent(object):
 
 
         :return: The league_name of this SportEvent.  # noqa: E501
-        :rtype: Leaguepropertiesname
+        :rtype: LeagueName
         """
         return self._league_name
 
@@ -252,7 +246,7 @@ class SportEvent(object):
 
 
         :param league_name: The league_name of this SportEvent.  # noqa: E501
-        :type: Leaguepropertiesname
+        :type: LeagueName
         """
 
         self._league_name = league_name

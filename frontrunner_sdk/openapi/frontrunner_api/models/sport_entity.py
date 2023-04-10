@@ -34,8 +34,8 @@ class SportEntity(object):
         'name': 'str',
         'abbreviation': 'str',
         'updated': 'datetime',
-        'league_id': 'Leaguepropertiesid',
-        'league_name': 'Leaguepropertiesname'
+        'league_id': 'LeagueId',
+        'league_name': 'LeagueName'
     }
 
     attribute_map = {
@@ -163,7 +163,7 @@ class SportEntity(object):
 
 
         :return: The league_id of this SportEntity.  # noqa: E501
-        :rtype: Leaguepropertiesid
+        :rtype: LeagueId
         """
         return self._league_id
 
@@ -173,7 +173,7 @@ class SportEntity(object):
 
 
         :param league_id: The league_id of this SportEntity.  # noqa: E501
-        :type: Leaguepropertiesid
+        :type: LeagueId
         """
 
         self._league_id = league_id
@@ -184,7 +184,7 @@ class SportEntity(object):
 
 
         :return: The league_name of this SportEntity.  # noqa: E501
-        :rtype: Leaguepropertiesname
+        :rtype: LeagueName
         """
         return self._league_name
 
@@ -194,7 +194,7 @@ class SportEntity(object):
 
 
         :param league_name: The league_name of this SportEntity.  # noqa: E501
-        :type: Leaguepropertiesname
+        :type: LeagueName
         """
 
         self._league_name = league_name

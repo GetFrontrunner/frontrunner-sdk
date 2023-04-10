@@ -20,10 +20,10 @@ def cli(**kwargs):
 
 async def run_get_sport_events(**kwargs):
   app = FrontrunnerIoC()
-  api_instance = await app.openapi_frontrunner_api
+  api_instance = app.openapi_frontrunner_api
 
   try:
-    api_response = api_instance.get_sport_events(**kwargs)
+    api_response = await api_instance.get_sport_events(**kwargs)
     pprint(api_response)
   except ApiException as e:
     print("Exception when calling FrontrunnerApi->get_sport_events: %s\n" % e)

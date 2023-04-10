@@ -18,8 +18,16 @@ from __future__ import absolute_import
 # import models into model package
 from frontrunner_sdk.openapi.frontrunner_api.models.error import Error
 from frontrunner_sdk.openapi.frontrunner_api.models.league import League
+from frontrunner_sdk.openapi.frontrunner_api.models.league_id import LeagueId
+from frontrunner_sdk.openapi.frontrunner_api.models.league_name import LeagueName
 from frontrunner_sdk.openapi.frontrunner_api.models.market import Market
 from frontrunner_sdk.openapi.frontrunner_api.models.market_status import MarketStatus
 from frontrunner_sdk.openapi.frontrunner_api.models.prop import Prop
+from frontrunner_sdk.openapi.frontrunner_api.models.prop_id import PropId
+from frontrunner_sdk.openapi.frontrunner_api.models.prop_name import PropName
+from frontrunner_sdk.openapi.frontrunner_api.models.prop_type import PropType
 from frontrunner_sdk.openapi.frontrunner_api.models.sport_entity import SportEntity
 from frontrunner_sdk.openapi.frontrunner_api.models.sport_event import SportEvent
+from frontrunner_sdk.openapi.frontrunner_api.models.sport_event_id import SportEventId
+from frontrunner_sdk.openapi.frontrunner_api.models.sport_event_name import SportEventName
+from frontrunner_sdk.openapi.frontrunner_api.models.sport_event_type import SportEventType

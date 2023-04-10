@@ -87,7 +87,7 @@
             "description": "Frontrunner Market status",
             "required": false,
             "schema": {
-              "$ref": "#/components/schemas/MarketStatus"
+              "$ref": "#/components/schemas/marketStatus"
             }
           }
         ],
@@ -221,6 +221,14 @@
                   "items": {
                     "$ref": "#/components/schemas/Prop"
                   }
+                }
+              }
+            },
+            "links": {
+              "propId": {
+                "operationId": "getMarkets",
+                "parameters": {
+                  "propId": "$response.body#/id"
                 }
               }
             }
@@ -451,6 +459,43 @@
       }
     },
     "schemas": {
+      "propId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "propName": {
+        "type": "string",
+        "example": "Winner"
+      },
+      "propType": {
+        "type": "string",
+        "enum": [
+          "winner"
+        ]
+      },
+      "leagueId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "leagueName": {
+        "type": "string",
+        "example": "English Premier League"
+      },
+      "sportEventId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "sportEventName": {
+        "type": "string"
+      },
+      "sportEventType": {
+        "type": "string",
+        "enum": [
+          "game",
+          "future"
+        ],
+        "example": "game"
+      },
       "Error": {
         "type": "object",
         "properties": {
@@ -509,10 +554,10 @@
             "format": "date-time"
           },
           "leagueId": {
-            "$ref": "#/components/schemas/League/properties/id"
+            "$ref": "#/components/schemas/leagueId"
           },
           "leagueName": {
-            "$ref": "#/components/schemas/League/properties/name"
+            "$ref": "#/components/schemas/leagueName"
           }
         }
       },
@@ -524,18 +569,13 @@
         ],
         "properties": {
           "id": {
-            "type": "string",
-            "format": "uuid"
+            "$ref": "#/components/schemas/sportEventId"
           },
           "name": {
-            "type": "string"
+            "$ref": "#/components/schemas/sportEventName"
           },
           "eventType": {
-            "type": "string",
-            "enum": [
-              "game",
-              "future"
-            ]
+            "$ref": "#/components/schemas/sportEventType"
           },
           "startTime": {
             "type": "string",
@@ -551,10 +591,10 @@
             "format": "date-time"
           },
           "leagueId": {
-            "$ref": "#/components/schemas/League/properties/id"
+            "$ref": "#/components/schemas/leagueId"
           },
           "leagueName": {
-            "$ref": "#/components/schemas/League/properties/name"
+            "$ref": "#/components/schemas/leagueName"
           }
         }
       },
@@ -567,26 +607,19 @@
         ],
         "properties": {
           "id": {
-            "type": "string",
-            "format": "uuid"
+            "$ref": "#/components/schemas/propId"
           },
           "leagueId": {
-            "$ref": "#/components/schemas/League/properties/id"
+            "$ref": "#/components/schemas/leagueId"
           },
           "leagueName": {
-            "$ref": "#/components/schemas/League/properties/name"
+            "$ref": "#/components/schemas/leagueName"
           },
           "name": {
-            "type": "string"
+            "$ref": "#/components/schemas/propName"
           },
           "propType": {
-            "type": "string",
-            "enum": [
-              "winner",
-              "team_prop",
-              "player_prop",
-              "other"
-            ]
+            "$ref": "#/components/schemas/propType"
           },
           "created": {
             "type": "string",
@@ -597,17 +630,17 @@
             "format": "date-time"
           },
           "sportEventId": {
-            "$ref": "#/components/schemas/SportEvent/properties/id"
+            "$ref": "#/components/schemas/sportEventId"
           },
           "sportEventName": {
-            "$ref": "#/components/schemas/SportEvent/properties/name"
+            "$ref": "#/components/schemas/sportEventName"
           },
           "sportEventType": {
-            "$ref": "#/components/schemas/SportEvent/properties/eventType"
+            "$ref": "#/components/schemas/sportEventType"
           }
         }
       },
-      "MarketStatus": {
+      "marketStatus": {
         "type": "string",
         "enum": [
           "active",
@@ -629,11 +662,10 @@
             "format": "uuid"
           },
           "leagueId": {
-            "type": "string",
-            "format": "uuid"
+            "$ref": "#/components/schemas/leagueId"
           },
           "leagueName": {
-            "type": "string"
+            "$ref": "#/components/schemas/leagueName"
           },
           "injectiveId": {
             "type": "string",
@@ -674,23 +706,25 @@
             "description": "The abbreviation of the SportEntity, if it exists, on the short side of the market"
           },
           "status": {
-            "$ref": "#/components/schemas/MarketStatus"
+            "$ref": "#/components/schemas/marketStatus"
           },
           "propId": {
-            "type": "string",
-            "format": "uuid"
+            "$ref": "#/components/schemas/propId"
           },
           "propName": {
-            "$ref": "#/components/schemas/Prop/properties/propType"
+            "$ref": "#/components/schemas/propName"
+          },
+          "propType": {
+            "$ref": "#/components/schemas/propType"
           },
           "sportEventId": {
-            "$ref": "#/components/schemas/SportEvent/properties/id"
+            "$ref": "#/components/schemas/sportEventId"
           },
           "sportEventName": {
-            "$ref": "#/components/schemas/SportEvent/properties/name"
+            "$ref": "#/components/schemas/sportEventName"
           },
           "sportEventType": {
-            "$ref": "#/components/schemas/SportEvent/properties/eventType"
+            "$ref": "#/components/schemas/sportEventType"
           }
         }
       }
