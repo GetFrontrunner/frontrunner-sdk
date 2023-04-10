@@ -22,7 +22,7 @@ async def run_get_leagues(**kwargs):
   api_instance = app.openapi_frontrunner_api
 
   try:
-    api_response = api_instance.get_leagues(**kwargs)
+    api_response = await api_instance.get_leagues(**kwargs)
     pprint(api_response)
   except ApiException as e:
     print("Exception when calling FrontrunnerApi->get_leagues: %s\n" % e)

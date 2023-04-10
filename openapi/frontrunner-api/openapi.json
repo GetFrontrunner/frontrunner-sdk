@@ -3,7 +3,7 @@
   "info": {
     "title": "Frontrunner Market Maker",
     "description": "This is a first draft of the FR External Market Maker API",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "contact": {}
   },
   "tags": [
@@ -509,8 +509,10 @@
             "format": "date-time"
           },
           "leagueId": {
-            "type": "string",
-            "format": "uuid"
+            "$ref": "#/components/schemas/League/properties/id"
+          },
+          "leagueName": {
+            "$ref": "#/components/schemas/League/properties/name"
           }
         }
       },
@@ -549,8 +551,10 @@
             "format": "date-time"
           },
           "leagueId": {
-            "type": "string",
-            "format": "uuid"
+            "$ref": "#/components/schemas/League/properties/id"
+          },
+          "leagueName": {
+            "$ref": "#/components/schemas/League/properties/name"
           }
         }
       },
@@ -567,8 +571,10 @@
             "format": "uuid"
           },
           "leagueId": {
-            "type": "string",
-            "format": "uuid"
+            "$ref": "#/components/schemas/League/properties/id"
+          },
+          "leagueName": {
+            "$ref": "#/components/schemas/League/properties/name"
           },
           "name": {
             "type": "string"
@@ -591,8 +597,13 @@
             "format": "date-time"
           },
           "sportEventId": {
-            "type": "string",
-            "format": "uuid"
+            "$ref": "#/components/schemas/SportEvent/properties/id"
+          },
+          "sportEventName": {
+            "$ref": "#/components/schemas/SportEvent/properties/name"
+          },
+          "sportEventType": {
+            "$ref": "#/components/schemas/SportEvent/properties/eventType"
           }
         }
       },
@@ -617,6 +628,13 @@
             "type": "string",
             "format": "uuid"
           },
+          "leagueId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "leagueName": {
+            "type": "string"
+          },
           "injectiveId": {
             "type": "string",
             "description": "The marketId on Injective"
@@ -634,10 +652,26 @@
             "format": "uuid",
             "description": "The ID of the SportEntity on the long side of the market; if this side wins the market will go to 1"
           },
+          "longEntityName": {
+            "type": "string",
+            "description": "The name of the SportEntity on the long side of the market"
+          },
+          "longEntityAbbreviation": {
+            "type": "string",
+            "description": "The abbreviation of the SportEntity on the long side of the market"
+          },
           "shortEntityId": {
             "type": "string",
             "format": "uuid",
             "description": "The ID of the SportEntity, if it exists, on the short side of the market; if this side wins the market will go to 0. If this is null, then the short side of the market is the \\'not\\' of the `longEntity`"
+          },
+          "shortEntityName": {
+            "type": "string",
+            "description": "The name of the SportEntity, if it exists, on the short side of the market"
+          },
+          "shortEntityAbbreviation": {
+            "type": "string",
+            "description": "The abbreviation of the SportEntity, if it exists, on the short side of the market"
           },
           "status": {
             "$ref": "#/components/schemas/MarketStatus"
@@ -645,6 +679,18 @@
           "propId": {
             "type": "string",
             "format": "uuid"
+          },
+          "propName": {
+            "$ref": "#/components/schemas/Prop/properties/propType"
+          },
+          "sportEventId": {
+            "$ref": "#/components/schemas/SportEvent/properties/id"
+          },
+          "sportEventName": {
+            "$ref": "#/components/schemas/SportEvent/properties/name"
+          },
+          "sportEventType": {
+            "$ref": "#/components/schemas/SportEvent/properties/eventType"
           }
         }
       }

@@ -20,7 +20,7 @@ def cli(**kwargs):
 
 async def run_get_sport_events(**kwargs):
   app = FrontrunnerIoC()
-  api_instance = app.openapi_frontrunner_api
+  api_instance = await app.openapi_frontrunner_api
 
   try:
     api_response = api_instance.get_sport_events(**kwargs)
