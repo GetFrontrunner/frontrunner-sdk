@@ -7,7 +7,7 @@ from frontrunner_sdk.commands.injective.get_account_portfolio import GetAccountP
 from frontrunner_sdk.ioc import FrontrunnerIoC
 
 
-class TestCreateWalletOperation(IsolatedAsyncioTestCase):
+class TestGetAccountPortfolioOperation(IsolatedAsyncioTestCase):
 
   def setUp(self) -> None:
     self.deps = MagicMock(spec=FrontrunnerIoC)
@@ -17,7 +17,7 @@ class TestCreateWalletOperation(IsolatedAsyncioTestCase):
     cmd = GetAccountPortfolioOperation(req)
     cmd.validate(self.deps)
 
-  async def test_create_wallet(self):
+  async def test_execute(self):
     portfolio = MagicMock()
     response = MagicMock(portfolio=portfolio)
 
