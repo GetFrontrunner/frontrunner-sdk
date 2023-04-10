@@ -516,11 +516,10 @@
         ],
         "properties": {
           "id": {
-            "type": "string",
-            "format": "uuid"
+            "$ref": "#/components/schemas/leagueId"
           },
           "name": {
-            "type": "string"
+            "$ref": "#/components/schemas/leagueName"
           },
           "updated": {
             "type": "string",
