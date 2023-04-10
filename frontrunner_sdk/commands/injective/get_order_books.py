@@ -1,7 +1,8 @@
 from dataclasses import dataclass
-from typing import Iterable, Mapping, Sequence
+from typing import Iterable
+from typing import Mapping
 
-from pyinjective.proto.exchange.injective_derivative_exchange_rpc_pb2 import SingleDerivativeLimitOrderbookV2
+from pyinjective.proto.exchange.injective_derivative_exchange_rpc_pb2 import SingleDerivativeLimitOrderbookV2 # NOQA
 
 from frontrunner_sdk.commands.base import FrontrunnerOperation
 from frontrunner_sdk.ioc import FrontrunnerIoC
@@ -30,10 +31,6 @@ class GetOrderBooksOperation(FrontrunnerOperation[GetOrderBooksRequest, GetOrder
   async def execute(self, deps: FrontrunnerIoC) -> GetOrderBooksResponse:
     get_derivative_orderbooks = await deps.injective_client.get_derivative_orderbooksV2(self.request.market_ids)
 
-    order_books = {
-      order_book.market_id: order_book.orderbook
-      for order_book
-      in get_derivative_orderbooks.orderbooks
-    }
+    order_books = {order_book.market_id: order_book.orderbook for order_book in get_derivative_orderbooks.orderbooks}
 
     return GetOrderBooksResponse(order_books=order_books)

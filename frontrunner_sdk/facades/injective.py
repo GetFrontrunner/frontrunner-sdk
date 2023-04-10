@@ -15,8 +15,10 @@ from frontrunner_sdk.commands.injective.fund_wallet_from_faucet import FundWalle
 from frontrunner_sdk.commands.injective.fund_wallet_from_faucet import FundWalletFromFaucetResponse # NOQA
 from frontrunner_sdk.commands.injective.get_account_portfolio import GetAccountPortfolioOperation # NOQA
 from frontrunner_sdk.commands.injective.get_account_portfolio import GetAccountPortfolioRequest # NOQA
-from frontrunner_sdk.commands.injective.get_account_portfolio import GetAccountPortfolioResponse
-from frontrunner_sdk.commands.injective.get_order_books import GetOrderBooksOperation, GetOrderBooksRequest, GetOrderBooksResponse # NOQA
+from frontrunner_sdk.commands.injective.get_account_portfolio import GetAccountPortfolioResponse # NOQA
+from frontrunner_sdk.commands.injective.get_order_books import GetOrderBooksOperation # NOQA
+from frontrunner_sdk.commands.injective.get_order_books import GetOrderBooksRequest # NOQA
+from frontrunner_sdk.commands.injective.get_order_books import GetOrderBooksResponse # NOQA
 from frontrunner_sdk.facades.base import FrontrunnerFacadeMixin # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.models.order import Order
