@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Iterable
 from typing import Mapping
 
-from pyinjective.proto.exchange.injective_derivative_exchange_rpc_pb2 import SingleDerivativeLimitOrderbookV2 # NOQA
+from pyinjective.proto.exchange.injective_derivative_exchange_rpc_pb2 import DerivativeLimitOrderbookV2 # NOQA
 
 from frontrunner_sdk.commands.base import FrontrunnerOperation
 from frontrunner_sdk.ioc import FrontrunnerIoC
@@ -16,7 +16,7 @@ class GetOrderBooksRequest:
 
 @dataclass
 class GetOrderBooksResponse:
-  order_books: Mapping[str, SingleDerivativeLimitOrderbookV2]
+  order_books: Mapping[str, DerivativeLimitOrderbookV2]
 
 
 class GetOrderBooksOperation(FrontrunnerOperation[GetOrderBooksRequest, GetOrderBooksResponse]):
