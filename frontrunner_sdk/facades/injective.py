@@ -1,5 +1,7 @@
-from typing import Iterable
+from datetime import datetime
+from typing import Iterable, Literal
 from typing import List
+from typing import Optional
 
 from frontrunner_sdk.commands.injective.cancel_orders import CancelAllOrdersOperation # NOQA
 from frontrunner_sdk.commands.injective.cancel_orders import CancelAllOrdersRequest # NOQA
@@ -19,6 +21,9 @@ from frontrunner_sdk.commands.injective.get_account_portfolio import GetAccountP
 from frontrunner_sdk.commands.injective.get_order_books import GetOrderBooksOperation # NOQA
 from frontrunner_sdk.commands.injective.get_order_books import GetOrderBooksRequest # NOQA
 from frontrunner_sdk.commands.injective.get_order_books import GetOrderBooksResponse # NOQA
+from frontrunner_sdk.commands.injective.get_positions import GetPositionsOperation # NOQA
+from frontrunner_sdk.commands.injective.get_positions import GetPositionsRequest # NOQA
+from frontrunner_sdk.commands.injective.get_positions import GetPositionsResponse # NOQA
 from frontrunner_sdk.facades.base import FrontrunnerFacadeMixin # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.models.order import Order
@@ -54,6 +59,23 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     request = GetOrderBooksRequest(market_ids=market_ids)
     return await self._run_operation(GetOrderBooksOperation, self.deps, request)
 
+  async def get_positions(
+    self,
+    market_ids: Iterable[str],
+    mine: bool = False,
+    direction: Optional[Literal["buy", "sell"]] = None,
+    start_time: Optional[datetime] = None,
+    end_time: Optional[datetime] = None,
+  ) -> GetPositionsResponse:
+    request = GetPositionsRequest(
+      market_ids=market_ids,
+      mine=mine,
+      direction=direction,
+      start_time=start_time,
+      end_time=end_time,
+    )
+    return await self._run_operation(GetPositionsOperation, self.deps, request)
+
 
 class InjectiveFacade(SyncMixin):
 
@@ -77,3 +99,20 @@ class InjectiveFacade(SyncMixin):
 
   def get_order_books(self, market_ids: Iterable[str]) -> GetOrderBooksResponse:
     return self._synchronously(self.impl.get_order_books, market_ids)
+
+  def get_positions(
+    self,
+    market_ids: Iterable[str],
+    mine: bool = False,
+    direction: Optional[Literal["buy", "sell"]] = None,
+    start_time: Optional[datetime] = None,
+    end_time: Optional[datetime] = None,
+  ) -> GetPositionsResponse:
+    return self._synchronously(
+      self.impl.get_positions,
+      market_ids=market_ids,
+      mine=mine,
+      direction=direction,
+      start_time=start_time,
+      end_time=end_time,
+    )

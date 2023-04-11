@@ -13,11 +13,13 @@ from pyinjective.composer import Composer
 from pyinjective.constant import Denom
 from pyinjective.constant import Network
 from pyinjective.proto.cosmos.base.abci.v1beta1.abci_pb2 import SimulationResponse # NOQA
-from pyinjective.proto.cosmos.base.abci.v1beta1.abci_pb2 import TxResponse # NOQA
+from pyinjective.proto.cosmos.base.abci.v1beta1.abci_pb2 import TxResponse
+from pyinjective.proto.exchange.injective_derivative_exchange_rpc_pb2 import DerivativeLimitOrder # NOQA
 from pyinjective.transaction import Coin
 from pyinjective.transaction import Transaction
 
 from frontrunner_sdk.exceptions import FrontrunnerInjectiveException
+from frontrunner_sdk.helpers.paginators import injective_paginated_list
 from frontrunner_sdk.logging.log_external_exceptions import log_external_exceptions # NOQA
 from frontrunner_sdk.models.order import Order
 from frontrunner_sdk.models.wallet import Wallet
@@ -165,24 +167,12 @@ class InjectiveChain:
     return await self._send_transaction(wallet, sequence, messages, gas, fee)
 
   @log_external_exceptions(__name__)
-  async def get_all_open_orders(
-    self,
-    wallet: Wallet,
-  ):
-    results = []
-    skip = 0
-    while True:
-      temp_result = await self.client.get_derivative_subaccount_orders(
-        wallet.subaccount_address(), skip=skip, limit=100
-      )
-      if not temp_result or not temp_result.orders or len(temp_result.orders) == 0:
-        break
-      results.extend(temp_result.orders)
-      skip += len(temp_result.orders)
-      if temp_result.paging.to == temp_result.paging.total:
-        break
-
-    return results
+  async def get_all_open_orders(self, wallet: Wallet) -> Iterable[DerivativeLimitOrder]:
+    return await injective_paginated_list(
+      self.client.get_derivative_subaccount_orders,
+      "orders",
+      wallet.subaccount_address(),
+    )
 
   @log_external_exceptions(__name__)
   async def create_orders(
