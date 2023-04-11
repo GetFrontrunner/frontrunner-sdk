@@ -1,6 +1,7 @@
 from datetime import datetime
-from typing import Iterable, Literal
+from typing import Iterable
 from typing import List
+from typing import Literal
 from typing import Optional
 
 from frontrunner_sdk.commands.injective.cancel_orders import CancelAllOrdersOperation # NOQA
