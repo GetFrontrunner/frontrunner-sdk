@@ -15,6 +15,10 @@ from frontrunner_sdk.commands.injective.get_account_portfolio import GetAccountP
 from frontrunner_sdk.commands.injective.get_account_portfolio import GetAccountPortfolioResponse # NOQA
 from frontrunner_sdk.commands.injective.get_order_books import GetOrderBooksOperation # NOQA
 from frontrunner_sdk.commands.injective.get_order_books import GetOrderBooksResponse # NOQA
+from frontrunner_sdk.commands.injective.get_positions import GetPositionsOperation # NOQA
+from frontrunner_sdk.commands.injective.get_positions import GetPositionsResponse # NOQA
+from frontrunner_sdk.commands.injective.get_trades import GetTradesOperation # NOQA
+from frontrunner_sdk.commands.injective.get_trades import GetTradesResponse
 from frontrunner_sdk.facades.injective import InjectiveFacadeAsync
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.models.order import Order
@@ -85,4 +89,24 @@ class TestInjectiveFacadeAsync(IsolatedAsyncioTestCase):
   )
   async def test_get_order_books(self, _execute: AsyncMock):
     await self.facade.get_order_books(market_ids=["abc"])
+    _execute.assert_awaited_once()
+
+  @patch.object(
+    GetPositionsOperation,
+    "execute",
+    new_callable=AsyncMock,
+    return_value=GetPositionsResponse(positions=[]),
+  )
+  async def test_get_positions(self, _execute: AsyncMock):
+    await self.facade.get_positions(market_ids=["abc"])
+    _execute.assert_awaited_once()
+
+  @patch.object(
+    GetTradesOperation,
+    "execute",
+    new_callable=AsyncMock,
+    return_value=GetTradesResponse(trades=[]),
+  )
+  async def test_get_trades(self, _execute: AsyncMock):
+    await self.facade.get_trades(market_ids=["abc"])
     _execute.assert_awaited_once()
