@@ -73,7 +73,10 @@ class GetPositionsOperation(FrontrunnerOperation[GetPositionsRequest, GetPositio
       request["subaccount_id"] = wallet.subaccount_address()
 
     if self.request.start_time:
-      request["start_time"] = self.request.start_time.timestamp()
+      request["start_time"] = int(self.request.start_time.timestamp())
+
+    if self.request.end_time:
+      request["end_time"] = int(self.request.end_time.timestamp())
 
     if self.request.direction == "buy":
       request["direction"] = "long"
