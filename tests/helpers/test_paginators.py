@@ -1,6 +1,7 @@
 from typing import Any
 from typing import Callable
 from typing import Iterable
+from typing import Sized
 from unittest import IsolatedAsyncioTestCase
 from unittest.mock import AsyncMock
 from unittest.mock import MagicMock
@@ -12,7 +13,7 @@ from frontrunner_sdk.helpers.paginators import injective_paginated_list
 class TestInjectivePaginator(IsolatedAsyncioTestCase):
 
   @staticmethod
-  def _paged_call(field: str, pages: Iterable[Iterable[Any]]) -> Callable[..., Any]:
+  def _paged_call(field: str, pages: Iterable[Sized]) -> Callable[..., Any]:
     total = sum(len(page) for page in pages)
 
     return AsyncMock(side_effect=[MagicMock(
