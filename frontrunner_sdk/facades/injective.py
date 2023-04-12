@@ -25,6 +25,9 @@ from frontrunner_sdk.commands.injective.get_order_books import GetOrderBooksResp
 from frontrunner_sdk.commands.injective.get_positions import GetPositionsOperation # NOQA
 from frontrunner_sdk.commands.injective.get_positions import GetPositionsRequest # NOQA
 from frontrunner_sdk.commands.injective.get_positions import GetPositionsResponse # NOQA
+from frontrunner_sdk.commands.injective.get_trades import GetTradesOperation # NOQA
+from frontrunner_sdk.commands.injective.get_trades import GetTradesRequest
+from frontrunner_sdk.commands.injective.get_trades import GetTradesResponse
 from frontrunner_sdk.facades.base import FrontrunnerFacadeMixin # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.models.order import Order
@@ -77,6 +80,25 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     )
     return await self._run_operation(GetPositionsOperation, self.deps, request)
 
+  async def get_trades(
+    self,
+    market_ids: Iterable[str],
+    mine: bool = False,
+    direction: Optional[Literal["buy", "sell"]] = None,
+    side: Optional[Literal["maker", "taker"]] = None,
+    start_time: Optional[datetime] = None,
+    end_time: Optional[datetime] = None,
+  ) -> GetTradesResponse:
+    request = GetTradesRequest(
+      market_ids=market_ids,
+      mine=mine,
+      direction=direction,
+      side=side,
+      start_time=start_time,
+      end_time=end_time,
+    )
+    return await self._run_operation(GetTradesOperation, self.deps, request)
+
 
 class InjectiveFacade(SyncMixin):
 
@@ -114,6 +136,25 @@ class InjectiveFacade(SyncMixin):
       market_ids=market_ids,
       mine=mine,
       direction=direction,
+      start_time=start_time,
+      end_time=end_time,
+    )
+
+  def get_trades(
+    self,
+    market_ids: Iterable[str],
+    mine: bool = False,
+    direction: Optional[Literal["buy", "sell"]] = None,
+    side: Optional[Literal["maker", "taker"]] = None,
+    start_time: Optional[datetime] = None,
+    end_time: Optional[datetime] = None,
+  ) -> GetTradesResponse:
+    return self._synchronously(
+      self.impl.get_trades,
+      market_ids=market_ids,
+      mine=mine,
+      direction=direction,
+      side=side,
       start_time=start_time,
       end_time=end_time,
     )
