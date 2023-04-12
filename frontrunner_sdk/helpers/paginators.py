@@ -1,3 +1,5 @@
+import sys
+
 from typing import Any
 from typing import AsyncIterator
 from typing import Awaitable
@@ -25,16 +27,11 @@ async def injective_paginated_iterator(
   **call_kwargs: Any,
 ) -> AsyncIterator[Item]:
   seen = 0
+  total = sys.maxsize
 
-  response = await call(*call_args, **call_kwargs)
-  items: Iterable[Item] = getattr(response, field)
-
-  for item in items:
-    seen += 1
-    yield item
-
-  while seen < response.paging.total:
-    response = await call(*call_args, **{**call_kwargs, "skip": seen})
+  while seen < total:
+    response = await call(*call_args, **call_kwargs)
+    total = response.paging.total
     items: Iterable[Item] = getattr(response, field)
 
     for item in items:
