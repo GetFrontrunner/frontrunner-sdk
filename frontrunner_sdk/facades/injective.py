@@ -19,6 +19,9 @@ from frontrunner_sdk.commands.injective.fund_wallet_from_faucet import FundWalle
 from frontrunner_sdk.commands.injective.get_account_portfolio import GetAccountPortfolioOperation # NOQA
 from frontrunner_sdk.commands.injective.get_account_portfolio import GetAccountPortfolioRequest # NOQA
 from frontrunner_sdk.commands.injective.get_account_portfolio import GetAccountPortfolioResponse # NOQA
+from frontrunner_sdk.commands.injective.get_my_orders import GetMyOrdersOperation # NOQA
+from frontrunner_sdk.commands.injective.get_my_orders import GetMyOrdersRequest
+from frontrunner_sdk.commands.injective.get_my_orders import GetMyOrdersResponse # NOQA
 from frontrunner_sdk.commands.injective.get_order_books import GetOrderBooksOperation # NOQA
 from frontrunner_sdk.commands.injective.get_order_books import GetOrderBooksRequest # NOQA
 from frontrunner_sdk.commands.injective.get_order_books import GetOrderBooksResponse # NOQA
@@ -62,6 +65,10 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
   async def get_order_books(self, market_ids: Iterable[str]) -> GetOrderBooksResponse:
     request = GetOrderBooksRequest(market_ids=market_ids)
     return await self._run_operation(GetOrderBooksOperation, self.deps, request)
+
+  async def get_my_orders(self) -> GetMyOrdersResponse:
+    request = GetMyOrdersRequest()
+    return await self._run_operation(GetMyOrdersOperation, self.deps, request)
 
   async def get_positions(
     self,
@@ -122,6 +129,9 @@ class InjectiveFacade(SyncMixin):
 
   def get_order_books(self, market_ids: Iterable[str]) -> GetOrderBooksResponse:
     return self._synchronously(self.impl.get_order_books, market_ids)
+
+  def get_my_orders(self) -> GetMyOrdersResponse:
+    return self._synchronously(self.impl.get_my_orders)
 
   def get_positions(
     self,
