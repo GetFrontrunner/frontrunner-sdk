@@ -35,6 +35,7 @@ async def injective_paginated_iterator(
 
   while seen < response.paging.total:
     response = await call(*call_args, **{**call_kwargs, "skip": seen})
+    items: Iterable[Item] = getattr(response, field)
 
     for item in items:
       seen += 1
