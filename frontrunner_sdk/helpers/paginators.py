@@ -30,7 +30,10 @@ async def injective_paginated_iterator(
   total = sys.maxsize
 
   while seen < total:
-    response = await call(*call_args, **call_kwargs)
+    skip_kwargs = {"skip": seen} if seen > 0 else {}
+
+    response = await call(*call_args, **call_kwargs, **skip_kwargs)
+
     total = response.paging.total
     items: Iterable[Item] = getattr(response, field)
 
