@@ -64,7 +64,7 @@ jobs:
         uses: actions/checkout@v3
       - name: Slate Build
         run: |
-          rsync docs/ /srv/slate/source/
+          cp -R docs/ /srv/slate/source/
           ls -lah /srv/slate/source
           # /srv/slate/slate.sh build
       # - name: Slate Upload
