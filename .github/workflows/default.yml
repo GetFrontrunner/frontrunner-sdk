@@ -65,6 +65,7 @@ jobs:
       - name: Slate Build
         run: |
           cp --recursive docs/ /srv/slate/source/
+          ls -R /srv/slate/
           cd /srv/slate
           ./slate.sh build --verbose
       # - name: Slate Upload
