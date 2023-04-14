@@ -65,8 +65,8 @@ jobs:
       - name: Slate Build
         run: |
           cp -R docs/ /srv/slate/source/
-          ls -lah /srv/slate/source
-          # /srv/slate/slate.sh build
+          /srv/slate/slate.sh build
+          ls -lah /srv/slate/build
       # - name: Slate Upload
       #   uses: actions/upload-artifact@v3
       #   with:
