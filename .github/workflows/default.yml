@@ -62,7 +62,7 @@ jobs:
       image: slatedocs/slate:v2.13.1
       volumes:
         - ${GITHUB_WORKSPACE}/docs:/srv/slate/source
-        - ${GITHUB_WORKSPACE}/dist/slate:/srv/slate/build
+        # - ${GITHUB_WORKSPACE}/dist/slate:/srv/slate/build
     steps:
       - name: Checkout
         uses: actions/checkout@v3
