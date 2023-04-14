@@ -65,7 +65,7 @@ jobs:
       - name: Slate Build
         run: |
           cp --recursive docs/ /srv/slate/source/
-          pushd /srv/slate
+          cd /srv/slate
           ./slate.sh build
       # - name: Slate Upload
       #   uses: actions/upload-artifact@v3
