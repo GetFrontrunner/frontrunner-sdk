@@ -21,6 +21,7 @@ from pyinjective.transaction import Transaction
 from frontrunner_sdk.exceptions import FrontrunnerInjectiveException
 from frontrunner_sdk.helpers.paginators import injective_paginated_list
 from frontrunner_sdk.logging.log_external_exceptions import log_external_exceptions # NOQA
+from frontrunner_sdk.models.cancel_order import CancelOrder
 from frontrunner_sdk.models.order import Order
 from frontrunner_sdk.models.wallet import Wallet
 
@@ -84,6 +85,11 @@ class InjectiveChain:
       # We need to specify a placeholder denom because one isn't hardcoded for
       # our ephemeral markets.
       denom=self.DENOM,
+    )
+
+  def _injective_order_cancel(self, wallet: Wallet, market_id: str, order_hash: str):
+    return self.composer.OrderData(
+      market_id=market_id, subaccount_id=wallet.subaccount_address(), order_hash=order_hash
     )
 
   async def _simulate_transaction(self, wallet: Wallet, sequence: int, messages: List[Message]) -> SimulationResponse:
@@ -199,6 +205,20 @@ class InjectiveChain:
       wallet.injective_address,
       subaccount_id=wallet.subaccount_address(),
       binary_options_market_ids_to_cancel_all=injective_market_ids,
+    )
+
+    return await self._execute_transaction(wallet, [batch_message])
+
+  @log_external_exceptions(__name__)
+  async def cancel_orders(self, wallet: Wallet, orders: Iterable[CancelOrder]) -> TxResponse:
+    order_messages = [
+      self._injective_order_cancel(wallet, order.market_id, order.order_hash) for order in orders if order.order_hash
+    ]
+
+    batch_message = self.composer.MsgBatchUpdateOrders(
+      wallet.injective_address,
+      subaccount_id=wallet.subaccount_address(),
+      binary_options_orders_to_cancel=order_messages
     )
 
     return await self._execute_transaction(wallet, [batch_message])
