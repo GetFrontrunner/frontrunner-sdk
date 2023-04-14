@@ -61,7 +61,9 @@ jobs:
     container:
       image: slatedocs/slate:v2.13.1
       volumes:
-        - ${{ github.action_path }}/docs:/srv/slate/source
+        # Can't use ${{ github.workspace }} because it's wrong
+        # https://github.com/actions/runner/issues/2058
+        - /__w/frontrunner-sdk/frontrunner-sdk/docs:/srv/slate/source
         # - ${GITHUB_WORKSPACE}/dist/slate:/srv/slate/build
     steps:
       - name: Checkout
@@ -73,9 +75,7 @@ jobs:
           echo -----
           pwd
           echo -----
-          echo ${{ github.action_path }}
-          ls -lah ${{ github.action_path }}/docs
-          echo -----
+          echo /srv/slate/source
           ls -lah /srv/slate/source
           # /srv/slate/slate.sh build
       # - name: Slate Upload
