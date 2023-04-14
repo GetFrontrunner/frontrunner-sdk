@@ -120,3 +120,21 @@ To get a Python shell to test code, run...
 ```sh
 pants repl ::
 ```
+
+### Viewing Docs
+
+To view docs generated from the `docs` folder, run...
+
+```sh
+./scripts/slate.sh serve
+```
+
+Then, in a browser, open http://localhost:8000.
+
+### Building Docs Locally
+
+To build docs locally, run...
+
+```sh
+./scripts/slate.sh build
+```
