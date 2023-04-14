@@ -61,7 +61,7 @@ jobs:
     container:
       image: slatedocs/slate:v2.13.1
       volumes:
-        - ${{ github.workspace }}/docs:/srv/slate/source
+        - ${{ github.action_path }}/docs:/srv/slate/source
         # - ${GITHUB_WORKSPACE}/dist/slate:/srv/slate/build
     steps:
       - name: Checkout
@@ -73,7 +73,8 @@ jobs:
           echo -----
           pwd
           echo -----
-          ls -lah ${{ github.workspace }}/docs
+          echo ${{ github.action_path }}
+          ls -lah ${{ github.action_path }}/docs
           echo -----
           ls -lah /srv/slate/source
           # /srv/slate/slate.sh build
