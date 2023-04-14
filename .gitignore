@@ -12,3 +12,6 @@ test.py
 
 # IntelliJ
 .idea
+
+# osx
+.DS_Store
