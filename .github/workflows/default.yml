@@ -69,8 +69,12 @@ jobs:
       - name: Slate Build
         run: |
           echo Hello World
+          ls -lah
+          echo -----
           ls -lah docs
+          echo -----
           ls -lah ${{ github.workspace }}/docs
+          echo -----
           ls -lah /srv/slate/source
           # /srv/slate/slate.sh build
       # - name: Slate Upload
