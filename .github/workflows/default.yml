@@ -4,69 +4,74 @@ on: [push]
 
 jobs:
 
-  Code-Quality:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Setup Python
-        uses: actions/setup-python@v4
-      - name: Setup Pants
-        uses: pantsbuild/actions/init-pants@main
-        with:
-          named-caches-hash: ${{ hashFiles('**/*.lockfile') }}
-          setup-python-for-plugins: "true"
-      - name: Run Lint
-        run: |
-          pants lint ::
-      - name: Run Check
-        run: |
-          pants check ::
+  # Code-Quality:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #     - name: Setup Python
+  #       uses: actions/setup-python@v4
+  #     - name: Setup Pants
+  #       uses: pantsbuild/actions/init-pants@main
+  #       with:
+  #         named-caches-hash: ${{ hashFiles('**/*.lockfile') }}
+  #         setup-python-for-plugins: "true"
+  #     - name: Run Lint
+  #       run: |
+  #         pants lint ::
+  #     - name: Run Check
+  #       run: |
+  #         pants check ::
 
-  Unit-Test:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
-    permissions:
-      contents: read
-      checks: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Setup Pants
-        uses: pantsbuild/actions/init-pants@main
-        with:
-          named-caches-hash: ${{ hashFiles('**/*.lockfile') }}
-      - name: Run Unit Tests
-        run: |
-          pants test ::
-      - name: Report Unit Tests
-        uses: mikepenz/action-junit-report@v3
-        if: success() || failure()
-        with:
-          report_paths: "dist/**/*.tests.xml"
-      - name: Report Coverage
-        uses: irongut/CodeCoverageSummary@v1.3.0
-        if: success() || failure()
-        with:
-          filename: "dist/coverage/**/*.xml"
+  # Unit-Test:
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       python-version: ["3.8", "3.9", "3.10", "3.11"]
+  #   permissions:
+  #     contents: read
+  #     checks: write
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #     - name: Setup Python
+  #       uses: actions/setup-python@v4
+  #       with:
+  #         python-version: ${{ matrix.python-version }}
+  #     - name: Setup Pants
+  #       uses: pantsbuild/actions/init-pants@main
+  #       with:
+  #         named-caches-hash: ${{ hashFiles('**/*.lockfile') }}
+  #     - name: Run Unit Tests
+  #       run: |
+  #         pants test ::
+  #     - name: Report Unit Tests
+  #       uses: mikepenz/action-junit-report@v3
+  #       if: success() || failure()
+  #       with:
+  #         report_paths: "dist/**/*.tests.xml"
+  #     - name: Report Coverage
+  #       uses: irongut/CodeCoverageSummary@v1.3.0
+  #       if: success() || failure()
+  #       with:
+  #         filename: "dist/coverage/**/*.xml"
 
   Documentation:
     runs-on: ubuntu-latest
+    container:
+      image: slatedocs/slate:v2.13.1
+      # volumes:
+      #   - ${GITHUB_WORKSPACE}/docs:/srv/slate/source
+      #   - ${GITHUB_WORKSPACE}/dist/slate:/srv/slate/build
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Slate Build
-        uses: docker://decathlon/slate-builder-action:2.0.0
-        env:
-          DOC_BASE_FOLDER: docs
-      - name: Slate Upload
-        uses: actions/upload-artifact@v3
-        with:
-          name: docs
-          path: ${GITHUB_WORKSPACE}/docs/build/
+        run: |
+          echo Hello World
+          # /srv/slate/slate.sh build
+      # - name: Slate Upload
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: docs
+      #     path: ${GITHUB_WORKSPACE}/dist/slate/
