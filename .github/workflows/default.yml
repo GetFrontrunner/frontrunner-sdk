@@ -58,19 +58,15 @@ jobs:
 
   Documentation:
     runs-on: ubuntu-latest
-    container:
-      image: slatedocs/slate:v2.13.1
-      volumes:
-        - ${GITHUB_WORKSPACE}/docs:/srv/slate/source
-        - ${GITHUB_WORKSPACE}/dist/slate:/srv/slate/build
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Slate Build
-        run: |
-          /srv/slate/slate.sh build
+        uses: docker://decathlon/slate-builder-action:2.0.0
+        env:
+          DOC_BASE_FOLDER: docs
       - name: Slate Upload
         uses: actions/upload-artifact@v3
         with:
           name: docs
-          path: ${GITHUB_WORKSPACE}/dist/slate/
+          path: ${GITHUB_WORKSPACE}/docs/build/
