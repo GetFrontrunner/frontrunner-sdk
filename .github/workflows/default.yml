@@ -71,7 +71,7 @@ jobs:
           echo Hello World
           ls -lah
           echo -----
-          ls -lah docs
+          pwd
           echo -----
           ls -lah ${{ github.workspace }}/docs
           echo -----
