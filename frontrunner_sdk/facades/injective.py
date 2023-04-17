@@ -1,4 +1,5 @@
 import contextlib
+
 from datetime import datetime
 from typing import Iterable
 from typing import List
@@ -32,7 +33,9 @@ from frontrunner_sdk.commands.injective.get_positions import GetPositionsRespons
 from frontrunner_sdk.commands.injective.get_trades import GetTradesOperation # NOQA
 from frontrunner_sdk.commands.injective.get_trades import GetTradesRequest
 from frontrunner_sdk.commands.injective.get_trades import GetTradesResponse
-from frontrunner_sdk.commands.injective.stream_trades import StreamTradesOperation, StreamTradesRequest, StreamTradesResponse
+from frontrunner_sdk.commands.injective.stream_trades import StreamTradesOperation # NOQA
+from frontrunner_sdk.commands.injective.stream_trades import StreamTradesRequest # NOQA
+from frontrunner_sdk.commands.injective.stream_trades import StreamTradesResponse # NOQA
 from frontrunner_sdk.facades.base import FrontrunnerFacadeMixin # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.models.order import Order
@@ -109,13 +112,13 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     return await self._run_operation(GetTradesOperation, self.deps, request)
 
   async def stream_trades(
-          self,
-          market_ids: Iterable[str],
-          mine: bool = False,
-          direction: Optional[Literal["buy", "sell"]] = None,
-          side: Optional[Literal["maker", "taker"]] = None,
-          start_time: Optional[datetime] = None,
-          end_time: Optional[datetime] = None,
+    self,
+    market_ids: Iterable[str],
+    mine: bool = False,
+    direction: Optional[Literal["buy", "sell"]] = None,
+    side: Optional[Literal["maker", "taker"]] = None,
+    start_time: Optional[datetime] = None,
+    end_time: Optional[datetime] = None,
   ) -> StreamTradesResponse:
     request = StreamTradesRequest(
       market_ids=market_ids,
@@ -191,13 +194,13 @@ class InjectiveFacade(SyncMixin):
     )
 
   def stream_trades(
-          self,
-          market_ids: Iterable[str],
-          mine: bool = False,
-          direction: Optional[Literal["buy", "sell"]] = None,
-          side: Optional[Literal["maker", "taker"]] = None,
-          start_time: Optional[datetime] = None,
-          end_time: Optional[datetime] = None,
+    self,
+    market_ids: Iterable[str],
+    mine: bool = False,
+    direction: Optional[Literal["buy", "sell"]] = None,
+    side: Optional[Literal["maker", "taker"]] = None,
+    start_time: Optional[datetime] = None,
+    end_time: Optional[datetime] = None,
   ) -> StreamTradesResponse:
     return self._synchronously(
       self.impl.stream_trades,

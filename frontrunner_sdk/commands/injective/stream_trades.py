@@ -1,16 +1,17 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, AsyncIterator
+from typing import Any
+from typing import AsyncIterator
 from typing import Dict
 from typing import Iterable
 from typing import Literal
 from typing import Optional
 
-from frontrunner_sdk.helpers.streams import injective_stream
-from pyinjective.proto.exchange.injective_derivative_exchange_rpc_pb2 import DerivativeTrade  # NOQA
+from pyinjective.proto.exchange.injective_derivative_exchange_rpc_pb2 import DerivativeTrade # NOQA
 
 from frontrunner_sdk.commands.base import FrontrunnerOperation
 from frontrunner_sdk.exceptions import FrontrunnerArgumentException
+from frontrunner_sdk.helpers.streams import injective_stream
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.logging.log_operation import log_operation
 
@@ -87,8 +88,8 @@ class StreamTradesOperation(FrontrunnerOperation[StreamTradesRequest, StreamTrad
       request["execution_side"] = self.request.side
 
     trades = await injective_stream(
-            deps.injective_client.stream_derivative_trades,
-            "trade",
-            **request,
+      deps.injective_client.stream_derivative_trades,
+      "trade",
+      **request,
     )
     return StreamTradesResponse(trades)
