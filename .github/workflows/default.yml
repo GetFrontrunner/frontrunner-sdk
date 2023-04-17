@@ -55,3 +55,21 @@ jobs:
         if: success() || failure()
         with:
           filename: "dist/coverage/**/*.xml"
+
+  Documentation:
+    runs-on: ubuntu-latest
+    container: slatedocs/slate:v2.13.1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Slate Build
+        run: |
+          rm --recursive --force /srv/slate/source
+          cp --recursive docs /srv/slate/source
+          cd /srv/slate
+          ./slate.sh build
+      - name: Slate Upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: docs
+          path: /srv/slate/build
