@@ -1,5 +1,3 @@
-import contextlib
-
 from datetime import datetime
 from typing import Iterable
 from typing import List
