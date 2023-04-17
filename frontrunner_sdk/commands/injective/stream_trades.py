@@ -87,7 +87,7 @@ class StreamTradesOperation(FrontrunnerOperation[StreamTradesRequest, StreamTrad
     if self.request.side:
       request["execution_side"] = self.request.side
 
-    trades = await injective_stream(
+    trades: AsyncIterator[DerivativeTrade] = await injective_stream(
       deps.injective_client.stream_derivative_trades,
       "trade",
       **request,
