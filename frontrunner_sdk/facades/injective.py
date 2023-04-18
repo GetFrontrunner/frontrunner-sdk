@@ -31,7 +31,9 @@ from frontrunner_sdk.commands.injective.get_positions import GetPositionsRespons
 from frontrunner_sdk.commands.injective.get_trades import GetTradesOperation # NOQA
 from frontrunner_sdk.commands.injective.get_trades import GetTradesRequest
 from frontrunner_sdk.commands.injective.get_trades import GetTradesResponse
-from frontrunner_sdk.commands.injective.stream_orders import StreamOrdersRequest, StreamOrdersResponse, StreamOrdersOperation
+from frontrunner_sdk.commands.injective.stream_orders import StreamOrdersOperation # NOQA
+from frontrunner_sdk.commands.injective.stream_orders import StreamOrdersRequest # NOQA
+from frontrunner_sdk.commands.injective.stream_orders import StreamOrdersResponse # NOQA
 from frontrunner_sdk.commands.injective.stream_trades import StreamTradesOperation # NOQA
 from frontrunner_sdk.commands.injective.stream_trades import StreamTradesRequest # NOQA
 from frontrunner_sdk.commands.injective.stream_trades import StreamTradesResponse # NOQA
@@ -120,25 +122,19 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     start_time: Optional[datetime] = None,
     end_time: Optional[datetime] = None,
   ) -> StreamTradesResponse:
-    request = StreamTradesRequest(
-      market_ids=market_ids,
-      mine=mine,
-      direction=direction,
-      side=side,
-      start_time=start_time,
-      end_time=end_time,
-    )
+    kwargs = get_cleaned_args(locals())
+    request = StreamTradesRequest(**kwargs)
     return await self._run_operation(StreamTradesOperation, self.deps, request)
 
   async def stream_orders(
-          self,
-          market_id: str,
-          mine: bool = False,
-          direction: Optional[Literal["buy", "sell"]] = None,
-          subaccount_id: Optional[str] = None,
-          order_types: Optional[List[str]] = None,
-          state: Optional[str] = None,
-          execution_types: Optional[str] = None,
+    self,
+    market_id: str,
+    mine: bool = False,
+    direction: Optional[Literal["buy", "sell"]] = None,
+    subaccount_id: Optional[str] = None,
+    order_types: Optional[List[str]] = None,
+    state: Optional[str] = None,
+    execution_types: Optional[str] = None,
   ) -> StreamOrdersResponse:
     kwargs = get_cleaned_args(locals())
     request = StreamOrdersRequest(**kwargs)
