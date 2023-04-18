@@ -14,6 +14,7 @@ from pyinjective.proto.exchange.injective_derivative_exchange_rpc_pb2 import Der
 from frontrunner_sdk.commands.base import FrontrunnerOperation
 from frontrunner_sdk.exceptions import FrontrunnerArgumentException
 from frontrunner_sdk.helpers.streams import injective_stream
+from frontrunner_sdk.helpers.utils import ignore_none
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.logging.log_operation import log_operation
 
@@ -50,7 +51,7 @@ class StreamOrdersOperation(FrontrunnerOperation[StreamOrdersRequest, StreamOrde
 
   @log_operation(__name__)
   async def execute(self, deps: FrontrunnerIoC) -> StreamOrdersResponse:
-    request: Dict[str, Any] = dataclasses.asdict(self.request)
+    request: Dict[str, Any] = dataclasses.asdict(self.request, dict_factory=ignore_none)
     request.pop("mine", None)
 
     if self.request.mine:
