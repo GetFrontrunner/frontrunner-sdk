@@ -59,7 +59,6 @@ class StreamOrdersOperation(FrontrunnerOperation[StreamOrdersRequest, StreamOrde
 
     orders: AsyncIterator[DerivativeOrderHistory] = await injective_stream(
       deps.injective_client.stream_historical_derivative_orders,
-      "order",
       **request,
     )
     return StreamOrdersResponse(orders)

@@ -10,7 +10,6 @@ Item = TypeVar("Item")
 
 async def injective_stream_iterator(
   call: Callable[..., Awaitable[AsyncIterable]],
-  field: str,
   *call_args: Any,
   **call_kwargs: Any,
 ) -> AsyncIterator[Item]:
@@ -18,14 +17,13 @@ async def injective_stream_iterator(
   response = await call(*call_args, **call_kwargs)
 
   async for item in response:
-    yield getattr(item, field)
+    yield item
 
 
 async def injective_stream(
   call: Callable[..., Awaitable[AsyncIterable]],
-  field: str,
   *call_args: Any,
   **call_kwargs: Any,
 ) -> AsyncIterator[Item]:
-  response: AsyncIterator[Item] = injective_stream_iterator(call, field, *call_args, **call_kwargs)
+  response: AsyncIterator[Item] = injective_stream_iterator(call, *call_args, **call_kwargs)
   return response
