@@ -125,7 +125,7 @@ class TestGetTradesOperation(IsolatedAsyncioTestCase):
 
     self.deps.injective_client.get_derivative_trades.assert_awaited_once_with(
       market_ids=self.market_ids,
-      direction="long",
+      direction="buy",
     )
 
   async def test_get_trades_when_direction_sell(self):
@@ -141,7 +141,7 @@ class TestGetTradesOperation(IsolatedAsyncioTestCase):
 
     self.deps.injective_client.get_derivative_trades.assert_awaited_once_with(
       market_ids=self.market_ids,
-      direction="short",
+      direction="sell",
     )
 
   async def test_get_trades_when_side(self):
