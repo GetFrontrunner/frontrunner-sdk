@@ -34,6 +34,9 @@ from frontrunner_sdk.commands.injective.get_positions import GetPositionsRespons
 from frontrunner_sdk.commands.injective.get_trades import GetTradesOperation # NOQA
 from frontrunner_sdk.commands.injective.get_trades import GetTradesRequest
 from frontrunner_sdk.commands.injective.get_trades import GetTradesResponse
+from frontrunner_sdk.commands.injective.stream_trades import StreamTradesOperation # NOQA
+from frontrunner_sdk.commands.injective.stream_trades import StreamTradesRequest # NOQA
+from frontrunner_sdk.commands.injective.stream_trades import StreamTradesResponse # NOQA
 from frontrunner_sdk.facades.base import FrontrunnerFacadeMixin # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.models.cancel_order import CancelOrder
@@ -113,6 +116,25 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
       end_time=end_time,
     )
     return await self._run_operation(GetTradesOperation, self.deps, request)
+
+  async def stream_trades(
+    self,
+    market_ids: Iterable[str],
+    mine: bool = False,
+    direction: Optional[Literal["buy", "sell"]] = None,
+    side: Optional[Literal["maker", "taker"]] = None,
+    start_time: Optional[datetime] = None,
+    end_time: Optional[datetime] = None,
+  ) -> StreamTradesResponse:
+    request = StreamTradesRequest(
+      market_ids=market_ids,
+      mine=mine,
+      direction=direction,
+      side=side,
+      start_time=start_time,
+      end_time=end_time,
+    )
+    return await self._run_operation(StreamTradesOperation, self.deps, request)
 
 
 class InjectiveFacade(SyncMixin):
