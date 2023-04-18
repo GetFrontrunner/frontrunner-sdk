@@ -7,6 +7,9 @@ from typing import Optional
 from frontrunner_sdk.commands.injective.cancel_orders import CancelAllOrdersOperation # NOQA
 from frontrunner_sdk.commands.injective.cancel_orders import CancelAllOrdersRequest # NOQA
 from frontrunner_sdk.commands.injective.cancel_orders import CancelAllOrdersResponse # NOQA
+from frontrunner_sdk.commands.injective.cancel_orders import CancelOrdersOperation # NOQA
+from frontrunner_sdk.commands.injective.cancel_orders import CancelOrdersRequest # NOQA
+from frontrunner_sdk.commands.injective.cancel_orders import CancelOrdersResponse # NOQA
 from frontrunner_sdk.commands.injective.create_orders import CreateOrdersOperation # NOQA
 from frontrunner_sdk.commands.injective.create_orders import CreateOrdersRequest # NOQA
 from frontrunner_sdk.commands.injective.create_orders import CreateOrdersResponse # NOQA
@@ -40,6 +43,7 @@ from frontrunner_sdk.commands.injective.stream_trades import StreamTradesRespons
 from frontrunner_sdk.facades.base import FrontrunnerFacadeMixin # NOQA
 from frontrunner_sdk.helpers.utils import get_cleaned_kwargs
 from frontrunner_sdk.ioc import FrontrunnerIoC
+from frontrunner_sdk.models.cancel_order import CancelOrder
 from frontrunner_sdk.models.order import Order
 from frontrunner_sdk.sync import SyncMixin
 
@@ -64,6 +68,10 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
   async def cancel_all_orders(self) -> CancelAllOrdersResponse:
     request = CancelAllOrdersRequest()
     return await self._run_operation(CancelAllOrdersOperation, self.deps, request)
+
+  async def cancel_orders(self, orders: Iterable[CancelOrder]) -> CancelOrdersResponse:
+    request = CancelOrdersRequest(orders=orders)
+    return await self._run_operation(CancelOrdersOperation, self.deps, request)
 
   async def get_account_portfolio(self) -> GetAccountPortfolioResponse:
     request = GetAccountPortfolioRequest()
@@ -129,7 +137,6 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     request = StreamOrdersRequest(**kwargs)
     return await self._run_operation(StreamOrdersOperation, self.deps, request)
 
-
 class InjectiveFacade(SyncMixin):
 
   def __init__(self, deps: FrontrunnerIoC):
@@ -146,6 +153,9 @@ class InjectiveFacade(SyncMixin):
 
   def cancel_all_orders(self) -> CancelAllOrdersResponse:
     return self._synchronously(self.impl.cancel_all_orders)
+
+  def cancel_orders(self, orders: Iterable[Order]) -> CancelOrdersResponse:
+    return self._synchronously(self.impl.cancel_orders, orders)
 
   def get_account_portfolio(self) -> GetAccountPortfolioResponse:
     return self._synchronously(self.impl.get_account_portfolio)
