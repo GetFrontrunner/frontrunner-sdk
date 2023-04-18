@@ -190,22 +190,3 @@ class InjectiveFacade(SyncMixin):
       start_time=start_time,
       end_time=end_time,
     )
-
-  def stream_trades(
-    self,
-    market_ids: Iterable[str],
-    mine: bool = False,
-    direction: Optional[Literal["buy", "sell"]] = None,
-    side: Optional[Literal["maker", "taker"]] = None,
-    start_time: Optional[datetime] = None,
-    end_time: Optional[datetime] = None,
-  ) -> StreamTradesResponse:
-    return self._synchronously(
-      self.impl.stream_trades,
-      market_ids=market_ids,
-      mine=mine,
-      direction=direction,
-      side=side,
-      start_time=start_time,
-      end_time=end_time,
-    )
