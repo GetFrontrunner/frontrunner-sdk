@@ -5,6 +5,8 @@ from unittest.mock import patch
 
 from frontrunner_sdk.commands.injective.cancel_orders import CancelAllOrdersOperation # NOQA
 from frontrunner_sdk.commands.injective.cancel_orders import CancelAllOrdersResponse # NOQA
+from frontrunner_sdk.commands.injective.cancel_orders import CancelOrdersOperation # NOQA
+from frontrunner_sdk.commands.injective.cancel_orders import CancelOrdersResponse # NOQA
 from frontrunner_sdk.commands.injective.create_orders import CreateOrdersOperation # NOQA
 from frontrunner_sdk.commands.injective.create_orders import CreateOrdersResponse # NOQA
 from frontrunner_sdk.commands.injective.create_wallet import CreateWalletOperation # NOQA
@@ -23,6 +25,7 @@ from frontrunner_sdk.commands.injective.get_trades import GetTradesOperation # N
 from frontrunner_sdk.commands.injective.get_trades import GetTradesResponse
 from frontrunner_sdk.facades.injective import InjectiveFacadeAsync
 from frontrunner_sdk.ioc import FrontrunnerIoC
+from frontrunner_sdk.models.cancel_order import CancelOrder
 from frontrunner_sdk.models.order import Order
 from frontrunner_sdk.models.wallet import Wallet
 
@@ -71,6 +74,16 @@ class TestInjectiveFacadeAsync(IsolatedAsyncioTestCase):
   )
   async def test_cancel_all_orders(self, _execute: AsyncMock):
     await self.facade.cancel_all_orders()
+    _execute.assert_awaited_once()
+
+  @patch.object(
+    CancelOrdersOperation,
+    "execute",
+    new_callable=AsyncMock,
+    return_value=CancelOrdersResponse(transaction="<hash>"),
+  )
+  async def test_cancel_orders(self, _execute: AsyncMock):
+    await self.facade.cancel_orders([CancelOrder(market_id="<market-id>", order_hash="<order-hash>")])
     _execute.assert_awaited_once()
 
   @patch.object(
