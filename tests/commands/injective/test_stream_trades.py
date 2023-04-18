@@ -85,7 +85,7 @@ class TestStreamTradesOperation(IsolatedAsyncioTestCase):
 
     # note that it is necessary to evaluate the response iterator (here we do it with list comprehension)
     # in order for the assert_awaited_* calls to succeed
-    self.assertEqual(self.fake_trade_contents, [t async for t in res.trades])
+    self.assertEqual(self.trades, [t async for t in res.trades])
 
     self.deps.injective_client.stream_derivative_trades.assert_awaited_once()
 
@@ -96,7 +96,7 @@ class TestStreamTradesOperation(IsolatedAsyncioTestCase):
     req = StreamTradesRequest(market_ids=self.market_ids, mine=True)
     cmd = StreamTradesOperation(req)
     res = await cmd.execute(self.deps)
-    self.assertEqual(self.fake_trade_contents, [t async for t in res.trades])
+    self.assertEqual(self.trades, [t async for t in res.trades])
 
     self.deps.injective_client.stream_derivative_trades.assert_awaited_once_with(
       market_ids=self.market_ids,
@@ -117,7 +117,7 @@ class TestStreamTradesOperation(IsolatedAsyncioTestCase):
     )
     cmd = StreamTradesOperation(req)
     res = await cmd.execute(self.deps)
-    self.assertEqual(self.fake_trade_contents, [t async for t in res.trades])
+    self.assertEqual(self.trades, [t async for t in res.trades])
 
     self.deps.injective_client.stream_derivative_trades.assert_awaited_once_with(
       market_ids=self.market_ids,
@@ -135,11 +135,11 @@ class TestStreamTradesOperation(IsolatedAsyncioTestCase):
     )
     cmd = StreamTradesOperation(req)
     res = await cmd.execute(self.deps)
-    self.assertEqual(self.fake_trade_contents, [t async for t in res.trades])
+    self.assertEqual(self.trades, [t async for t in res.trades])
 
     self.deps.injective_client.stream_derivative_trades.assert_awaited_once_with(
       market_ids=self.market_ids,
-      direction="long",
+      direction="buy",
     )
 
   async def test_stream_trades_when_direction_sell(self):
@@ -152,11 +152,11 @@ class TestStreamTradesOperation(IsolatedAsyncioTestCase):
     )
     cmd = StreamTradesOperation(req)
     res = await cmd.execute(self.deps)
-    self.assertEqual(self.fake_trade_contents, [t async for t in res.trades])
+    self.assertEqual(self.trades, [t async for t in res.trades])
 
     self.deps.injective_client.stream_derivative_trades.assert_awaited_once_with(
       market_ids=self.market_ids,
-      direction="short",
+      direction="sell",
     )
 
   async def test_stream_trades_when_side(self):
@@ -169,7 +169,7 @@ class TestStreamTradesOperation(IsolatedAsyncioTestCase):
     )
     cmd = StreamTradesOperation(req)
     res = await cmd.execute(self.deps)
-    self.assertEqual(self.fake_trade_contents, [t async for t in res.trades])
+    self.assertEqual(self.trades, [t async for t in res.trades])
 
     self.deps.injective_client.stream_derivative_trades.assert_awaited_once_with(
       market_ids=self.market_ids,
