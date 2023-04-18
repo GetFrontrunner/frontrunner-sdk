@@ -137,6 +137,7 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     request = StreamOrdersRequest(**kwargs)
     return await self._run_operation(StreamOrdersOperation, self.deps, request)
 
+
 class InjectiveFacade(SyncMixin):
 
   def __init__(self, deps: FrontrunnerIoC):
