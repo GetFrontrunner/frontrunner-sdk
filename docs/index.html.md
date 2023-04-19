@@ -15,6 +15,7 @@ includes:
   - operations
   - operations/frontrunner/find_markets
   - operations/injective/cancel_all_orders
+  - operations/injective/cancel_orders
 
 search: true
 
