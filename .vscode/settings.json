@@ -3,7 +3,6 @@
   "python.formatting.provider": "yapf",
   "python.defaultInterpreterPath": "${workspaceFolder}/dist/export/python/virtualenv/3.8.16/bin/python",
   "markdownlint.config": {
-
     "single-h1": false,
     "no-trailing-punctuation": {
       "punctuation": ".,;:。，；：！"
