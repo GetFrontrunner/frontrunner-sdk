@@ -1,23 +1,23 @@
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
+from typing import AsyncIterator
 from typing import Dict
 from typing import Iterable
 from typing import Literal
 from typing import Optional
-from typing import Sequence
 
 from pyinjective.proto.exchange.injective_derivative_exchange_rpc_pb2 import DerivativeTrade # NOQA
 
 from frontrunner_sdk.commands.base import FrontrunnerOperation
 from frontrunner_sdk.exceptions import FrontrunnerArgumentException
-from frontrunner_sdk.helpers.paginators import injective_paginated_list
+from frontrunner_sdk.helpers.streams import injective_stream
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.logging.log_operation import log_operation
 
 
 @dataclass
-class GetTradesRequest:
+class StreamTradesRequest:
   market_ids: Iterable[str]
   mine: bool
   direction: Optional[Literal["buy", "sell"]] = None
@@ -27,13 +27,13 @@ class GetTradesRequest:
 
 
 @dataclass
-class GetTradesResponse:
-  trades: Sequence[DerivativeTrade]
+class StreamTradesResponse:
+  trades: AsyncIterator[DerivativeTrade]
 
 
-class GetTradesOperation(FrontrunnerOperation[GetTradesRequest, GetTradesResponse]):
+class StreamTradesOperation(FrontrunnerOperation[StreamTradesRequest, StreamTradesResponse]):
 
-  def __init__(self, request: GetTradesRequest):
+  def __init__(self, request: StreamTradesRequest):
     super().__init__(request)
 
   def validate(self, deps: FrontrunnerIoC) -> None:
@@ -64,7 +64,7 @@ class GetTradesOperation(FrontrunnerOperation[GetTradesRequest, GetTradesRespons
       )
 
   @log_operation(__name__)
-  async def execute(self, deps: FrontrunnerIoC) -> GetTradesResponse:
+  async def execute(self, deps: FrontrunnerIoC) -> StreamTradesResponse:
     request: Dict[str, Any] = {
       "market_ids": list(self.request.market_ids),
     }
@@ -85,10 +85,8 @@ class GetTradesOperation(FrontrunnerOperation[GetTradesRequest, GetTradesRespons
     if self.request.side:
       request["execution_side"] = self.request.side
 
-    trades: Sequence[DerivativeTrade] = await injective_paginated_list(
-      deps.injective_client.get_derivative_trades,
-      "trades",
+    trades: AsyncIterator[DerivativeTrade] = await injective_stream(
+      deps.injective_client.stream_derivative_trades,
       **request,
     )
-
-    return GetTradesResponse(trades=trades)
+    return StreamTradesResponse(trades)

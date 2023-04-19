@@ -7,6 +7,9 @@ from typing import Optional
 from frontrunner_sdk.commands.injective.cancel_orders import CancelAllOrdersOperation # NOQA
 from frontrunner_sdk.commands.injective.cancel_orders import CancelAllOrdersRequest # NOQA
 from frontrunner_sdk.commands.injective.cancel_orders import CancelAllOrdersResponse # NOQA
+from frontrunner_sdk.commands.injective.cancel_orders import CancelOrdersOperation # NOQA
+from frontrunner_sdk.commands.injective.cancel_orders import CancelOrdersRequest # NOQA
+from frontrunner_sdk.commands.injective.cancel_orders import CancelOrdersResponse # NOQA
 from frontrunner_sdk.commands.injective.create_orders import CreateOrdersOperation # NOQA
 from frontrunner_sdk.commands.injective.create_orders import CreateOrdersRequest # NOQA
 from frontrunner_sdk.commands.injective.create_orders import CreateOrdersResponse # NOQA
@@ -31,8 +34,16 @@ from frontrunner_sdk.commands.injective.get_positions import GetPositionsRespons
 from frontrunner_sdk.commands.injective.get_trades import GetTradesOperation # NOQA
 from frontrunner_sdk.commands.injective.get_trades import GetTradesRequest
 from frontrunner_sdk.commands.injective.get_trades import GetTradesResponse
+from frontrunner_sdk.commands.injective.stream_orders import StreamOrdersOperation # NOQA
+from frontrunner_sdk.commands.injective.stream_orders import StreamOrdersRequest # NOQA
+from frontrunner_sdk.commands.injective.stream_orders import StreamOrdersResponse # NOQA
+from frontrunner_sdk.commands.injective.stream_trades import StreamTradesOperation # NOQA
+from frontrunner_sdk.commands.injective.stream_trades import StreamTradesRequest # NOQA
+from frontrunner_sdk.commands.injective.stream_trades import StreamTradesResponse # NOQA
 from frontrunner_sdk.facades.base import FrontrunnerFacadeMixin # NOQA
+from frontrunner_sdk.helpers.parameters import as_request_args
 from frontrunner_sdk.ioc import FrontrunnerIoC
+from frontrunner_sdk.models.cancel_order import CancelOrder
 from frontrunner_sdk.models.order import Order
 from frontrunner_sdk.sync import SyncMixin
 
@@ -58,6 +69,10 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     request = CancelAllOrdersRequest()
     return await self._run_operation(CancelAllOrdersOperation, self.deps, request)
 
+  async def cancel_orders(self, orders: Iterable[CancelOrder]) -> CancelOrdersResponse:
+    request = CancelOrdersRequest(orders=orders)
+    return await self._run_operation(CancelOrdersOperation, self.deps, request)
+
   async def get_account_portfolio(self) -> GetAccountPortfolioResponse:
     request = GetAccountPortfolioRequest()
     return await self._run_operation(GetAccountPortfolioOperation, self.deps, request)
@@ -78,13 +93,8 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     start_time: Optional[datetime] = None,
     end_time: Optional[datetime] = None,
   ) -> GetPositionsResponse:
-    request = GetPositionsRequest(
-      market_ids=market_ids,
-      mine=mine,
-      direction=direction,
-      start_time=start_time,
-      end_time=end_time,
-    )
+    kwargs = as_request_args(locals())
+    request = GetPositionsRequest(**kwargs)
     return await self._run_operation(GetPositionsOperation, self.deps, request)
 
   async def get_trades(
@@ -96,15 +106,36 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     start_time: Optional[datetime] = None,
     end_time: Optional[datetime] = None,
   ) -> GetTradesResponse:
-    request = GetTradesRequest(
-      market_ids=market_ids,
-      mine=mine,
-      direction=direction,
-      side=side,
-      start_time=start_time,
-      end_time=end_time,
-    )
+    kwargs = as_request_args(locals())
+    request = GetTradesRequest(**kwargs)
     return await self._run_operation(GetTradesOperation, self.deps, request)
+
+  async def stream_trades(
+    self,
+    market_ids: Iterable[str],
+    mine: bool = False,
+    direction: Optional[Literal["buy", "sell"]] = None,
+    side: Optional[Literal["maker", "taker"]] = None,
+    start_time: Optional[datetime] = None,
+    end_time: Optional[datetime] = None,
+  ) -> StreamTradesResponse:
+    kwargs = as_request_args(locals())
+    request = StreamTradesRequest(**kwargs)
+    return await self._run_operation(StreamTradesOperation, self.deps, request)
+
+  async def stream_orders(
+    self,
+    market_id: str,
+    mine: bool = False,
+    direction: Optional[Literal["buy", "sell"]] = None,
+    subaccount_id: Optional[str] = None,
+    order_types: Optional[List[str]] = None,
+    state: Optional[str] = None,
+    execution_types: Optional[str] = None,
+  ) -> StreamOrdersResponse:
+    kwargs = as_request_args(locals())
+    request = StreamOrdersRequest(**kwargs)
+    return await self._run_operation(StreamOrdersOperation, self.deps, request)
 
 
 class InjectiveFacade(SyncMixin):
@@ -124,6 +155,9 @@ class InjectiveFacade(SyncMixin):
   def cancel_all_orders(self) -> CancelAllOrdersResponse:
     return self._synchronously(self.impl.cancel_all_orders)
 
+  def cancel_orders(self, orders: Iterable[Order]) -> CancelOrdersResponse:
+    return self._synchronously(self.impl.cancel_orders, orders)
+
   def get_account_portfolio(self) -> GetAccountPortfolioResponse:
     return self._synchronously(self.impl.get_account_portfolio)
 
@@ -141,14 +175,8 @@ class InjectiveFacade(SyncMixin):
     start_time: Optional[datetime] = None,
     end_time: Optional[datetime] = None,
   ) -> GetPositionsResponse:
-    return self._synchronously(
-      self.impl.get_positions,
-      market_ids=market_ids,
-      mine=mine,
-      direction=direction,
-      start_time=start_time,
-      end_time=end_time,
-    )
+    kwargs = as_request_args(locals())
+    return self._synchronously(self.impl.get_positions, **kwargs)
 
   def get_trades(
     self,
@@ -159,12 +187,5 @@ class InjectiveFacade(SyncMixin):
     start_time: Optional[datetime] = None,
     end_time: Optional[datetime] = None,
   ) -> GetTradesResponse:
-    return self._synchronously(
-      self.impl.get_trades,
-      market_ids=market_ids,
-      mine=mine,
-      direction=direction,
-      side=side,
-      start_time=start_time,
-      end_time=end_time,
-    )
+    kwargs = as_request_args(locals())
+    return self._synchronously(self.impl.get_trades, **kwargs)
