@@ -4,7 +4,7 @@ from typing import List
 from typing import Tuple
 
 
-def get_cleaned_kwargs(args: Dict) -> Dict:
+def as_request_args(args: Dict[str, Any]) -> Dict:
   kwargs = args.copy()
   kwargs.pop("self", None)
   return kwargs

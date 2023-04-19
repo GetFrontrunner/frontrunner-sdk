@@ -41,7 +41,7 @@ from frontrunner_sdk.commands.injective.stream_trades import StreamTradesOperati
 from frontrunner_sdk.commands.injective.stream_trades import StreamTradesRequest # NOQA
 from frontrunner_sdk.commands.injective.stream_trades import StreamTradesResponse # NOQA
 from frontrunner_sdk.facades.base import FrontrunnerFacadeMixin # NOQA
-from frontrunner_sdk.helpers.utils import get_cleaned_kwargs
+from frontrunner_sdk.helpers.parameters import as_request_args
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.models.cancel_order import CancelOrder
 from frontrunner_sdk.models.order import Order
@@ -93,7 +93,7 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     start_time: Optional[datetime] = None,
     end_time: Optional[datetime] = None,
   ) -> GetPositionsResponse:
-    kwargs = get_cleaned_kwargs(locals())
+    kwargs = as_request_args(locals())
     request = GetPositionsRequest(**kwargs)
     return await self._run_operation(GetPositionsOperation, self.deps, request)
 
@@ -106,7 +106,7 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     start_time: Optional[datetime] = None,
     end_time: Optional[datetime] = None,
   ) -> GetTradesResponse:
-    kwargs = get_cleaned_kwargs(locals())
+    kwargs = as_request_args(locals())
     request = GetTradesRequest(**kwargs)
     return await self._run_operation(GetTradesOperation, self.deps, request)
 
@@ -119,7 +119,7 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     start_time: Optional[datetime] = None,
     end_time: Optional[datetime] = None,
   ) -> StreamTradesResponse:
-    kwargs = get_cleaned_kwargs(locals())
+    kwargs = as_request_args(locals())
     request = StreamTradesRequest(**kwargs)
     return await self._run_operation(StreamTradesOperation, self.deps, request)
 
@@ -133,7 +133,7 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     state: Optional[str] = None,
     execution_types: Optional[str] = None,
   ) -> StreamOrdersResponse:
-    kwargs = get_cleaned_kwargs(locals())
+    kwargs = as_request_args(locals())
     request = StreamOrdersRequest(**kwargs)
     return await self._run_operation(StreamOrdersOperation, self.deps, request)
 
@@ -175,7 +175,7 @@ class InjectiveFacade(SyncMixin):
     start_time: Optional[datetime] = None,
     end_time: Optional[datetime] = None,
   ) -> GetPositionsResponse:
-    kwargs = get_cleaned_kwargs(locals())
+    kwargs = as_request_args(locals())
     return self._synchronously(self.impl.get_positions, **kwargs)
 
   def get_trades(
@@ -187,5 +187,5 @@ class InjectiveFacade(SyncMixin):
     start_time: Optional[datetime] = None,
     end_time: Optional[datetime] = None,
   ) -> GetTradesResponse:
-    kwargs = get_cleaned_kwargs(locals())
+    kwargs = as_request_args(locals())
     return self._synchronously(self.impl.get_trades, **kwargs)

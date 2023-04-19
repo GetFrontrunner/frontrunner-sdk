@@ -13,8 +13,8 @@ from pyinjective.proto.exchange.injective_derivative_exchange_rpc_pb2 import Der
 
 from frontrunner_sdk.commands.base import FrontrunnerOperation
 from frontrunner_sdk.exceptions import FrontrunnerArgumentException
+from frontrunner_sdk.helpers.parameters import ignore_none
 from frontrunner_sdk.helpers.streams import injective_stream
-from frontrunner_sdk.helpers.utils import ignore_none
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.logging.log_operation import log_operation
 
@@ -47,7 +47,11 @@ class StreamOrdersOperation(FrontrunnerOperation[StreamOrdersRequest, StreamOrde
       raise FrontrunnerArgumentException("'market_id' is required")
 
     if self.request.mine and self.request.subaccount_id:
-      raise FrontrunnerArgumentException("'mine' and 'subaccount_id' are mutually exclusive")
+      raise FrontrunnerArgumentException(
+        "'mine' and 'subaccount_id' are mutually exclusive",
+        mine=self.request.mine,
+        subaccount_id=self.request.subaccount_id
+      )
 
   @log_operation(__name__)
   async def execute(self, deps: FrontrunnerIoC) -> StreamOrdersResponse:
