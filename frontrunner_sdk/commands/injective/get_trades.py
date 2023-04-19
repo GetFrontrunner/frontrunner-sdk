@@ -79,10 +79,8 @@ class GetTradesOperation(FrontrunnerOperation[GetTradesRequest, GetTradesRespons
     if self.request.end_time:
       request["end_time"] = int(self.request.end_time.timestamp())
 
-    if self.request.direction == "buy":
-      request["direction"] = "long"
-    elif self.request.direction == "sell":
-      request["direction"] = "short"
+    if self.request.direction:
+      request["direction"] = self.request.direction
 
     if self.request.side:
       request["execution_side"] = self.request.side
