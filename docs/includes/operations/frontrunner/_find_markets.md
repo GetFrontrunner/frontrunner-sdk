@@ -33,13 +33,13 @@ response = sdk.frontrunner.find_markets()
 
 | Name | Type | | Description |
 | - | - | - | - |
-| `sports` | `[str]` | ø | Only include the given sports |
-| `league_names` | `[str]` | ø | Only include the given league names |
-| `event_types` | `[str]` | ø | Only include the given event types; must be in `[game, future]` |
-| `sport_entity_names` | `[str]` | ø | Only include the given entity names (eg. Atlanta Hawks) |
-| `sport_entity_abbreviations` | `[str]` | ø | Only include the given entity abbreviations (eg. ATL) |
-| `prop_types` | `[str]` | ø | Only include the given prop types; must be in `[winner, other]` |
-| `market_statuses` | `[str]` | ø | Only include the given market statuses; must be in `[active, closed]` |
+| `sports` | `[str]` | ◯ | Only include the given sports |
+| `league_names` | `[str]` | ◯ | Only include the given league names |
+| `event_types` | `[str]` | ◯ | Only include the given event types; must be in `[game, future]` |
+| `sport_entity_names` | `[str]` | ◯ | Only include the given entity names (eg. Atlanta Hawks) |
+| `sport_entity_abbreviations` | `[str]` | ◯ | Only include the given entity abbreviations (eg. ATL) |
+| `prop_types` | `[str]` | ◯ | Only include the given prop types; must be in `[winner, other]` |
+| `market_statuses` | `[str]` | ◯ | Only include the given market statuses; must be in `[active, closed]` |
 
 ### Response
 

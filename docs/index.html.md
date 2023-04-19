@@ -13,8 +13,8 @@ includes:
   - configuring
   - conventions
   - operations
-  - operations/frontrunner
-  - operations/injective
+  - operations/frontrunner/find_markets
+  - operations/injective/cancel_all_orders
 
 search: true
 
