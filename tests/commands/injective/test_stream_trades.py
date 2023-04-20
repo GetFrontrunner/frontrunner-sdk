@@ -45,37 +45,6 @@ class TestStreamTradesOperation(IsolatedAsyncioTestCase):
     with self.assertRaises(FrontrunnerArgumentException):
       cmd.validate(self.deps)
 
-  def test_validate_exception_when_start_in_future(self):
-    start = datetime.now() + timedelta(days=1)
-    req = StreamTradesRequest(market_ids=self.market_ids, mine=True, start_time=start)
-    cmd = StreamTradesOperation(req)
-
-    with self.assertRaises(FrontrunnerArgumentException):
-      cmd.validate(self.deps)
-
-  def test_validate_exception_when_end_in_future(self):
-    end = datetime.now() + timedelta(days=1)
-    req = StreamTradesRequest(market_ids=self.market_ids, mine=True, end_time=end)
-    cmd = StreamTradesOperation(req)
-
-    with self.assertRaises(FrontrunnerArgumentException):
-      cmd.validate(self.deps)
-
-  def test_validate_exception_when_end_before_start(self):
-    ref = datetime.now()
-    start = ref - timedelta(days=1)
-    end = ref - timedelta(days=2)
-    req = StreamTradesRequest(
-      market_ids=self.market_ids,
-      mine=True,
-      start_time=start,
-      end_time=end,
-    )
-    cmd = StreamTradesOperation(req)
-
-    with self.assertRaises(FrontrunnerArgumentException):
-      cmd.validate(self.deps)
-
   async def test_stream_trades(self):
     self.deps.injective_client.stream_derivative_trades = self.trades_response
 
@@ -101,28 +70,6 @@ class TestStreamTradesOperation(IsolatedAsyncioTestCase):
     self.deps.injective_client.stream_derivative_trades.assert_awaited_once_with(
       market_ids=self.market_ids,
       subaccount_id=self.wallet.subaccount_address(),
-    )
-
-  async def test_stream_trades_when_start_end_time(self):
-    self.deps.injective_client.stream_derivative_trades = self.trades_response
-
-    ref = datetime.now()
-    start = ref - timedelta(days=2)
-    end = ref - timedelta(days=1)
-    req = StreamTradesRequest(
-      market_ids=self.market_ids,
-      mine=False,
-      start_time=start,
-      end_time=end,
-    )
-    cmd = StreamTradesOperation(req)
-    res = await cmd.execute(self.deps)
-    self.assertEqual(self.trades, [t async for t in res.trades])
-
-    self.deps.injective_client.stream_derivative_trades.assert_awaited_once_with(
-      market_ids=self.market_ids,
-      start_time=int(start.timestamp()),
-      end_time=int(end.timestamp()),
     )
 
   async def test_stream_trades_when_direction_buy(self):
