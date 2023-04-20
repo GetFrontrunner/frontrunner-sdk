@@ -6,7 +6,6 @@ from typing import Optional
 from pyinjective.proto.exchange.injective_derivative_exchange_rpc_pb2 import DerivativePosition # NOQA
 
 from frontrunner_sdk.commands.base import FrontrunnerOperation
-from frontrunner_sdk.exceptions import FrontrunnerArgumentException
 from frontrunner_sdk.helpers.streams import injective_stream
 from frontrunner_sdk.helpers.validation import validate_mutually_exclusive
 from frontrunner_sdk.ioc import FrontrunnerIoC
