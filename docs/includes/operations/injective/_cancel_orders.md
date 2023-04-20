@@ -14,7 +14,7 @@ response = sdk.injective.cancel_orders([
 ])
 ```
 
-| Name | Type | | Description |
+| Name | Type | Req? | Description |
 | - | - | - | - |
 | `orders` | `[CancelOrder]` | ✓ | List of order cancellation specs |
 | `orders[].market_id` | `str` | ✓ | Market ID of order to cancel |

@@ -17,7 +17,7 @@ response = sdk.injective.create_orders([
 ])
 ```
 
-| Name | Type | | Description |
+| Name | Type | Req? | Description |
 | - | - | - | - |
 | `orders` | `[Order]` | ✓ | Orders to place; must have at least 1 order |
 | `orders[].market_id` | `str` | ✓ | Market of the order |

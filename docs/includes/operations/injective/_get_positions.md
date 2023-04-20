@@ -16,7 +16,7 @@ response = sdk.injective.get_positions(
 )
 ```
 
-| Name | Type | | Description |
+| Name | Type | Req? | Description |
 | - | - | - | - |
 | `market_ids` | `[str]` | ✓ | IDs of markets to look up positions for |
 | `mine` | `bool` | ◯ `False` | Only find positions for this wallet |

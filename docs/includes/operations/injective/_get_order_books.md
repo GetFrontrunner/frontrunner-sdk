@@ -13,7 +13,7 @@ market_id = "0xd5e4b12b19ecf176e4e14b42944731c27677819d2ed93be4104ad7025529c7ff"
 response = sdk.injective.get_order_books([market_id])
 ```
 
-| Name | Type | | Description |
+| Name | Type | Req? | Description |
 | - | - | - | - |
 | `market_ids` | `[str]` | ✓ | IDs of markets to look up orders for |
 

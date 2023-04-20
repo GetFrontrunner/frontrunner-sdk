@@ -16,7 +16,7 @@ response = sdk.injective.get_trades(
 )
 ```
 
-| Name | Type | | Description |
+| Name | Type | Req? | Description |
 | - | - | - | - |
 | `market_ids` | `[str]` | ✓ | IDs of markets to look up trades for |
 | `mine` | `bool` | ◯ `False` | Only find trades for this wallet |

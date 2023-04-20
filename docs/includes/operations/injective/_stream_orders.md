@@ -17,7 +17,7 @@ async def run():
   response = async_sdk.injective.stream_orders(market_id)
 ```
 
-| Name | Type | | Description |
+| Name | Type | Req? | Description |
 | - | - | - | - |
 | `market_id` | `str` | ✓ | Market ID to watch for orders |
 | `mine` | `bool` | ◯ `False` | Only watch for my orders |

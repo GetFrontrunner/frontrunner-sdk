@@ -31,7 +31,7 @@ response = sdk.frontrunner.find_markets(
 response = sdk.frontrunner.find_markets()
 ```
 
-| Name | Type | | Description |
+| Name | Type | Req? | Description |
 | - | - | - | - |
 | `sports` | `[str]` | ◯ | Only include the given sports |
 | `league_names` | `[str]` | ◯ | Only include the given league names |
