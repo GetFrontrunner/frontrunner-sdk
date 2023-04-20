@@ -34,6 +34,9 @@ from frontrunner_sdk.commands.injective.get_positions import GetPositionsRespons
 from frontrunner_sdk.commands.injective.get_trades import GetTradesOperation # NOQA
 from frontrunner_sdk.commands.injective.get_trades import GetTradesRequest
 from frontrunner_sdk.commands.injective.get_trades import GetTradesResponse
+from frontrunner_sdk.commands.injective.stream_markets import StreamMarketsOperation # NOQA
+from frontrunner_sdk.commands.injective.stream_markets import StreamMarketsRequest # NOQA
+from frontrunner_sdk.commands.injective.stream_markets import StreamMarketsResponse # NOQA
 from frontrunner_sdk.commands.injective.stream_orders import StreamOrdersOperation # NOQA
 from frontrunner_sdk.commands.injective.stream_orders import StreamOrdersRequest # NOQA
 from frontrunner_sdk.commands.injective.stream_orders import StreamOrdersResponse # NOQA
@@ -125,6 +128,14 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     kwargs = as_request_args(locals())
     request = StreamTradesRequest(**kwargs)
     return await self._run_operation(StreamTradesOperation, self.deps, request)
+
+  async def stream_markets(
+    self,
+    market_ids: Iterable[str],
+  ) -> StreamMarketsResponse:
+    kwargs = as_request_args(locals())
+    request = StreamMarketsRequest(**kwargs)
+    return await self._run_operation(StreamMarketsOperation, self.deps, request)
 
   async def stream_orders(
     self,
