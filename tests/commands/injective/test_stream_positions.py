@@ -38,7 +38,7 @@ class TestStreamPositionsOperation(IsolatedAsyncioTestCase):
     cmd.validate(self.deps)
 
   def test_validate_exception_when_mine_and_subaccount_ids(self):
-    req = StreamPositionsRequest(mine=True, subaccount_ids="1234")
+    req = StreamPositionsRequest(mine=True, subaccount_ids=self.subaccount_ids)
     cmd = StreamPositionsOperation(req)
 
     with self.assertRaises(FrontrunnerArgumentException):
