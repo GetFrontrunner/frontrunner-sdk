@@ -1,27 +1,25 @@
 ## Injective: Fund Wallet from Faucet
 
-TODO description
+Request a small amount of INJ from the faucet.
+
+<aside class="notice">
+You can only request from the Injective Testnet faucet once every 24 hours.
+</aside>
 
 ### Parameters
 
 ```python
-# TODO example code
-response = sdk.do.something()
+response = sdk.injective.fund_wallet_from_faucet()
 ```
-
-| Name | Type | | Description |
-| - | - | - | - |
-| `field` | `Type` | ✓ ◯ `123` | ✓ required ◯ optional `default value maybe` |
 
 There are no parameters for this operation.
 
 ### Response
 
 ```python
-# TODO example code
-print("value:", response.value)
+print("message:", response.message)
 ```
 
 | Name | Type | Description |
 | - | - | - |
-| `value` | `Type` | Description |
+| `message` | `str` | Message from the faucet |
