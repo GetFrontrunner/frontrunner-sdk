@@ -22,10 +22,8 @@ class StreamPositionsRequest:
   # internal fields
   mine: bool
   # passthrough fields
-  market_id: Optional[str]
-  market_ids: Optional[Iterable[str]]
-  subaccount_id: Optional[str]
-  subaccount_ids: Optional[Iterable[str]]
+  market_ids: Optional[Iterable[str]] = None
+  subaccount_ids: Optional[Iterable[str]] = None
 
 
 @dataclass
@@ -39,11 +37,10 @@ class StreamPositionsOperation(FrontrunnerOperation[StreamPositionsRequest, Stre
     super().__init__(request)
 
   def validate(self, deps: FrontrunnerIoC) -> None:
-    if (self.request.mine and self.request.subaccount_id) or (self.request.mine and self.request.subaccount_ids):
+    if self.request.mine and self.request.subaccount_ids:
       raise FrontrunnerArgumentException(
-        "'mine' and 'subaccount_id'/'subaccount_ids' are mutually exclusive",
+        "'mine' and 'subaccount_ids' are mutually exclusive",
         mine=self.request.mine,
-        subaccount_id=self.request.subaccount_id,
         subaccount_ids=self.request.subaccount_ids,
       )
 
@@ -54,7 +51,7 @@ class StreamPositionsOperation(FrontrunnerOperation[StreamPositionsRequest, Stre
 
     if self.request.mine:
       wallet = await deps.wallet()
-      request["subaccount_id"] = wallet.subaccount_address()
+      request["subaccount_ids"] = [wallet.subaccount_address()]
 
     positions: AsyncIterator[DerivativePosition] = await injective_stream(
       deps.injective_client.stream_derivative_positions,
