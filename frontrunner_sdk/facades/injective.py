@@ -37,6 +37,9 @@ from frontrunner_sdk.commands.injective.get_trades import GetTradesResponse
 from frontrunner_sdk.commands.injective.stream_orders import StreamOrdersOperation # NOQA
 from frontrunner_sdk.commands.injective.stream_orders import StreamOrdersRequest # NOQA
 from frontrunner_sdk.commands.injective.stream_orders import StreamOrdersResponse # NOQA
+from frontrunner_sdk.commands.injective.stream_positions import StreamPositionsOperation # NOQA
+from frontrunner_sdk.commands.injective.stream_positions import StreamPositionsRequest # NOQA
+from frontrunner_sdk.commands.injective.stream_positions import StreamPositionsResponse # NOQA
 from frontrunner_sdk.commands.injective.stream_trades import StreamTradesOperation # NOQA
 from frontrunner_sdk.commands.injective.stream_trades import StreamTradesRequest # NOQA
 from frontrunner_sdk.commands.injective.stream_trades import StreamTradesResponse # NOQA
@@ -136,6 +139,18 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     kwargs = as_request_args(locals())
     request = StreamOrdersRequest(**kwargs)
     return await self._run_operation(StreamOrdersOperation, self.deps, request)
+
+  async def stream_positions(
+    self,
+    mine: bool = False,
+    market_id: Optional[str] = None,
+    market_ids: Optional[List[str]] = None,
+    subaccount_id: Optional[str] = None,
+    subaccount_ids: Optional[List[str]] = None,
+  ) -> StreamPositionsResponse:
+    kwargs = as_request_args(locals())
+    request = StreamPositionsRequest(**kwargs)
+    return await self._run_operation(StreamPositionsOperation, self.deps, request)
 
 
 class InjectiveFacade(SyncMixin):
