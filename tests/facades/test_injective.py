@@ -112,7 +112,7 @@ class TestInjectiveFacadeAsync(IsolatedAsyncioTestCase):
     new_callable=AsyncMock,
     return_value=GetOrdersResponse(orders=MagicMock()),
   )
-  async def test_get_my_orders(self, _execute: AsyncMock):
+  async def test_get_orders(self, _execute: AsyncMock):
     await self.facade.get_orders(mine=False)
     _execute.assert_awaited_once()
 

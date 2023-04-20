@@ -192,7 +192,7 @@ class InjectiveFacade(SyncMixin):
   def get_order_books(self, market_ids: Iterable[str]) -> GetOrderBooksResponse:
     return self._synchronously(self.impl.get_order_books, market_ids)
 
-  def get_my_orders(self) -> GetOrdersResponse:
+  def get_orders(self) -> GetOrdersResponse:
     return self._synchronously(self.impl.get_orders)
 
   def get_positions(
