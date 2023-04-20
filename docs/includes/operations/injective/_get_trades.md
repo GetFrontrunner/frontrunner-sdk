@@ -1,27 +1,36 @@
 ## Injective: Get Trades
 
-TODO description
+Gets open positions. For the corresponding Injective API, see [Trades][derivative-trades].
+
+[derivative-trades]: https://api.injective.exchange/#injectivederivativeexchangerpc-trades
 
 ### Parameters
 
 ```python
-# TODO example code
-response = sdk.do.something()
+market_id = "0x90e662193fa29a3a7e6c07be4407c94833e762d9ee82136a2cc712d6b87d7de3"
+
+# Get all trades on the maker side
+response = sdk.injective.get_trades(
+  [market_id],
+  side="maker",
+)
 ```
 
 | Name | Type | | Description |
 | - | - | - | - |
-| `field` | `Type` | ✓ ◯ `123` | ✓ required ◯ optional `default value maybe` |
-
-There are no parameters for this operation.
+| `market_ids` | `[str]` | ✓ | IDs of markets to look up trades for |
+| `mine` | `bool` | ◯ `False` | Only find trades for this wallet |
+| `direction` | `"buy", "sell"` | ◯ `None` | Only find trades with this direction |
+| `side` | `"maker", "taker"` | ◯ `None` | Only find trades with this side |
+| `start_time` | `datetime` | ◯ `None` | Only find trades executing on or after this time |
+| `end_time` | `datetime` | ◯ `None` | Only find trades executing on or before this time |
 
 ### Response
 
 ```python
-# TODO example code
-print("value:", response.value)
+print("trades:", response.trades)
 ```
 
 | Name | Type | Description |
 | - | - | - |
-| `value` | `Type` | Description |
+| `trades` | `[DerivativeTrade]` | Trades for the given markets |
