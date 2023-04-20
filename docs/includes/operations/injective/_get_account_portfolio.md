@@ -1,27 +1,34 @@
 ## Injective: Get Account Portfolio
 
-TODO description
+Retrieves the account portfolio for the current wallet. For the corresponding Injective API, see [Account Portfolio][get-account-portfolio].
+
+[get-account-portfolio]: https://api.injective.exchange/#injectiveportfoliorpc-accountportfolio
 
 ### Parameters
 
 ```python
-# TODO example code
-response = sdk.do.something()
+response = sdk.injective.get_account_portfolio()
 ```
-
-| Name | Type | | Description |
-| - | - | - | - |
-| `field` | `Type` | ✓ ◯ `123` | ✓ required ◯ optional `default value maybe` |
 
 There are no parameters for this operation.
 
 ### Response
 
 ```python
-# TODO example code
-print("value:", response.value)
+print("portfolio bank balances:")
+for coins in response.portfolio.bank_balances:
+  print("\tcoin:", coins.amount, coins.denom)
+
+print("portfolio subaccount balances:")
+for subaccount in response.portfolio.subaccounts:
+  print(
+    "\tsubaccount:",
+    subaccount.subaccount_id,
+    subaccount.deposit.available_balance, "/", subaccount.deposit.available_balance,
+    subaccount.denom,
+  )
 ```
 
 | Name | Type | Description |
 | - | - | - |
-| `value` | `Type` | Description |
+| `portfolio` | `Portfolio` | Your account portfolio |
