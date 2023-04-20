@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from datetime import datetime
 from typing import Any
 from typing import AsyncIterator
 from typing import Dict
@@ -22,8 +21,6 @@ class StreamTradesRequest:
   mine: bool
   direction: Optional[Literal["buy", "sell"]] = None
   side: Optional[Literal["maker", "taker"]] = None
-  start_time: Optional[datetime] = None
-  end_time: Optional[datetime] = None
 
 
 @dataclass
@@ -40,29 +37,6 @@ class StreamTradesOperation(FrontrunnerOperation[StreamTradesRequest, StreamTrad
     if not self.request.market_ids:
       raise FrontrunnerArgumentException("At least one market id is required")
 
-    now = datetime.now()
-
-    if self.request.start_time and self.request.start_time > now:
-      raise FrontrunnerArgumentException(
-        "Start time cannot be in the future",
-        now=now,
-        start_time=self.request.start_time,
-      )
-
-    if self.request.end_time and self.request.end_time > now:
-      raise FrontrunnerArgumentException(
-        "End time cannot be in the future",
-        now=now,
-        end_time=self.request.end_time,
-      )
-
-    if self.request.start_time and self.request.end_time and self.request.start_time > self.request.end_time:
-      raise FrontrunnerArgumentException(
-        "Start time cannot be after end time",
-        start_time=self.request.start_time,
-        end_time=self.request.end_time,
-      )
-
   @log_operation(__name__)
   async def execute(self, deps: FrontrunnerIoC) -> StreamTradesResponse:
     request: Dict[str, Any] = {
@@ -72,12 +46,6 @@ class StreamTradesOperation(FrontrunnerOperation[StreamTradesRequest, StreamTrad
     if self.request.mine:
       wallet = await deps.wallet()
       request["subaccount_id"] = wallet.subaccount_address()
-
-    if self.request.start_time:
-      request["start_time"] = int(self.request.start_time.timestamp())
-
-    if self.request.end_time:
-      request["end_time"] = int(self.request.end_time.timestamp())
 
     if self.request.direction:
       request["direction"] = self.request.direction

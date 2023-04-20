@@ -6,8 +6,8 @@ from typing import Optional
 from pyinjective.proto.exchange.injective_derivative_exchange_rpc_pb2 import DerivativePosition # NOQA
 
 from frontrunner_sdk.commands.base import FrontrunnerOperation
-from frontrunner_sdk.exceptions import FrontrunnerArgumentException
 from frontrunner_sdk.helpers.streams import injective_stream
+from frontrunner_sdk.helpers.validation import validate_mutually_exclusive
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.logging.log_operation import log_operation
 
@@ -32,12 +32,7 @@ class StreamPositionsOperation(FrontrunnerOperation[StreamPositionsRequest, Stre
     super().__init__(request)
 
   def validate(self, deps: FrontrunnerIoC) -> None:
-    if self.request.mine and self.request.subaccount_ids:
-      raise FrontrunnerArgumentException(
-        "'mine' and 'subaccount_ids' are mutually exclusive",
-        mine=self.request.mine,
-        subaccount_ids=self.request.subaccount_ids,
-      )
+    validate_mutually_exclusive("mine", self.request.mine, "subaccount_ids", self.request.subaccount_ids)
 
   @log_operation(__name__)
   async def execute(self, deps: FrontrunnerIoC) -> StreamPositionsResponse:
