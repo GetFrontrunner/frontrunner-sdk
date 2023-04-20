@@ -1,7 +1,10 @@
 import dataclasses
+
 from abc import ABC
 from abc import abstractmethod
-from typing import Generic, Dict, Any
+from typing import Any
+from typing import Dict
+from typing import Generic
 from typing import TypeVar
 
 from frontrunner_sdk.helpers.parameters import ignore_none

@@ -3,7 +3,7 @@ from typing import AsyncIterator
 from typing import Iterable
 from typing import Optional
 
-from pyinjective.proto.exchange.injective_derivative_exchange_rpc_pb2 import DerivativePosition  # NOQA
+from pyinjective.proto.exchange.injective_derivative_exchange_rpc_pb2 import DerivativePosition # NOQA
 
 from frontrunner_sdk.commands.base import FrontrunnerOperation
 from frontrunner_sdk.exceptions import FrontrunnerArgumentException

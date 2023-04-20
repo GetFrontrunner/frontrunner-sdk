@@ -28,7 +28,10 @@ class TestStreamPositionsOperation(IsolatedAsyncioTestCase):
     self.market_ids = ["0x1234"]
     self.subaccount_ids = ["0x45789000000"]
     self.fake_position_contents = ["id1", "id2"]
-    self.positions = [MagicMock(positions=self.fake_position_contents[0]), MagicMock(positions=self.fake_position_contents[1])]
+    self.positions = [
+      MagicMock(positions=self.fake_position_contents[0]),
+      MagicMock(positions=self.fake_position_contents[1])
+    ]
     self.positions_iterator = TestIterator(self.positions)
     self.positions_response = AsyncMock(return_value=self.positions_iterator.response())
 
