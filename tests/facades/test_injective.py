@@ -15,10 +15,10 @@ from frontrunner_sdk.commands.injective.fund_wallet_from_faucet import FundWalle
 from frontrunner_sdk.commands.injective.fund_wallet_from_faucet import FundWalletFromFaucetResponse # NOQA
 from frontrunner_sdk.commands.injective.get_account_portfolio import GetAccountPortfolioOperation # NOQA
 from frontrunner_sdk.commands.injective.get_account_portfolio import GetAccountPortfolioResponse # NOQA
-from frontrunner_sdk.commands.injective.get_my_orders import GetMyOrdersOperation # NOQA
-from frontrunner_sdk.commands.injective.get_my_orders import GetMyOrdersResponse # NOQA
 from frontrunner_sdk.commands.injective.get_order_books import GetOrderBooksOperation # NOQA
 from frontrunner_sdk.commands.injective.get_order_books import GetOrderBooksResponse # NOQA
+from frontrunner_sdk.commands.injective.get_orders import GetOrdersOperation # NOQA
+from frontrunner_sdk.commands.injective.get_orders import GetOrdersResponse # NOQA
 from frontrunner_sdk.commands.injective.get_positions import GetPositionsOperation # NOQA
 from frontrunner_sdk.commands.injective.get_positions import GetPositionsResponse # NOQA
 from frontrunner_sdk.commands.injective.get_trades import GetTradesOperation # NOQA
@@ -107,13 +107,13 @@ class TestInjectiveFacadeAsync(IsolatedAsyncioTestCase):
     _execute.assert_awaited_once()
 
   @patch.object(
-    GetMyOrdersOperation,
+    GetOrdersOperation,
     "execute",
     new_callable=AsyncMock,
-    return_value=GetMyOrdersResponse(orders=MagicMock()),
+    return_value=GetOrdersResponse(orders=MagicMock()),
   )
-  async def test_get_my_orders(self, _execute: AsyncMock):
-    await self.facade.get_my_orders()
+  async def test_get_orders(self, _execute: AsyncMock):
+    await self.facade.get_orders(mine=False)
     _execute.assert_awaited_once()
 
   @patch.object(
