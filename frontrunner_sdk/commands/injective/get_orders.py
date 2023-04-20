@@ -92,6 +92,9 @@ class GetOrdersOperation(FrontrunnerOperation[GetOrdersRequest, GetOrdersRespons
     orders: Sequence[DerivativeLimitOrder] = await injective_paginated_list(
       deps.injective_client.get_historical_derivative_orders,
       "orders",
+      # Force market_id=None since we use optional market_ids param instead
+      # TODO: remove workaround once Injective SDK has market_id as optional
+      None,
       **request,
     )
 

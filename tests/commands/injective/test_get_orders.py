@@ -80,6 +80,7 @@ class TestGetOrdersOperation(IsolatedAsyncioTestCase):
     self.assertEqual(res.orders, self.orders)
 
     self.deps.injective_client.get_historical_derivative_orders.assert_awaited_once_with(
+      None,
       subaccount_id=self.wallet.subaccount_address(),
     )
 
@@ -107,6 +108,7 @@ class TestGetOrdersOperation(IsolatedAsyncioTestCase):
     self.assertEqual(res.orders, self.orders)
 
     self.deps.injective_client.get_historical_derivative_orders.assert_awaited_once_with(
+      None,
       subaccount_id="1234",
       market_ids=self.market_ids,
       direction="buy",
