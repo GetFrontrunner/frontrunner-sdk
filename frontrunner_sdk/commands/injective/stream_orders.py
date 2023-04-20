@@ -13,6 +13,9 @@ from frontrunner_sdk.helpers.streams import injective_stream
 from frontrunner_sdk.helpers.validation import validate_mutually_exclusive
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.logging.log_operation import log_operation
+from frontrunner_sdk.models import OrderExecutionType
+from frontrunner_sdk.models import OrderState
+from frontrunner_sdk.models import OrderType
 
 
 @dataclass
@@ -23,9 +26,9 @@ class StreamOrdersRequest:
   market_id: str
   direction: Optional[Literal["buy", "sell"]] = None
   subaccount_id: Optional[str] = None
-  order_types: Optional[List[str]] = None
-  state: Optional[str] = None
-  execution_types: Optional[List[str]] = None
+  order_types: Optional[List[OrderType]] = None
+  state: Optional[OrderState] = None
+  execution_types: Optional[List[OrderExecutionType]] = None
 
 
 @dataclass
