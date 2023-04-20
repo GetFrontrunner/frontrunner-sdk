@@ -20,7 +20,7 @@ class FrontrunnerOperation(Generic[Request, Response], ABC):
     self.request = request
 
   def request_as_kwargs(self) -> Dict[str, Any]:
-    return dataclasses.asdict(self.request, dict_factory=ignore_none)  # type: ignore[call-overload]
+    return dataclasses.asdict(self.request, dict_factory=ignore_none) # type: ignore[call-overload]
 
   @abstractmethod
   def validate(self, deps: FrontrunnerIoC) -> None:
