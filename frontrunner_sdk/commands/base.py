@@ -18,9 +18,9 @@ class FrontrunnerOperation(Generic[Request, Response], ABC):
 
   def __init__(self, request: Request):
     self.request = request
-    request_data: Dict[str, Any] = dataclasses.asdict(self.request, dict_factory=ignore_none)
-    request_data.pop("mine", None)
-    self.request_data = request_data
+
+  def request_as_kwargs(self) -> Dict[str, Any]:
+    return dataclasses.asdict(self.request, dict_factory=ignore_none)
 
   @abstractmethod
   def validate(self, deps: FrontrunnerIoC) -> None:

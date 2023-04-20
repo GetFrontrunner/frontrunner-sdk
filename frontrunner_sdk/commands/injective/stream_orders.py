@@ -50,12 +50,15 @@ class StreamOrdersOperation(FrontrunnerOperation[StreamOrdersRequest, StreamOrde
 
   @log_operation(__name__)
   async def execute(self, deps: FrontrunnerIoC) -> StreamOrdersResponse:
+    request = self.request_as_kwargs()
+    request.pop("mine", None)
+
     if self.request.mine:
       wallet = await deps.wallet()
-      self.request_data["subaccount_id"] = wallet.subaccount_address()
+      request["subaccount_id"] = wallet.subaccount_address()
 
     orders: AsyncIterator[DerivativeOrderHistory] = await injective_stream(
       deps.injective_client.stream_historical_derivative_orders,
-      **self.request_data,
+      **request,
     )
     return StreamOrdersResponse(orders)

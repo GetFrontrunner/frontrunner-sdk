@@ -41,12 +41,15 @@ class StreamPositionsOperation(FrontrunnerOperation[StreamPositionsRequest, Stre
 
   @log_operation(__name__)
   async def execute(self, deps: FrontrunnerIoC) -> StreamPositionsResponse:
+    request = self.request_as_kwargs()
+    request.pop("mine", None)
+
     if self.request.mine:
       wallet = await deps.wallet()
-      self.request_data["subaccount_ids"] = [wallet.subaccount_address()]
+      request["subaccount_ids"] = [wallet.subaccount_address()]
 
     positions: AsyncIterator[DerivativePosition] = await injective_stream(
       deps.injective_client.stream_derivative_positions,
-      **self.request_data,
+      **request,
     )
     return StreamPositionsResponse(positions)
