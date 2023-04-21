@@ -46,7 +46,11 @@ jobs:
           git fetch origin gh-pages
           git checkout gh-pages
 
+          mv .git /tmp/.git
+
           rsync --recursive --delete /srv/slate/build/ .
+
+          mv /tmp/.git .
 
           git commit --all --message "${commit_message}"
 
