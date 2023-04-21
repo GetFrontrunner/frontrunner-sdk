@@ -41,7 +41,7 @@ jobs:
 
           rsync --recursive --delete /srv/slate/build .
 
-          git diff
+          git commit --all --message "${commit_message}"
 
-      # git commit --all --message "${commit_message}"
+          git show
       # git push
