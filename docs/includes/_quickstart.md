@@ -8,6 +8,12 @@ To demonstrate SDK usage, we'll be using it to create a wallet, place a market o
 pip install -y frontrunner-sdk
 ```
 
+Install the Frontrunner SDK using the following code.
+
+Contact [support@getfrontrunner.com][support] for a Frontrunner API Key. Keep this somewhere safe. When launching a Python REPL or running the scripts in this guide, make sure that API Key is set in the environment variable `FRONTRUNNER_FRONTRUNNER_API_AUTHN_TOKEN`.
+
+[support]: mailto:support@getfrontrunner.com
+
 ## Creating and Funding a Wallet
 
 ```python
@@ -18,7 +24,7 @@ from frontrunner_sdk import FrontrunnerSDK
 sdk = FrontrunnerSDK()
 
 # Creates a new wallet locally
-# Requests funds from an 
+# Requests funds from an injective faucet
 create_wallet = sdk.injective.create_wallet()
 
 # Save your wallet credentials
@@ -29,6 +35,12 @@ Put this somewhere safe!
 
 """)
 ```
+
+In a script or Python REPL, run the following code.
+
+This will create an instance of the SDK which will be used to interact with both Frontrunner and Injective. There are two "versions" of this SDK: synchronous and asynchronous. For this quickstart, we will use the synchronous version.
+
+Then, we'll call `create_wallet` to create our wallet and receive an airdrop from Injective's faucet, to allow us to start placing orders right away! Any subsequent calls that require a wallet will use the one we just made.
 
 ## Getting Frontrunner Markets
 
@@ -43,6 +55,10 @@ find_markets = sdk.frontrunner.find_markets(
 market = find_markets.markets[0]
 print(f"Market: {market.long_entity_name} [{market.prop_name}] vs {market.short_entity_name}")
 ```
+
+Before we can bet on markets, we'll need to find them. The example here finds all markets where the sport is basketball, the event is a game, and the proposition is for a winner. The response object contains (among other things) the raw market objects and the market IDs, which will be useful for placing bets.
+
+Then, we'll pick one market to place bets on, and print some info about it.
 
 ## Finding Current Low & High Bids
 
@@ -67,6 +83,10 @@ highest_buy, lowest_buy = max(prices), min(prices)
 print(f"price range: [{highest_buy}, {lowest_buy}]")
 ```
 
+Without knowing much else about the market besides its ID, it's hard to price bets and make orders. Here, we'll use our super duper top-secret proprietary trading algorithm: we'll place buy bids around the current min, max, and midway buy prices.
+
+We'll call `get_order_books`, passing in our market id, to get the current order books. This order book contains both the buys and sells. Using the buys, we can find the highest and lowest buy prices.
+
 ## Placing bids
 
 ```python
@@ -87,6 +107,12 @@ You can view your transaction at:
 
 """)
 ```
+
+To place the orders, we'll call `create_orders`. We'll place...
+
+* 10 orders of the lowest price
+* 100 orders of the midway price
+* 10 orders of the highest price
 
 ## Retrieving Your Orders
 
