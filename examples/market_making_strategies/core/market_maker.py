@@ -1,108 +1,87 @@
-from asyncio import (
-    Event,
-)
-import logging
-from pyinjective.wallet import PrivateKey
+import asyncio
+from typing import Tuple
+from typing import List
+from typing import Literal
+from frontrunner_sdk.sdk import FrontrunnerSDKAsync
+from frontrunner_sdk.models.order import Order
+from frontrunner_sdk.models.cancel_order import CancelOrder
 
-from sortedcontainers import SortedList
-from objs import (
-    PositionDerivative,
-    MarketDerivative,
-    BalanceDerivative,
-)
-from configparser import SectionProxy
-from typing import List, Dict
-from utilities import (
-    build_client_and_composer,
-    switch_network,
-)
-
+"""
+1. fund wallet
+2. get market id
+3. check prob
+4. send orders
+5. listen for the trade steam
+6. refresh current orders
+"""
 
 class MarketMaker:
-    def __init__(
-        self,
-        configs: SectionProxy,
-    ):
-        priv_key = configs["private_key"]
-        nodes = configs["nodes"].split(",")
-        self.nodes = nodes
-        self.is_mainnet = configs.getboolean("is_mainnet", False)
-        self.node_index, self.network, insecure = switch_network(
-            self.nodes, 0, self.is_mainnet
-        )
-        self.client, self.composer = build_client_and_composer(self.network, insecure)
+    def __init__(self, market_id:str, n_orders:int=10) -> None:
+        self.async_sdk = FrontrunnerSDKAsync()
+        self.async_fr = self.async_sdk.frontrunner
+        self.async_inj = self.async_sdk.injective
+        self.wallet = self._get_wallet()
+        self.market_id = market_id
+        self.n_orders = n_orders
 
-        # load account
-        self.priv_key = PrivateKey.from_hex(priv_key)
-        self.pub_key = self.priv_key.to_public_key()
-        self.address = self.pub_key.to_address().init_num_seq(self.network.lcd_endpoint)
-        self.subaccount_id = self.address.get_subaccount_id(index=0)
-        logging.info("Subaccount ID: %s" % self.subaccount_id)
+    def _get_wallet(self):
+        return asyncio.run(self.async_sdk.wallet())
+ 
+    def fund_wallet(self):
+        return asyncio.run(self.async_inj.fund_wallet_from_faucet()) 
+    def find_market(self):
+        # TODO what to do with this
+        return asyncio.run(self.async_fr.find_markets())
 
-        self.fee_recipient = "inj1wrg096y69grgf8yg6tqxnh0tdwx4x47rsj8rs3"
-        self.update_interval = configs.getint("update_interval", 60)
-        logging.info("update interval: %d" % self.update_interval)
+    def get_probabilities(self, probability:float)->List[List[float]]:
+        # TODO what to feed in this function
+        return [[0.1], [0.9]]
 
-        ############################
-        self.position = PositionDerivative()
+    def get_quantities(self, probabilities:List[float])->List[float]:
+        return [10* probability for probability in probabilities]
 
-        if configs.get("base") and configs.get("quote"):
-            self.market = MarketDerivative(
-                base=configs["base"],
-                quote=configs["quote"],
-                network=self.network,
-                is_mainnet=self.is_mainnet,
-            )
-        else:
-            raise Exception("invalid base or quote ticker")
-        self.balance = BalanceDerivative(
-            available_balance=configs.getfloat("available_balance", 10.0)
-        )
+    def build_buy_orders(self, prices:List[float], quantities:List[int], sides:List[Literal["for", "against"]])-> List[Order]:
+        zipped_orders = zip(prices,quantities,sides)
+        return [Order(direction='buy', side=order[2], market_id=self.market_id, quantity=order[1], price=order[0]) for order in zipped_orders]
 
-        self.ask_price = 0
-        self.bid_price = 0
+    def build_sell_orders(self, prices:List[float], quantities:List[int], sides:List[Literal["for", "against"]])->List[Order]:
+        # check current position
+        # maybe better to skip the check the current position
+        # if no enough position this will fail 
+        zipped_orders = zip(prices,quantities,sides)
+        return [Order(direction='sell', side=order[2], market_id=self.market_id, quantity=order[1], price=order[0]) for order in zipped_orders]
 
-        self.n_orders = configs.getint("n_orders", 5)
-        logging.info("n_orders: %s" % self.n_orders)
-        self.leverage = configs.getfloat("leverage", 1)
-        logging.info("leverage: %s" % self.leverage)
+    async def create_orders(self, orders:List[Order]):
+        return await self.async_inj.create_orders(orders)
 
-        # Avellaneda Stoikov model parameters
+    async def cancel_orders(self, orders:List[CancelOrder]):
+        return await self.async_inj.cancel_orders(orders)
 
-        self.orders: Dict[str, SortedList] = {
-            "bids": SortedList(),
-            "asks": SortedList(),
-            "reduce_only_orders": SortedList(),
-        }
+    async def trades_stream(self):
+        return await self.async_inj.stream_trades(self.market_id, mine=True)
 
-        self.tob_bid_price = 0.0
-        self.sob_best_bid_price = 0.0
-        self.tob_ask_price = 0.0
-        self.sob_best_ask_price = 0.0
+    async def order_book(self):
+        return await self.async_inj.get_order_books(self.market_id)
 
-        self.last_order_delta = configs.getfloat("last_order_delta", 0.02)
-        self.first_order_delta = configs.getfloat("first_order_delta", 0.00)
-        logging.info(
-            "first_order_delta: %s, last_order_delta: %s :"
-            % (self.first_order_delta, self.last_order_delta)
-        )
+    async def get_my_orders(self):
+        return await self.async_inj.get_my_orders()
 
-        self.first_asset_allocation = configs.getfloat("first_asset_allocation", 0)
-        self.last_asset_allocation = configs.getfloat("last_asset_allocation", 0.4)
+    async def get_my_positions(self):
+        return await self.async_inj.get_positions(self.market_id, mine=True)
 
-        self.estimated_fee_ratio = configs.getfloat("estimated_fee_ratio", 0.005)
-        self.initial_margin_ratio = 1
+    async def get_account_portfolio(self):
+        return await self.async_inj.get_account_portfolio()
 
-        self.bid_total_asset_allocation = configs.getfloat(
-            "bid_total_asset_allocation", 0.09
-        ) * (
-            1 - self.estimated_fee_ratio
-        )  # fraction of total asset
-        logging.info("bid_total_asset_allocation: %s" % self.bid_total_asset_allocation)
-        self.ask_total_asset_allocation = configs.getfloat(
-            "ask_total_asset_allocation", 0.11
-        ) * (
-            1 - self.estimated_fee_ratio
-        )  # fraction of total asset
-        logging.info("ask_total_asset_allocation: %s" % self.ask_total_asset_allocation)
+    async def cancel_all_orders(self):
+        return await self.async_inj.cancel_all_orders()
+
+    def strategy(self):
+        raise NotImplemented
+
+    def initilization(self):
+        raise NotImplemented
+
+    def start(self):
+        raise NotImplemented
+
 
