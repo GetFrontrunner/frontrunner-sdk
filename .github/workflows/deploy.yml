@@ -10,23 +10,29 @@ jobs:
   GitHub-Pages:
     runs-on: ubuntu-latest
     container: slatedocs/slate:v2.13.1
-    env:
-      GIT_DEPLOY_USERNAME: ${{ github.actor }}
     steps:
       - name: Prerequisites
         run: |
           apt-get update
-          apt-get install -y git
+          apt-get install -y git rsync
       - name: Checkout
         uses: actions/checkout@v3
       - name: Slate Build
         run: |
-          rm --recursive --force /srv/slate/source
-          cp --recursive docs /srv/slate/source
+          repo_dir=$(pwd)
+
+          rsync --recursive --delete docs /srv/slate/source
+
+          commit_title=$(git log -n 1 --format="%s" HEAD)
+          commit_hash=$(git log -n 1 --format="%H" HEAD)
+          commit_message="publish: ${commit_title}\n\ngenerated from commit ${commit_hash}"
+
           cd /srv/slate
-          ./slate.sh deploy
-      - name: Slate Upload
-        uses: actions/upload-artifact@v3
-        with:
-          name: docs
-          path: /srv/slate/build
+          ./slate.sh build
+
+          cd "{repo_dir}"
+          git checkout gh-pages
+          rsync --recursive --delete /srv/slate/build .
+
+          git commit --all --message "${commit_message}"
+          git push
