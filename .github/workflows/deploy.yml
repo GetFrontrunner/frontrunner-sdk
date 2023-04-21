@@ -23,12 +23,12 @@ jobs:
 
           rsync --recursive --delete docs /srv/slate/source
 
-      # commit_title=$(git log -n 1 --format="%s" HEAD)
-      # commit_hash=$(git log -n 1 --format="%H" HEAD)
-      # commit_message="publish: ${commit_title}\n\ngenerated from commit ${commit_hash}"
+          commit_title=$(git log -n 1 --format="%s" HEAD)
+          commit_hash=$(git log -n 1 --format="%H" HEAD)
+          commit_message="publish: ${commit_title}\n\ngenerated from commit ${commit_hash}"
 
-      # cd /srv/slate
-      # ./slate.sh build
+          cd /srv/slate
+          ./slate.sh build
 
       # cd "{repo_dir}"
       # git checkout gh-pages
