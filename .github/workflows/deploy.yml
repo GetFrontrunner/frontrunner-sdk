@@ -35,7 +35,7 @@ jobs:
           cd /srv/slate
           ./slate.sh build
 
-          cd "{repo_dir}"
+          cd "${repo_dir}"
           git checkout gh-pages
 
           rsync --recursive --delete /srv/slate/build .
