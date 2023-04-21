@@ -1,6 +1,6 @@
 ## Injective: Create Wallet
 
-Creates a new wallet with a small aidrop of INJ from the faucet.
+Creates a new wallet with a small aidrop of INJ and USDT from Injective's faucet.
 
 ### Parameters
 
