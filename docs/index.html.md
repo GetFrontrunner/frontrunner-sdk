@@ -38,7 +38,7 @@ meta:
 
 # Introduction
 
-[Frontrunner][frontrunner] is the first zero gas fee, decentralized sports prediction market built on blockchain where you get the best odds with no house edge. Frontrunner is powered by the [Injective][injective], a blockchain built for Web3 finance applications. This SDK offers a programmatic way to interact with both, powering use cases such as market making.
+[Frontrunner][frontrunner] is the first zero gas fee, decentralized sports prediction market built on blockchain where you get the best odds with no house edge. Frontrunner is powered by [Injective][injective], a blockchain built for Web3 finance applications. This SDK offers a programmatic way to interact with both, powering use cases such as market making.
 
 [frontrunner]: https://www.getfrontrunner.com/
 [injective]: https://injective.com/
