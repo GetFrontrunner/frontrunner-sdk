@@ -37,7 +37,11 @@ jobs:
 
           commit_title=$(git log -n 1 --format="%s" HEAD)
           commit_hash=$(git log -n 1 --format="%H" HEAD)
-          commit_message="publish: ${commit_title}\n\ngenerated from commit ${commit_hash}"
+          commit_message=<<EOF
+          publish: ${commit_title}
+
+          generated from commit ${commit_hash}
+          EOF
 
           cd /srv/slate
           ./slate.sh build
@@ -46,11 +50,7 @@ jobs:
           git fetch origin gh-pages
           git checkout gh-pages
 
-          mv .git /tmp/.git
-
-          rsync --recursive --delete /srv/slate/build/ .
-
-          mv /tmp/.git .
+          rsync --recursive --delete --exclude=.git /srv/slate/build/ .
 
           git commit --all --message "${commit_message}"
 
