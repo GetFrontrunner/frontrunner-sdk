@@ -21,7 +21,7 @@ class TestFindMarketsOperation(IsolatedAsyncioTestCase):
   def setUp(self) -> None:
     self.deps = MagicMock(spec=FrontrunnerIoC)
 
-  def setup_frontrunner_api(
+  def setup_partner_api(
     self,
     leagues: Optional[List[League]] = None,
     sport_events: Optional[List[SportEvent]] = None,
@@ -36,7 +36,7 @@ class TestFindMarketsOperation(IsolatedAsyncioTestCase):
     self.deps.openapi_frontrunner_api.get_markets = AsyncMock(return_value=markets or [])
 
   async def test_find_markets_everything(self):
-    self.setup_frontrunner_api(
+    self.setup_partner_api(
       leagues=[League(id="league", name="league")],
       sport_events=[SportEvent(id="sport-event", league_id="league", name="sport-event")],
       sport_entities=[SportEntity(id="sport-entity", league_id="league", name="sport-entity")],
@@ -68,7 +68,7 @@ class TestFindMarketsOperation(IsolatedAsyncioTestCase):
     self.assertEqual(res.market_ids, ["injective-market"])
 
   async def test_find_markets_short_circuit(self):
-    self.setup_frontrunner_api(leagues=[])
+    self.setup_partner_api(leagues=[])
 
     req = FindMarketsRequest(
       sports=[],

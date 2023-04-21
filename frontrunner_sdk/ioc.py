@@ -63,12 +63,12 @@ class FrontrunnerIoC(SyncMixin):
 
     config = api.api_client.configuration
 
-    if self.config.frontrunner_api_base_url:
-      config.host = self.config.frontrunner_api_base_url
+    if self.config.partner_api_base_url:
+      config.host = self.config.partner_api_base_url
 
-    if self.config.frontrunner_api_authn_token:
+    if self.config.partner_api_authn_token:
       config.api_key = {
-        "Authorization": self.config.frontrunner_api_authn_token,
+        "Authorization": self.config.partner_api_authn_token,
       }
 
     return api

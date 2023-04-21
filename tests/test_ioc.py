@@ -57,7 +57,7 @@ class TestFrontrunnerIoC(IsolatedAsyncioTestCase):
     _initialize_wallet.assert_awaited_once()
 
   def test_openapi_frontrunner_api(self):
-    ioc = self.ioc_for(frontrunner_api_base_url="http://frontrunner.example")
+    ioc = self.ioc_for(partner_api_base_url="http://frontrunner.example")
 
     self.assertIsInstance(ioc.openapi_frontrunner_api, FrontrunnerApi)
 
