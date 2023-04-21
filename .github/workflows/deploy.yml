@@ -1,0 +1,32 @@
+name: Deploy
+run-name: Deploy
+on: [push]
+# on:
+#   push:
+#     branches: [master]
+
+jobs:
+
+  GitHub-Pages:
+    runs-on: ubuntu-latest
+    container: slatedocs/slate:v2.13.1
+    env:
+      GIT_DEPLOY_USERNAME: ${{ github.actor }}
+    steps:
+      - name: Prerequisites
+        run: |
+          apt-get update
+          apt-get install -y git
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Slate Build
+        run: |
+          rm --recursive --force /srv/slate/source
+          cp --recursive docs /srv/slate/source
+          cd /srv/slate
+          ./deploy.sh
+      - name: Slate Upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: docs
+          path: /srv/slate/build
