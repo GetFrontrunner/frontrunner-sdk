@@ -9,7 +9,7 @@ TODO description
 response = sdk.do.something()
 ```
 
-| Name | Type | | Description |
+| Name | Type | Req? | Description |
 | - | - | - | - |
 | `field` | `Type` | ✓ ◯ `123` | ✓ required ◯ optional `default value maybe` |
 

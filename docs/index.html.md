@@ -20,8 +20,8 @@ includes:
   - operations/injective/create_wallet
   - operations/injective/fund_wallet_from_faucet
   - operations/injective/get_account_portfolio
-  - operations/injective/get_my_orders
   - operations/injective/get_order_books
+  - operations/injective/get_orders
   - operations/injective/get_positions
   - operations/injective/get_trades
   - operations/injective/stream_orders
