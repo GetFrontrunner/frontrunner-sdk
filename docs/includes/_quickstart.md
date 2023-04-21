@@ -77,8 +77,12 @@ print("sells:")
 for sell in orders.sells:
   print(f"{sell.quantity} @ {sell.price}")
 
+# Frontrunner markets are in USDC while on Injective, USDC has 6 decimals.
+# 1,000,000 from Injective is $1 USDC.
+INJ_TO_USDC = 10 ** -6
+
 # find the lowest and highest buying prices in the order book
-prices = [int(buy.price) / 1000000 for buy in orders.buys]
+prices = [int(buy.price) * INJ_TO_USDC for buy in orders.buys]
 highest_buy, lowest_buy = max(prices), min(prices)
 print(f"price range: [{highest_buy}, {lowest_buy}]")
 ```
