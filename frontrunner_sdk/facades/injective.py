@@ -22,12 +22,12 @@ from frontrunner_sdk.commands.injective.fund_wallet_from_faucet import FundWalle
 from frontrunner_sdk.commands.injective.get_account_portfolio import GetAccountPortfolioOperation # NOQA
 from frontrunner_sdk.commands.injective.get_account_portfolio import GetAccountPortfolioRequest # NOQA
 from frontrunner_sdk.commands.injective.get_account_portfolio import GetAccountPortfolioResponse # NOQA
-from frontrunner_sdk.commands.injective.get_my_orders import GetMyOrdersOperation # NOQA
-from frontrunner_sdk.commands.injective.get_my_orders import GetMyOrdersRequest
-from frontrunner_sdk.commands.injective.get_my_orders import GetMyOrdersResponse # NOQA
 from frontrunner_sdk.commands.injective.get_order_books import GetOrderBooksOperation # NOQA
 from frontrunner_sdk.commands.injective.get_order_books import GetOrderBooksRequest # NOQA
 from frontrunner_sdk.commands.injective.get_order_books import GetOrderBooksResponse # NOQA
+from frontrunner_sdk.commands.injective.get_orders import GetOrdersOperation # NOQA
+from frontrunner_sdk.commands.injective.get_orders import GetOrdersRequest
+from frontrunner_sdk.commands.injective.get_orders import GetOrdersResponse # NOQA
 from frontrunner_sdk.commands.injective.get_positions import GetPositionsOperation # NOQA
 from frontrunner_sdk.commands.injective.get_positions import GetPositionsRequest # NOQA
 from frontrunner_sdk.commands.injective.get_positions import GetPositionsResponse # NOQA
@@ -37,6 +37,9 @@ from frontrunner_sdk.commands.injective.get_trades import GetTradesResponse
 from frontrunner_sdk.commands.injective.stream_orders import StreamOrdersOperation # NOQA
 from frontrunner_sdk.commands.injective.stream_orders import StreamOrdersRequest # NOQA
 from frontrunner_sdk.commands.injective.stream_orders import StreamOrdersResponse # NOQA
+from frontrunner_sdk.commands.injective.stream_positions import StreamPositionsOperation # NOQA
+from frontrunner_sdk.commands.injective.stream_positions import StreamPositionsRequest # NOQA
+from frontrunner_sdk.commands.injective.stream_positions import StreamPositionsResponse # NOQA
 from frontrunner_sdk.commands.injective.stream_trades import StreamTradesOperation # NOQA
 from frontrunner_sdk.commands.injective.stream_trades import StreamTradesRequest # NOQA
 from frontrunner_sdk.commands.injective.stream_trades import StreamTradesResponse # NOQA
@@ -81,9 +84,22 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     request = GetOrderBooksRequest(market_ids=market_ids)
     return await self._run_operation(GetOrderBooksOperation, self.deps, request)
 
-  async def get_my_orders(self) -> GetMyOrdersResponse:
-    request = GetMyOrdersRequest()
-    return await self._run_operation(GetMyOrdersOperation, self.deps, request)
+  async def get_orders(
+    self,
+    mine: bool,
+    market_ids: Optional[List[str]] = None,
+    subaccount_id: Optional[str] = None,
+    direction: Optional[Literal["buy", "sell"]] = None,
+    is_conditional: Optional[bool] = None,
+    order_types: Optional[List[str]] = None,
+    state: Optional[str] = None,
+    execution_types: Optional[List[str]] = None,
+    start_time: Optional[datetime] = None,
+    end_time: Optional[datetime] = None,
+  ) -> GetOrdersResponse:
+    kwargs = as_request_args(locals())
+    request = GetOrdersRequest(**kwargs)
+    return await self._run_operation(GetOrdersOperation, self.deps, request)
 
   async def get_positions(
     self,
@@ -137,6 +153,18 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     request = StreamOrdersRequest(**kwargs)
     return await self._run_operation(StreamOrdersOperation, self.deps, request)
 
+  async def stream_positions(
+    self,
+    mine: bool = False,
+    market_id: Optional[str] = None,
+    market_ids: Optional[List[str]] = None,
+    subaccount_id: Optional[str] = None,
+    subaccount_ids: Optional[List[str]] = None,
+  ) -> StreamPositionsResponse:
+    kwargs = as_request_args(locals())
+    request = StreamPositionsRequest(**kwargs)
+    return await self._run_operation(StreamPositionsOperation, self.deps, request)
+
 
 class InjectiveFacade(SyncMixin):
 
@@ -164,8 +192,8 @@ class InjectiveFacade(SyncMixin):
   def get_order_books(self, market_ids: Iterable[str]) -> GetOrderBooksResponse:
     return self._synchronously(self.impl.get_order_books, market_ids)
 
-  def get_my_orders(self) -> GetMyOrdersResponse:
-    return self._synchronously(self.impl.get_my_orders)
+  def get_orders(self) -> GetOrdersResponse:
+    return self._synchronously(self.impl.get_orders)
 
   def get_positions(
     self,

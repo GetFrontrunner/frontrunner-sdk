@@ -1,6 +1,10 @@
 from dataclasses import dataclass
 from typing import Literal
 
+OrderType = Literal["buy", "sell", "stop_buy", "stop_sell", "take_buy", "take_sell", "buy_po", "sell_po"]
+OrderState = Literal["booked", "partial_filled", "filled", "canceled"]
+OrderExecutionType = Literal["limit", "market"]
+
 
 @dataclass
 class Order:
