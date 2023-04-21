@@ -156,9 +156,7 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
   async def stream_positions(
     self,
     mine: bool = False,
-    market_id: Optional[str] = None,
     market_ids: Optional[List[str]] = None,
-    subaccount_id: Optional[str] = None,
     subaccount_ids: Optional[List[str]] = None,
   ) -> StreamPositionsResponse:
     kwargs = as_request_args(locals())
