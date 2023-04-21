@@ -17,7 +17,7 @@ DEFAULT: FrontrunnerConfig = ChainedFrontrunnerConfig([
   ),
 
   # frontrunner api
-  StaticFrontrunnerConfig(frontrunner_api_base_url="https://partner-api-staging.getfrontrunner.com/api/v1"),
+  StaticFrontrunnerConfig(partner_api_base_url="https://partner-api-staging.getfrontrunner.com/api/v1"),
 
   # injective k8s network
   ConditionalFrontrunnerConfig(

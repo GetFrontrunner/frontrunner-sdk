@@ -18,11 +18,11 @@ class FrontrunnerConfig:
     return None
 
   @property
-  def frontrunner_api_base_url(self) -> Optional[str]:
+  def partner_api_base_url(self) -> Optional[str]:
     return None
 
   @property
-  def frontrunner_api_authn_token(self) -> Optional[str]:
+  def partner_api_authn_token(self) -> Optional[str]:
     return None
 
   @property
