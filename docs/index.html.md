@@ -25,6 +25,7 @@ includes:
   - operations/injective/get_positions
   - operations/injective/get_trades
   - operations/injective/stream_orders
+  - operations/injective/stream_positions
   - operations/injective/stream_trades
 
 search: true
