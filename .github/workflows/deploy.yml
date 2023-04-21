@@ -24,6 +24,13 @@ jobs:
           # suppress "detected dubious ownership in repository" garbage
           git config --global --add safe.directory "${repo_dir}"
 
+          commit_author_name=$(git log -n 1 --format="%an" HEAD)
+          commit_author_email=$(git log -n 1 --format="%ae" HEAD)
+
+          # need to configure user details manually
+          git config --global user.name "${commit_author_name}"
+          git config --global user.email "${commit_author_email}"
+
           rm --recursive --force /srv/slate/source
           cp --recursive docs /srv/slate/source
           # rsync --recursive --delete docs /srv/slate/source
