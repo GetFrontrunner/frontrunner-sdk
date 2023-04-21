@@ -1,5 +1,31 @@
 # Conventions
 
+## Synchronous and Asynchronous SDKs
+
+This SDK is designed with [async/concurrent programming][asyncio] in mind. However, it can be difficult to use in regular scripts because the way `async` code needs to be written requires an all-or-nothing approach. To cater to non-async code, we provide a version of the SDK that can be used without `async`.
+
+[asyncio]: https://docs.python.org/3/library/asyncio.html
+
+```python
+from frontrunner_sdk import FrontrunnerSDKAsync
+
+sdk = FrontrunnerSDKAsync()
+```
+
+To create an `async` version of the SDK, use `FrontrunnerSDKAsync`.
+
+```python
+from frontrunner_sdk import FrontrunnerSDK
+
+sdk = FrontrunnerSDK()
+```
+
+To create a non-`async` version of the SDK, use `FrontrunnerSDK`.
+
+<aside class="warning">
+You cannot use the non-<code>async</code> version of the SDK inside <code>async def</code> functions. Internally, each operation creates an async loop and runs the code. Trying to run another async loop within another loop will fail.
+</aside>
+
 ## Response Objects
 
 SDK return values are always wrapped in a response object. The response object contains the desired values eg. orders, positions, portfolio info. This is to mitigate the effects of SDK changes for developers.
