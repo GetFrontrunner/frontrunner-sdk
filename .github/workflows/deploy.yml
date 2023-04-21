@@ -23,6 +23,8 @@ jobs:
 
           rsync --recursive --delete docs /srv/slate/source
 
+          ls -lah
+          whoami
           commit_title=$(git log -n 1 --format="%s" HEAD)
       # commit_hash=$(git log -n 1 --format="%H" HEAD)
       # commit_message="publish: ${commit_title}\n\ngenerated from commit ${commit_hash}"
