@@ -89,7 +89,7 @@ In Cosmos, we have the following endpoints:
 Normally, these come in sets, and are not interchangeable between sets.
 
 <aside class="notice">
-Some endpoints are specified as an authority, and some are specified as a base URL.
+Some endpoints are specified as an <a href="https://en.wikipedia.org/wiki/Uniform_Resource_Identifier#Syntax">authority (host + port)</a>, and some are specified as a base URL.
 </aside>
 
 ### Environment Variables
