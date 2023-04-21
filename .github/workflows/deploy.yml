@@ -24,7 +24,9 @@ jobs:
           # suppress "detected dubious ownership in repository" garbage
           git config --global --add safe.directory "${repo_dir}"
 
-          rsync --recursive --delete docs /srv/slate/source
+          rm --recursive --force /srv/slate/source
+          cp --recursive docs /srv/slate/source
+          # rsync --recursive --delete docs /srv/slate/source
 
           commit_title=$(git log -n 1 --format="%s" HEAD)
           commit_hash=$(git log -n 1 --format="%H" HEAD)
@@ -35,6 +37,7 @@ jobs:
 
           cd "{repo_dir}"
           git checkout gh-pages
+
           rsync --recursive --delete /srv/slate/build .
 
           git diff
