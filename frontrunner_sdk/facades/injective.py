@@ -86,7 +86,7 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
 
   async def get_orders(
     self,
-    mine: bool,
+    mine: Optional[bool] = None,
     market_ids: Optional[List[str]] = None,
     subaccount_id: Optional[str] = None,
     direction: Optional[Literal["buy", "sell"]] = None,
@@ -192,8 +192,21 @@ class InjectiveFacade(SyncMixin):
   def get_order_books(self, market_ids: Iterable[str]) -> GetOrderBooksResponse:
     return self._synchronously(self.impl.get_order_books, market_ids)
 
-  def get_orders(self) -> GetOrdersResponse:
-    return self._synchronously(self.impl.get_orders)
+  def get_orders(
+    self,
+    mine: Optional[bool] = None,
+    market_ids: Optional[List[str]] = None,
+    subaccount_id: Optional[str] = None,
+    direction: Optional[Literal["buy", "sell"]] = None,
+    is_conditional: Optional[bool] = None,
+    order_types: Optional[List[str]] = None,
+    state: Optional[str] = None,
+    execution_types: Optional[List[str]] = None,
+    start_time: Optional[datetime] = None,
+    end_time: Optional[datetime] = None,
+  ) -> GetOrdersResponse:
+    kwargs = as_request_args(locals())
+    return self._synchronously(self.impl.get_orders, **kwargs)
 
   def get_positions(
     self,

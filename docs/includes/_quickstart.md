@@ -121,9 +121,9 @@ To place the orders, we'll call `create_orders`. We'll place...
 ## Retrieving Your Orders
 
 ```python
-get_my_orders = sdk.injective.get_my_orders()
+get_orders = sdk.injective.get_orders(mine=True)
 
-print("my orders:")
-for order in get_my_orders.orders:
+print("orders:")
+for order in get_orders.orders:
   print(f"{order.order_hash}: {order.quantity} @ {order.price}")
 ```

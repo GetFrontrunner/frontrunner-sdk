@@ -8,12 +8,12 @@ Gets open orders. For the corresponding Injective API, see [Orders History][orde
 
 ```python
 # Get all my orders
-response = sdk.injective.get_orders(True)
+response = sdk.injective.get_orders(mine=True)
 ```
 
 | Name | Type | Req? | Description |
 | - | - | - | - |
-| `mine` | `bool` | ✓ | Only return your orders |
+| `mine` | `bool` | ◯ `None` | Only return your orders |
 | `market_ids` | `[str]` | ◯ `None` | Only return orders with this market ID |
 | `subaccount_id` | `str` | ◯ `None` | Only return orders from this subaccount |
 | `direction` | `"buy", "sell"` | ◯ `None` | Only return orders with this direction |
