@@ -31,9 +31,9 @@ jobs:
           git config --global user.name "${commit_author_name}"
           git config --global user.email "${commit_author_email}"
 
-          rm --recursive --force /srv/slate/source
-          cp --recursive docs /srv/slate/source
-          # rsync --recursive --delete docs /srv/slate/source
+          # rm --recursive --force /srv/slate/source
+          # cp --recursive docs /srv/slate/source
+          rsync --recursive --delete docs/ /srv/slate/source
 
           commit_title=$(git log -n 1 --format="%s" HEAD)
           commit_hash=$(git log -n 1 --format="%H" HEAD)
@@ -50,7 +50,13 @@ jobs:
           git fetch origin gh-pages
           git checkout gh-pages
 
-          rsync --recursive --delete --exclude=.git/,.gitignore /srv/slate/build/ .
+          rsync \
+            --recursive \
+            --delete \
+            --exclude=.git/ \
+            --exclude=.gitignore \
+            /srv/slate/build/ . \
+            ;
 
           git commit --all --message "${commit_message}"
 
