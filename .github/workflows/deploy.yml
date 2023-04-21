@@ -46,7 +46,7 @@ jobs:
           git fetch origin gh-pages
           git checkout gh-pages
 
-          rsync --recursive --delete /srv/slate/build .
+          rsync --recursive --delete /srv/slate/build/ .
 
           git commit --all --message "${commit_message}"
 
