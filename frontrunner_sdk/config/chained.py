@@ -32,12 +32,12 @@ class ChainedFrontrunnerConfig(FrontrunnerConfig):
     return self._find_next(lambda config: config.wallet_private_key_hex)
 
   @property
-  def frontrunner_api_base_url(self) -> Optional[str]:
-    return self._find_next(lambda config: config.frontrunner_api_base_url)
+  def partner_api_base_url(self) -> Optional[str]:
+    return self._find_next(lambda config: config.partner_api_base_url)
 
   @property
-  def frontrunner_api_authn_token(self) -> Optional[str]:
-    return self._find_next(lambda config: config.frontrunner_api_authn_token)
+  def partner_api_authn_token(self) -> Optional[str]:
+    return self._find_next(lambda config: config.partner_api_authn_token)
 
   @property
   def injective_network(self) -> Optional[NetworkEnvironment]:

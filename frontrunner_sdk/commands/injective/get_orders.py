@@ -22,7 +22,7 @@ from frontrunner_sdk.models import OrderType
 @dataclass
 class GetOrdersRequest:
   # internal fields
-  mine: bool
+  mine: Optional[bool] = None
   # passthrough fields
   market_ids: Optional[List[str]] = None
   subaccount_id: Optional[str] = None

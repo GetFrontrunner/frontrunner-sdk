@@ -20,12 +20,12 @@ class ConditionalFrontrunnerConfig(FrontrunnerConfig):
     return self.config.wallet_private_key_hex if self.condition() else None
 
   @property
-  def frontrunner_api_base_url(self) -> Optional[str]:
-    return self.config.frontrunner_api_base_url if self.condition() else None
+  def partner_api_base_url(self) -> Optional[str]:
+    return self.config.partner_api_base_url if self.condition() else None
 
   @property
-  def frontrunner_api_authn_token(self) -> Optional[str]:
-    return self.config.frontrunner_api_authn_token if self.condition() else None
+  def partner_api_authn_token(self) -> Optional[str]:
+    return self.config.partner_api_authn_token if self.condition() else None
 
   @property
   def injective_network(self) -> Optional[NetworkEnvironment]:
