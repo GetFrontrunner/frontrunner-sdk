@@ -17,7 +17,7 @@ jobs:
           apt-get install -y git rsync
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Slate Build
+      - name: Git Setup
         run: |
           repo_dir=$(pwd)
 
@@ -31,6 +31,8 @@ jobs:
           git config --global user.name "${commit_author_name}"
           git config --global user.email "${commit_author_email}"
 
+      - name: Slate Build
+        run: |
           rsync \
             --recursive \
             --delete \
@@ -63,6 +65,8 @@ jobs:
             . \
             ;
 
+      - name: Git Push
+        run: |
           git add .
           git commit --message "${commit_message}"
           git show --name-status
