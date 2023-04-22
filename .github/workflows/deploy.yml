@@ -31,9 +31,12 @@ jobs:
           git config --global user.name "${commit_author_name}"
           git config --global user.email "${commit_author_email}"
 
-          # rm --recursive --force /srv/slate/source
-          # cp --recursive docs /srv/slate/source
-          rsync --recursive --delete docs/ /srv/slate/source
+          rsync \
+            --recursive \
+            --delete \
+            docs/ \
+            /srv/slate/source \
+            ;
 
           commit_title=$(git log -n 1 --format="%s" HEAD)
           commit_hash=$(git log -n 1 --format="%H" HEAD)
@@ -56,11 +59,11 @@ jobs:
             --delete \
             --exclude=.git/ \
             --exclude=.gitignore \
-            /srv/slate/build/ . \
+            /srv/slate/build/ \
+            . \
             ;
 
           git add .
           git commit --message "${commit_message}"
-
-          git show
-      # git push
+          git show --name-status
+          # git push
