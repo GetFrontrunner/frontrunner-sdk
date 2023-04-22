@@ -71,4 +71,4 @@ jobs:
           git add .
           git commit --message "${commit_message}"
           git show --name-status
-          # git push
+          git push
