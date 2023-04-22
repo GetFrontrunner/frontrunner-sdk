@@ -58,7 +58,8 @@ jobs:
             /srv/slate/build/ . \
             ;
 
-          git commit --all --message "${commit_message}"
+          git add .
+          git commit --message "${commit_message}"
 
           git show
       # git push
