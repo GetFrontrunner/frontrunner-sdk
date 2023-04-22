@@ -42,6 +42,11 @@ jobs:
             /srv/slate/source \
             ;
 
+          cd /srv/slate
+          ./slate.sh build
+
+      - name: Git Push
+        run: |
           commit_title=$(git log -n 1 --format="%s" HEAD)
           commit_hash=$(git log -n 1 --format="%H" HEAD)
           commit_message=$(cat <<EOF
@@ -51,11 +56,6 @@ jobs:
           EOF
           )
 
-          cd /srv/slate
-          ./slate.sh build
-
-      - name: Git Push
-        run: |
           git fetch origin gh-pages
           git checkout gh-pages
 
