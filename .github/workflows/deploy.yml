@@ -1,9 +1,8 @@
 name: Deploy
 run-name: Deploy
-on: [push]
-# on:
-#   push:
-#     branches: [master]
+on:
+  push:
+    branches: [master]
 
 jobs:
 
@@ -32,7 +31,6 @@ jobs:
           # need to configure user details manually
           git config --global user.name "${commit_author_name}"
           git config --global user.email "${commit_author_email}"
-
       - name: Slate Build
         run: |
           repo_dir=$(pwd)
@@ -46,7 +44,6 @@ jobs:
 
           cd /srv/slate
           ./slate.sh build
-
       - name: Git Push
         run: |
           commit_title=$(git log -n 1 --format="%s" HEAD)
