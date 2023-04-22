@@ -33,6 +33,8 @@ jobs:
 
       - name: Slate Build
         run: |
+          repo_dir=$(pwd)
+
           rsync \
             --recursive \
             --delete \
@@ -52,7 +54,8 @@ jobs:
           cd /srv/slate
           ./slate.sh build
 
-          cd "${repo_dir}"
+      - name: Git Push
+        run: |
           git fetch origin gh-pages
           git checkout gh-pages
 
@@ -65,8 +68,6 @@ jobs:
             . \
             ;
 
-      - name: Git Push
-        run: |
           git add .
           git commit --message "${commit_message}"
           git show --name-status
