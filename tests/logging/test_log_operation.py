@@ -36,4 +36,4 @@ class TestLogOperation(IsolatedAsyncioTestCase):
 
       self.assertEqual(record.name, __name__)
       self.assertEqual(record.levelno, logging.INFO)
-      self.assertEqual(record.message, "MockOperation with request, yielding response")
+      self.assertEqual(record.message, "MockOperation with request")

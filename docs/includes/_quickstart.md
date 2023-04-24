@@ -4,7 +4,7 @@ To demonstrate SDK usage, we'll be using it to create a wallet, place a market o
 
 ## Installation
 
-First install the [Injective SDK pre-requisites][injective-sdk-prereqs]
+First install the [Injective SDK pre-requisites][injective-sdk-prereqs].
 
 [injective-sdk-prereqs]: https://github.com/InjectiveLabs/sdk-python#dependencies
 
@@ -52,7 +52,8 @@ Then, we'll call `create_wallet` to create our wallet and receive an airdrop fro
 find_markets = sdk.frontrunner.find_markets(
   sports=["basketball"], # Looking for basketball game markets
   event_types=["game"], # Looking for game (instead of future) markets
-  prop_types=["winner"], # Looking for winner (instead of loser/other) markets
+  prop_types=["winner"], # Looking for winner (instead of other) markets
+  market_statuses=["active"], # Only active markets
 )
 
 # Pick a market
@@ -71,25 +72,25 @@ Then, we'll pick one market to place bets on, and print some info about it.
 response = sdk.injective.get_order_books([market.injective_id])
 order_book = response.order_books[market.injective_id]
 
+# Frontrunner markets are in USDC while on Injective, USDC has 6 decimals.
+# 1,000,000 from Injective is $1 USDC.
+USDC_SCALE_FACTOR = 10 ** 6
+
 # print order book buys
 print("buys:")
 for buy in order_book.buys:
-  print(f"{buy.quantity} @ {buy.price}")
+  print(f"{buy.quantity} @ ${int(buy.price) / USDC_SCALE_FACTOR}")
 
 # print order book sells
 print("sells:")
 for sell in order_book.sells:
-  print(f"{sell.quantity} @ {sell.price}")
-
-# Frontrunner markets are in USDC while on Injective, USDC has 6 decimals.
-# 1,000,000 from Injective is $1 USDC.
-USDC_SCALE_FACTOR = 10 ** 6
+  print(f"{sell.quantity} @ ${int(sell.price) / USDC_SCALE_FACTOR}")
 
 # find the highest buy and lowest sell
 buy_prices = [int(order.price) / USDC_SCALE_FACTOR for order in order_book.buys]
 sell_prices = [int(order.price) / USDC_SCALE_FACTOR for order in order_book.sells]
 highest_buy, lowest_sell = max(buy_prices), min(sell_prices)
-print(f"bid-ask spread: [{highest_buy}, {lowest_sell}]")
+print(f"bid-ask spread: [${highest_buy}, ${lowest_sell}]")
 ```
 
 Without knowing much else about the market besides its ID, it's hard to price bets and make orders. Here, we'll place multiple buy orders above the highest buy price.
@@ -101,9 +102,12 @@ We'll call `get_order_books`, passing in the Injective market id, to get the cur
 ```python
 from frontrunner_sdk.models import Order
 
+highest_buy = 0.01
+injective_id = "0xb3a7e524c2ba5ec1eb44bf6780881d671992537eeab1428b8a44b205ceb3c304"
+
 create_orders = sdk.injective.create_orders([
-  Order.buy_long(market.injective_id, 10, highest_buy + 0.01 * USDC_SCALE_FACTOR),
-  Order.buy_long(market.injective_id, 5, highest_buy + 0.02 * USDC_SCALE_FACTOR),
+    Order.buy_long(injective_id, 10, highest_buy + 0.01),
+    Order.buy_long(injective_id, 5, highest_buy + 0.02),
 ])
 
 print(f"""
@@ -120,6 +124,10 @@ To place the orders, we'll call `create_orders`. We'll place...
 
 * An order for 10 shares at $0.01 above the highest buy price
 * An order for 5 shares at $0.02 above the highest buy price
+
+Note that we use a hard-coded market ID here that points to a testnet USDT market that can be traded in with Injective Faucet funds.
+
+Contact [support@getfrontrunner.com][support] to request testnet USDC to trade in real Frontrunner markets.
 
 ## Retrieving Your Orders
 
