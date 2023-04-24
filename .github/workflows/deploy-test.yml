@@ -6,6 +6,7 @@ jobs:
 
   PyPI:
     runs-on: ubuntu-latest
+    environment: pypi/test
     steps:
       - name: Checkout
         uses: actions/checkout@v3
