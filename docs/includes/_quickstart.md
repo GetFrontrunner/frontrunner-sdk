@@ -87,7 +87,7 @@ highest_buy, lowest_buy = max(prices), min(prices)
 print(f"price range: [{highest_buy}, {lowest_buy}]")
 ```
 
-Without knowing much else about the market besides its ID, it's hard to price bets and make orders. Here, we'll use our top-secret proprietary trading algorithm: we'll place buy bids around the current min, max, and midway buy prices.
+Without knowing much else about the market besides its ID, it's hard to price bets and make orders. Here, we'll place buy bids around the current min, max, and midway buy prices.
 
 We'll call `get_order_books`, passing in our market id, to get the current order books. This order book contains both the buys and sells. Using the buys, we can find the highest and lowest buy prices.
 
