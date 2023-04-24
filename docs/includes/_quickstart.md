@@ -4,11 +4,15 @@ To demonstrate SDK usage, we'll be using it to create a wallet, place a market o
 
 ## Installation
 
+First install the [Injective SDK pre-requisites][injective-sdk-prereqs]
+
+[injective-sdk-prereqs]: https://github.com/InjectiveLabs/sdk-python#dependencies
+
 ```sh
 pip install -y frontrunner-sdk
 ```
 
-Install the Frontrunner SDK using the following code.
+Then install the Frontrunner SDK.
 
 Contact [support@getfrontrunner.com][support] for a Frontrunner API Key. Keep this somewhere safe. When launching a Python REPL or running the scripts in this guide, make sure that API Key is set in the environment variable `FR_PARTNER_API_TOKEN`.
 
@@ -60,7 +64,7 @@ Before we can bet on markets, we'll need to find them. The example here finds al
 
 Then, we'll pick one market to place bets on, and print some info about it.
 
-## Viewing an Order Book
+## View an Order Book
 
 ```python
 # get the order book for this market
@@ -79,29 +83,27 @@ for sell in order_book.sells:
 
 # Frontrunner markets are in USDC while on Injective, USDC has 6 decimals.
 # 1,000,000 from Injective is $1 USDC.
-USDC_SCALE_FACTOR = 10 ** -6
+USDC_SCALE_FACTOR = 10 ** 6
 
 # find the highest buy and lowest sell
-prices = [int(buy.price) * USDC_SCALE_FACTOR for buy in orders.buys]
-highest_buy, lowest_buy = max(prices), min(prices)
-print(f"price range: [{highest_buy}, {lowest_buy}]")
+buy_prices = [int(order.price) / USDC_SCALE_FACTOR for order in order_book.buys]
+sell_prices = [int(order.price) / USDC_SCALE_FACTOR for order in order_book.sells]
+highest_buy, lowest_sell = max(buy_prices), min(sell_prices)
+print(f"bid-ask spread: [{highest_buy}, {lowest_sell}]")
 ```
 
-Without knowing much else about the market besides its ID, it's hard to price bets and make orders. Here, we'll place buy bids around the current min, max, and midway buy prices.
+Without knowing much else about the market besides its ID, it's hard to price bets and make orders. Here, we'll place multiple buy orders above the highest buy price.
 
-We'll call `get_order_books`, passing in the Injective market id, to get the current order books. This order book contains both the buys and sells. Using the buys, we can find the highest and lowest buy prices.
+We'll call `get_order_books`, passing in the Injective market id, to get the current order book. This order book contains both the buys and sells. Using the buys, we can find the highest buy price.
 
-## Placing bids
+## Placing buy orders
 
 ```python
 from frontrunner_sdk.models import Order
-from decimal import Decimal
 
-avg_buy = round(Decimal(str((highest_buy + lowest_buy) / 2)), 2)
 create_orders = sdk.injective.create_orders([
-  Order.buy_long(market.injective_id, 10, lowest_buy),
-  Order.buy_long(market.injective_id, 100, float(avg_buy)),
-  Order.buy_long(market.injective_id, 10, highest_buy),
+  Order.buy_long(market.injective_id, 10, highest_buy + 0.01 * USDC_SCALE_FACTOR),
+  Order.buy_long(market.injective_id, 5, highest_buy + 0.02 * USDC_SCALE_FACTOR),
 ])
 
 print(f"""
@@ -116,14 +118,13 @@ You can view your transaction at:
 
 To place the orders, we'll call `create_orders`. We'll place...
 
-* 10 orders of the lowest price
-* 100 orders of the midway price
-* 10 orders of the highest price
+* An order for 10 shares at $0.01 above the highest buy price
+* An order for 5 shares at $0.02 above the highest buy price
 
 ## Retrieving Your Orders
 
 ```python
-get_orders = sdk.injective.get_orders(mine=True)
+get_orders = sdk.injective.get_orders(mine=True, execution_types=["limit"])
 
 print("orders:")
 for order in get_orders.orders:
