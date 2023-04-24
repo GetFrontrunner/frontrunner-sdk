@@ -1,6 +1,6 @@
 ## Injective: Get Trades
 
-Gets open positions. For the corresponding Injective API, see [Trades][derivative-trades].
+Get trades (i.e. matched orders). For the corresponding Injective API, see [Trades][derivative-trades].
 
 [derivative-trades]: https://api.injective.exchange/#injectivederivativeexchangerpc-trades
 
