@@ -3,11 +3,9 @@
 ## Order Types
 Participants in Frontrunner markets submit `buy` and `sell` orders of 
 two different types:
+
 * `long`: in favor of the `long_entity` outcome
-* `short`: in favor of the `short_entity` if present. If no `short_entity`
-is present (i.e. in non-binary markets), this outcome is simply the 
-inverse or "not" of the `long_entity`. See the [Non-Binary Markets](#non-binary-markets) 
-section below for additional context.
+* `short`: in favor of the `short_entity` if present. If no `short_entity` is present (i.e. in non-binary markets), this outcome is simply the inverse or "not" of the `long_entity`. See the [Non-Binary Markets](#non-binary-markets) section below for additional context.
 
 ## Market Types
 
@@ -18,7 +16,7 @@ are binary markets because there are only two possible standard outcomes.
 
 <aside class="notice">
 NFL regular season `game` markets are also binary markets despite the fact that they can end in a draw.  
-If an NFL game ends in a tie, both `long` and `short` positions resolve at $0.50.
+If an NFL game ends in a draw, both `long` and `short` positions resolve at $0.50.
 </aside>
 
 For example, the `game` `winner` market `Miami Heat @ Orlando Magic` is a binary market where the Heat are 
@@ -31,7 +29,7 @@ if the outcome represented by the `short_entity` occurs.
 ### Non-Binary Markets
 Non-binary markets are represented by a group of binary markets that do not have `short_entity` 
 specified. When there is no `short_entity`, taking a `short` position is simply betting against the 
-`long` outcome. All `game` markets that **can** end in a draw and futures markets are non-binary markets.
+`long` outcome. All `game` markets that **can** end in a draw (besides NFL) and futures markets are non-binary markets.
 
 For example, the `game` `winner` market `Arsenal FC v Chelsea FC` is a non-binary market 
 represented by 3 distinct Frontrunner markets:
