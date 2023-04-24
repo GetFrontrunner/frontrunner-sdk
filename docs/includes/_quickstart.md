@@ -56,11 +56,11 @@ market = find_markets.markets[0]
 print(f"Market: {market.long_entity_name} [{market.prop_name}] vs {market.short_entity_name}")
 ```
 
-Before we can bet on markets, we'll need to find them. The example here finds all markets where the sport is basketball, the event is a game, and the proposition is for a winner. The response object contains (among other things) the raw market objects and the market IDs, which will be useful for placing bets.
+Before we can bet on markets, we'll need to find them. The example here finds all markets where the sport is basketball, the event is a game, and the proposition is for a winner. The response object contains the raw market objects and the market IDs, which will be useful for placing bets.
 
 Then, we'll pick one market to place bets on, and print some info about it.
 
-## Finding Current Low & High Bids
+## Viewing an Order Book
 
 ```python
 # get the order book for this market
@@ -81,7 +81,7 @@ for sell in order_book.sells:
 # 1,000,000 from Injective is $1 USDC.
 USDC_SCALE_FACTOR = 10 ** -6
 
-# find the lowest and highest buying prices in the order book
+# find the highest buy and lowest sell
 prices = [int(buy.price) * USDC_SCALE_FACTOR for buy in orders.buys]
 highest_buy, lowest_buy = max(prices), min(prices)
 print(f"price range: [{highest_buy}, {lowest_buy}]")

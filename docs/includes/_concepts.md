@@ -1,8 +1,8 @@
 # Concepts
 
 ## Order Types
-Participants in Frontrunner markets submit `buy` and `sell` orders of 
-two different types:
+Participants in Frontrunner markets submit `buy` (a.k.a. bid) and `sell` (a.k.a. ask) 
+orders of two different types:
 
 * `long`: in favor of the `long_entity` outcome
 * `short`: in favor of the `short_entity` if present. If no `short_entity` is present (i.e. in non-binary markets), this outcome is simply the inverse or "not" of the `long_entity`. See the [Non-Binary Markets](#non-binary-markets) section below for additional context.
@@ -33,6 +33,7 @@ specified. When there is no `short_entity`, taking a `short` position is simply 
 
 For example, the `game` `winner` market `Arsenal FC v Chelsea FC` is a non-binary market 
 represented by 3 distinct Frontrunner markets:
+
 * `Arsenal FC`: `long` in this market resolves at $1 if Arsenal wins and $0 if they lose or draw. 
 `short` in this market resolves at $1 if Arsenal loses or draws. `short` can be thought of as "Not Arsenal"
 * `Chelsea FC`: `long` in this market resolves at $1 if Chelsea wins and $0 if they lose or draw.
