@@ -63,17 +63,17 @@ class InjectiveChain:
     fee = [self.composer.Coin(amount=str(amount), denom=self.network.fee_denom)]
     return (limit, fee)
 
-  def _injective_order_for(self, wallet: Wallet, order: Order) -> Message:
+  def _injective_order(self, wallet: Wallet, order: Order) -> Message:
     return self.composer.BinaryOptionsOrder(
       market_id=order.market_id,
       quantity=order.quantity,
       price=order.price,
 
-      # [buy, for]      => [is_buy = True, is_reduce_only = False]
-      # [buy, against]  => [is_buy = False, is_reduce_only = False]
-      # [sell, for]     => [is_buy = False, is_reduce_only = True]
-      # [sell, against] => [is_buy = True, is_reduce_only = True]
-      is_buy=((order.direction == "buy") == (order.side == "for")),
+      # [buy, long]      => [is_buy = True, is_reduce_only = False]
+      # [buy, short]  => [is_buy = False, is_reduce_only = False]
+      # [sell, long]     => [is_buy = False, is_reduce_only = True]
+      # [sell, short] => [is_buy = True, is_reduce_only = True]
+      is_buy=((order.direction == "buy") == (order.side == "long")),
       is_reduce_only=(order.direction == "sell"),
 
       # TODO allow different fee recipient address
@@ -186,7 +186,7 @@ class InjectiveChain:
     wallet: Wallet,
     orders: Iterable[Order],
   ) -> TxResponse:
-    order_messages = [self._injective_order_for(wallet, order) for order in orders]
+    order_messages = [self._injective_order(wallet, order) for order in orders]
 
     batch_message = self.composer.MsgBatchUpdateOrders(
       wallet.injective_address,

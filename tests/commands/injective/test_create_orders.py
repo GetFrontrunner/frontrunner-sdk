@@ -13,7 +13,7 @@ class TestCreateOrdersOperation(IsolatedAsyncioTestCase):
 
   def setUp(self) -> None:
     self.deps = MagicMock(spec=FrontrunnerIoC)
-    self.orders = [Order.buy_for("<market-id>", 10, 0.75)]
+    self.orders = [Order.buy_long("<market-id>", 10, 0.75)]
 
   def test_validate(self):
     req = CreateOrdersRequest(orders=self.orders)
@@ -26,20 +26,20 @@ class TestCreateOrdersOperation(IsolatedAsyncioTestCase):
 
   def test_validate_order_quantity_invalid_exception(self):
     with self.assertRaises(FrontrunnerArgumentException):
-      CreateOrdersOperation(CreateOrdersRequest(orders=[Order.buy_for("<market-id>", -2, 0.75)])).validate(self.deps)
+      CreateOrdersOperation(CreateOrdersRequest(orders=[Order.buy_long("<market-id>", -2, 0.75)])).validate(self.deps)
 
   def test_validate_order_price_invalid_exception(self):
     with self.assertRaises(FrontrunnerArgumentException):
-      CreateOrdersOperation(CreateOrdersRequest(orders=[Order.buy_for("<market-id>", 1, -0.25)])).validate(self.deps)
+      CreateOrdersOperation(CreateOrdersRequest(orders=[Order.buy_long("<market-id>", 1, -0.25)])).validate(self.deps)
 
     with self.assertRaises(FrontrunnerArgumentException):
-      CreateOrdersOperation(CreateOrdersRequest(orders=[Order.buy_for("<market-id>", 1, 0)])).validate(self.deps)
+      CreateOrdersOperation(CreateOrdersRequest(orders=[Order.buy_long("<market-id>", 1, 0)])).validate(self.deps)
 
     with self.assertRaises(FrontrunnerArgumentException):
-      CreateOrdersOperation(CreateOrdersRequest(orders=[Order.buy_for("<market-id>", 1, 1)])).validate(self.deps)
+      CreateOrdersOperation(CreateOrdersRequest(orders=[Order.buy_long("<market-id>", 1, 1)])).validate(self.deps)
 
     with self.assertRaises(FrontrunnerArgumentException):
-      CreateOrdersOperation(CreateOrdersRequest(orders=[Order.buy_for("<market-id>", 1, 1.25)])).validate(self.deps)
+      CreateOrdersOperation(CreateOrdersRequest(orders=[Order.buy_long("<market-id>", 1, 1.25)])).validate(self.deps)
 
   async def test_create_orders(self):
     self.deps.injective_chain.create_orders = AsyncMock(return_value=MagicMock(txhash="<txhash>"))
