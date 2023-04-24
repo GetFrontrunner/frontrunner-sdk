@@ -45,3 +45,5 @@ meta:
 
 [frontrunner]: https://www.getfrontrunner.com/
 [injective]: https://injective.com/
+
+Please join our [Discord Server](https://discord.gg/Jaa7VveU4d) to ask questions and become a part of our community.
