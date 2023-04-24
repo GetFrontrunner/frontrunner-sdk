@@ -15,8 +15,8 @@ side represent distinct entities. All `game` markets that **cannot** end in a dr
 are binary markets because there are only two possible standard outcomes.
 
 <aside class="notice">
-NFL regular season `game` markets are also binary markets despite the fact that they can end in a draw.  
-If an NFL game ends in a draw, both `long` and `short` positions resolve at $0.50.
+NFL regular season <code>game</code> markets are also binary markets despite the fact that they can end in a draw.  
+If an NFL game ends in a draw, both <code>long</code> and <code>short</code> positions resolve at $0.50.
 </aside>
 
 For example, the `game` `winner` market `Miami Heat @ Orlando Magic` is a binary market where the Heat are 
