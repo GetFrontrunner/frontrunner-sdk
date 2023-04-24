@@ -49,7 +49,6 @@ To interact with the Frontrunner APIs, you will need a token to authenticate. Re
 
 The "network" is which blockchain network to use. Valid values are...
 
-* `devnet`
 * `testnet`
 * `mainnet`
 
@@ -59,7 +58,6 @@ The chain ID must match with the Injective network you are using.
 
 | Network | Chain ID |
 | - | - |
-| devnet | injective-777 |
 | testnet | injective-888 |
 | mainnet | injective-1 |
 
