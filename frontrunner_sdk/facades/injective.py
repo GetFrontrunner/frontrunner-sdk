@@ -34,6 +34,9 @@ from frontrunner_sdk.commands.injective.get_positions import GetPositionsRespons
 from frontrunner_sdk.commands.injective.get_trades import GetTradesOperation # NOQA
 from frontrunner_sdk.commands.injective.get_trades import GetTradesRequest
 from frontrunner_sdk.commands.injective.get_trades import GetTradesResponse
+from frontrunner_sdk.commands.injective.stream_markets import StreamMarketsOperation # NOQA
+from frontrunner_sdk.commands.injective.stream_markets import StreamMarketsRequest # NOQA
+from frontrunner_sdk.commands.injective.stream_markets import StreamMarketsResponse # NOQA
 from frontrunner_sdk.commands.injective.stream_orders import StreamOrdersOperation # NOQA
 from frontrunner_sdk.commands.injective.stream_orders import StreamOrdersRequest # NOQA
 from frontrunner_sdk.commands.injective.stream_orders import StreamOrdersResponse # NOQA
@@ -86,7 +89,7 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
 
   async def get_orders(
     self,
-    mine: bool,
+    mine: Optional[bool] = None,
     market_ids: Optional[List[str]] = None,
     subaccount_id: Optional[str] = None,
     direction: Optional[Literal["buy", "sell"]] = None,
@@ -139,6 +142,14 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     request = StreamTradesRequest(**kwargs)
     return await self._run_operation(StreamTradesOperation, self.deps, request)
 
+  async def stream_markets(
+    self,
+    market_ids: Iterable[str],
+  ) -> StreamMarketsResponse:
+    kwargs = as_request_args(locals())
+    request = StreamMarketsRequest(**kwargs)
+    return await self._run_operation(StreamMarketsOperation, self.deps, request)
+
   async def stream_orders(
     self,
     market_id: str,
@@ -156,9 +167,7 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
   async def stream_positions(
     self,
     mine: bool = False,
-    market_id: Optional[str] = None,
     market_ids: Optional[List[str]] = None,
-    subaccount_id: Optional[str] = None,
     subaccount_ids: Optional[List[str]] = None,
   ) -> StreamPositionsResponse:
     kwargs = as_request_args(locals())
@@ -192,8 +201,21 @@ class InjectiveFacade(SyncMixin):
   def get_order_books(self, market_ids: Iterable[str]) -> GetOrderBooksResponse:
     return self._synchronously(self.impl.get_order_books, market_ids)
 
-  def get_orders(self) -> GetOrdersResponse:
-    return self._synchronously(self.impl.get_orders)
+  def get_orders(
+    self,
+    mine: Optional[bool] = None,
+    market_ids: Optional[List[str]] = None,
+    subaccount_id: Optional[str] = None,
+    direction: Optional[Literal["buy", "sell"]] = None,
+    is_conditional: Optional[bool] = None,
+    order_types: Optional[List[str]] = None,
+    state: Optional[str] = None,
+    execution_types: Optional[List[str]] = None,
+    start_time: Optional[datetime] = None,
+    end_time: Optional[datetime] = None,
+  ) -> GetOrdersResponse:
+    kwargs = as_request_args(locals())
+    return self._synchronously(self.impl.get_orders, **kwargs)
 
   def get_positions(
     self,

@@ -27,7 +27,7 @@ This is the base URL for Frontrunner-specific operations such as finding markets
 
 ### Environment Variables
 
-* `FRONTRUNNER_FRONTRUNNER_API_BASE_URL`
+* `FRONTRUNNER_PARTNER_API_BASE_URL`
 
 ### Default
 
@@ -39,7 +39,7 @@ To interact with the Frontrunner APIs, you will need a token to authenticate. Re
 
 ### Environment Variable
 
-* `FRONTRUNNER_FRONTRUNNER_API_AUTHN_TOKEN`
+* `FRONTRUNNER_PARTNER_API_AUTHN_TOKEN`
 
 ### Default
 

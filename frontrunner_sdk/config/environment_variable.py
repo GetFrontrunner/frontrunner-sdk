@@ -21,12 +21,12 @@ class EnvironmentVariableFrontrunnerConfig(FrontrunnerConfig):
     return self.vars.get("FRONTRUNNER_WALLET_PRIVATE_KEY_HEX", None)
 
   @property
-  def frontrunner_api_base_url(self) -> Optional[str]:
-    return self.vars.get("FRONTRUNNER_FRONTRUNNER_API_BASE_URL", None)
+  def partner_api_base_url(self) -> Optional[str]:
+    return self.vars.get("FRONTRUNNER_PARTNER_API_BASE_URL", None)
 
   @property
-  def frontrunner_api_authn_token(self) -> Optional[str]:
-    return self.vars.get("FRONTRUNNER_FRONTRUNNER_API_AUTHN_TOKEN", None)
+  def partner_api_authn_token(self) -> Optional[str]:
+    return self.vars.get("FRONTRUNNER_PARTNER_API_AUTHN_TOKEN", None)
 
   @property
   def injective_network(self) -> Optional[NetworkEnvironment]:

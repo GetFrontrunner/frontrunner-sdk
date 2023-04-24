@@ -10,7 +10,7 @@ pip install -y frontrunner-sdk
 
 Install the Frontrunner SDK using the following code.
 
-Contact [support@getfrontrunner.com][support] for a Frontrunner API Key. Keep this somewhere safe. When launching a Python REPL or running the scripts in this guide, make sure that API Key is set in the environment variable `FRONTRUNNER_FRONTRUNNER_API_AUTHN_TOKEN`.
+Contact [support@getfrontrunner.com][support] for a Frontrunner API Key. Keep this somewhere safe. When launching a Python REPL or running the scripts in this guide, make sure that API Key is set in the environment variable `FRONTRUNNER_PARTNER_API_AUTHN_TOKEN`.
 
 [support]: mailto:support@getfrontrunner.com
 
@@ -121,9 +121,9 @@ To place the orders, we'll call `create_orders`. We'll place...
 ## Retrieving Your Orders
 
 ```python
-get_my_orders = sdk.injective.get_my_orders()
+get_orders = sdk.injective.get_orders(mine=True)
 
-print("my orders:")
-for order in get_my_orders.orders:
+print("orders:")
+for order in get_orders.orders:
   print(f"{order.order_hash}: {order.quantity} @ {order.price}")
 ```
