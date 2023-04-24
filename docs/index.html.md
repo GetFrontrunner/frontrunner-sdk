@@ -10,8 +10,8 @@ toc_footers:
 
 includes:
   - quickstart
-  - configuring
   - concepts
+  - configuring
   - technical_conventions
   - operations
   - operations/frontrunner/find_markets

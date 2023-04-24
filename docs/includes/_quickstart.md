@@ -64,17 +64,17 @@ Then, we'll pick one market to place bets on, and print some info about it.
 
 ```python
 # get the order book for this market
-get_order_books = sdk.injective.get_order_books([market.injective_id])
-orders = get_order_books.order_books[market.injective_id]
+response = sdk.injective.get_order_books([market.injective_id])
+order_book = response.order_books[market.injective_id]
 
 # print order book buys
 print("buys:")
-for buy in orders.buys:
+for buy in order_book.buys:
   print(f"{buy.quantity} @ {buy.price}")
 
 # print order book sells
 print("sells:")
-for sell in orders.sells:
+for sell in order_book.sells:
   print(f"{sell.quantity} @ {sell.price}")
 
 # Frontrunner markets are in USDC while on Injective, USDC has 6 decimals.
