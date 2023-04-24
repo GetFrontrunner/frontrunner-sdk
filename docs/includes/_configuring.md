@@ -14,8 +14,8 @@ This specifies which wallet the SDK will use for mutating the blockchain and que
 
 ### Environment Variables
 
-1. `FRONTRUNNER_WALLET_MNEMONIC`
-1. `FRONTRUNNER_WALLET_PRIVATE_KEY_HEX`
+1. `FR_WALLET_MNEMONIC`
+1. `FR_WALLET_PRIVATE_KEY_HEX`
 
 ### Default
 
@@ -27,7 +27,7 @@ This is the base URL for Frontrunner-specific operations such as finding markets
 
 ### Environment Variables
 
-* `FRONTRUNNER_PARTNER_API_BASE_URL`
+* `FR_PARTNER_API_BASE_URL`
 
 ### Default
 
@@ -39,7 +39,7 @@ To interact with the Frontrunner APIs, you will need a token to authenticate. Re
 
 ### Environment Variable
 
-* `FRONTRUNNER_PARTNER_API_AUTHN_TOKEN`
+* `FR_PARTNER_API_AUTHN_TOKEN`
 
 ### Default
 
@@ -65,8 +65,8 @@ The chain ID must match with the Injective network you are using.
 
 ### Environment Variable
 
-* `FRONTRUNNER_INJECTIVE_NETWORK`
-* `FRONTRUNNER_INJECTIVE_CHAIN_ID`
+* `FR_INJECTIVE_NETWORK`
+* `FR_INJECTIVE_CHAIN_ID`
 
 ### Default
 
@@ -94,15 +94,15 @@ Some endpoints are specified as an <a href="https://en.wikipedia.org/wiki/Unifor
 
 ### Environment Variables
 
-* `FRONTRUNNER_INJECTIVE_EXCHANGE_AUTHORITY`
-* `FRONTRUNNER_INJECTIVE_EXPLORER_AUTHORITY`
-* `FRONTRUNNER_INJECTIVE_LCD_BASE_URL`
-* `FRONTRUNNER_INJECTIVE_RPC_BASE_URL`
-* `FRONTRUNNER_INJECTIVE_GRPC_AUTHORITY`
+* `FR_INJECTIVE_EXCHANGE_AUTHORITY`
+* `FR_INJECTIVE_EXPLORER_AUTHORITY`
+* `FR_INJECTIVE_LCD_BASE_URL`
+* `FR_INJECTIVE_RPC_BASE_URL`
+* `FR_INJECTIVE_GRPC_AUTHORITY`
 
 ### Presets
 
-Environment Variable `FRONTRUNNER_PRESET_NODES` is `injective`. This will use Injective's Kubernetes-based nodes on the testnet network.
+Environment Variable `FR_PRESET_NODES` is `injective`. This will use Injective's Kubernetes-based nodes on the testnet network.
 
 | Endpoint Type | Default Value |
 | - | - |
@@ -130,7 +130,7 @@ A [faucet][faucet] is a site that dispenses free tokens to a wallet. Faucets are
 
 ### Environment Variable
 
-* `FRONTRUNNER_INJECTIVE_FAUCET_BASE_URL`
+* `FR_INJECTIVE_FAUCET_BASE_URL`
 
 ### Default
 

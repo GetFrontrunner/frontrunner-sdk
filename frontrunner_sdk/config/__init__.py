@@ -21,7 +21,7 @@ DEFAULT: FrontrunnerConfig = ChainedFrontrunnerConfig([
 
   # injective k8s network
   ConditionalFrontrunnerConfig(
-    lambda: os.environ.get("FRONTRUNNER_PRESET_NODES") == "injective",
+    lambda: os.environ.get("FR_PRESET_NODES") == "injective",
     StaticFrontrunnerConfig(
       injective_exchange_authority="k8s.testnet.exchange.grpc.injective.network:443",
       injective_explorer_authority="k8s.testnet.explorer.grpc.injective.network:443",

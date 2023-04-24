@@ -7,7 +7,7 @@ class TestEnvironmentVariableFrontrunnerConfig(TestCase):
 
   def test_defined_value(self):
     config = EnvironmentVariableFrontrunnerConfig({
-      "FRONTRUNNER_INJECTIVE_EXCHANGE_AUTHORITY": "authority",
+      "FR_INJECTIVE_EXCHANGE_AUTHORITY": "authority",
     })
     self.assertEqual(config.injective_exchange_authority, "authority")
 
@@ -17,6 +17,6 @@ class TestEnvironmentVariableFrontrunnerConfig(TestCase):
 
   def test_injective_network_invalid_value(self):
     config = EnvironmentVariableFrontrunnerConfig({
-      "FRONTRUNNER_INJECTIVE_NETWORK": "<wrong>",
+      "FR_INJECTIVE_NETWORK": "<wrong>",
     })
     self.assertIsNone(config.injective_exchange_authority)

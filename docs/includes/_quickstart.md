@@ -10,7 +10,7 @@ pip install -y frontrunner-sdk
 
 Install the Frontrunner SDK using the following code.
 
-Contact [support@getfrontrunner.com][support] for a Frontrunner API Key. Keep this somewhere safe. When launching a Python REPL or running the scripts in this guide, make sure that API Key is set in the environment variable `FRONTRUNNER_PARTNER_API_AUTHN_TOKEN`.
+Contact [support@getfrontrunner.com][support] for a Frontrunner API Key. Keep this somewhere safe. When launching a Python REPL or running the scripts in this guide, make sure that API Key is set in the environment variable `FR_PARTNER_API_AUTHN_TOKEN`.
 
 [support]: mailto:support@getfrontrunner.com
 
