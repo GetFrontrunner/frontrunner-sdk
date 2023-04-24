@@ -42,9 +42,13 @@ represented by 3 distinct Frontrunner markets:
 * `Draw`: `long` in this market resolves at $1 if the game ends in a draw.
   `short` in this market resolves at $1 if the game does not end in a draw. `short` can be thought of as "Not Draw"
 
+Futures markets may exist for season winners like the NFL Championship, Premier League Season, and NBA Finals.
+For futures markets, one market exists for each entity with sufficient chances of winning (at the discretion of Frontrunner).
+
 ## Home and Away
 | Market Type | Description                                                    | Long Entity | Short Entity | Sport Event Name |
 |-------------|----------------------------------------------------------------|-------------|--------------|------------------|
 | Binary      | Leagues that cannot end in a draw: NBA, MLB. Special case: NFL | Away        | Home         | Away @ Home      |
-| Non-Binary  | Leagues that can end in a draw: EPL; futures.                  | n/a*        | n/a          | Home v Away      |
+| Non-Binary  | Leagues that can end in a draw: EPL; futures.                  | n/a*        | n/a          | Home v Away**    |
 *One market per entity where each outcome is the `long_entity`
+**When relevant
