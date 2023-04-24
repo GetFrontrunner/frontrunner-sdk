@@ -31,7 +31,7 @@ This is the base URL for Frontrunner-specific operations such as finding markets
 
 ### Default
 
-`https://partner-api-staging.getfrontrunner.com/api/v1`
+`https://partner-api.getfrontrunner.com/api/v1`
 
 ## Parameter Configuration: Frontrunner API Token
 
@@ -116,11 +116,11 @@ Environment Variable `FRONTRUNNER_PRESET_NODES` is `injective`. This will use In
 
 | Endpoint Type | Default Value |
 | - | - |
-| Exchange Authority | `injective-node-v2-staging.grpc-exchange.getfrontrunner.com:443` |
-| Explorer Authority | `injective-node-v2-staging.grpc-explorer.getfrontrunner.com:443` |
-| LCD Base URL | `https://injective-node-v2-staging.lcd.getfrontrunner.com` |
-| RPC Base URL | `wss://injective-node-v2-staging.tm.getfrontrunner.com/websocket` |
-| gRPC Authority | `injective-node-v2-staging.grpc.getfrontrunner.com:443` |
+| Exchange Authority | `injective-node-v2-prod.grpc-exchange.getfrontrunner.com:443` |
+| Explorer Authority | `injective-node-v2-prod.grpc-explorer.getfrontrunner.com:443` |
+| LCD Base URL | `https://injective-node-v2-prod.lcd.getfrontrunner.com` |
+| RPC Base URL | `wss://injective-node-v2-prod.tm.getfrontrunner.com/websocket` |
+| gRPC Authority | `injective-node-v2-prod.grpc.getfrontrunner.com:443` |
 
 ## Parameter Configuration: Injective Faucet
 
