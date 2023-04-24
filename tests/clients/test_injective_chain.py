@@ -72,8 +72,8 @@ class TestInjectiveChain(IsolatedAsyncioTestCase):
     self.assertEqual(limit, 1000 + InjectiveChain.ADDITIONAL_GAS_FEE)
     self.assertEqual(fee[0].amount, str(InjectiveChain.GAS_PRICE * (1000 + InjectiveChain.ADDITIONAL_GAS_FEE)))
 
-  def test_injective_order_for_generic(self):
-    order = self.injective_chain._injective_order_for(self.wallet, Order.buy_for("<market-id>", 7, 0.25))
+  def test_injective_order_generic(self):
+    order = self.injective_chain._injective_order(self.wallet, Order.buy_long("<market-id>", 7, 0.25))
 
     self.assertEqual(order.market_id, "<market-id>")
     self.assertEqual(order.order_info.quantity, str(derivative_quantity_to_backend(7, InjectiveChain.DENOM)))
@@ -82,26 +82,26 @@ class TestInjectiveChain(IsolatedAsyncioTestCase):
     self.assertEqual(order.order_info.fee_recipient, self.wallet.injective_address)
     self.assertEqual(order.order_info.subaccount_id, self.wallet.subaccount_address())
 
-  def test_injective_order_for_combinations(self):
-    buy_for = self.injective_chain._injective_order_for(self.wallet, Order.buy_for("<market-id>", 1, 0.5))
+  def test_injective_order_combinations(self):
+    buy_long = self.injective_chain._injective_order(self.wallet, Order.buy_long("<market-id>", 1, 0.5))
 
-    self.assertEqual(buy_for.order_type, OrderType.BUY)
-    self.assertNotEqual(int(buy_for.margin), 0)
+    self.assertEqual(buy_long.order_type, OrderType.BUY)
+    self.assertNotEqual(int(buy_long.margin), 0)
 
-    buy_against = self.injective_chain._injective_order_for(self.wallet, Order.buy_against("<market-id>", 1, 0.5))
+    buy_short = self.injective_chain._injective_order(self.wallet, Order.buy_short("<market-id>", 1, 0.5))
 
-    self.assertEqual(buy_against.order_type, OrderType.SELL)
-    self.assertNotEqual(int(buy_against.margin), 0)
+    self.assertEqual(buy_short.order_type, OrderType.SELL)
+    self.assertNotEqual(int(buy_short.margin), 0)
 
-    sell_for = self.injective_chain._injective_order_for(self.wallet, Order.sell_for("<market-id>", 1, 0.5))
+    sell_long = self.injective_chain._injective_order(self.wallet, Order.sell_long("<market-id>", 1, 0.5))
 
-    self.assertEqual(sell_for.order_type, OrderType.SELL)
-    self.assertEqual(int(sell_for.margin), 0)
+    self.assertEqual(sell_long.order_type, OrderType.SELL)
+    self.assertEqual(int(sell_long.margin), 0)
 
-    sell_against = self.injective_chain._injective_order_for(self.wallet, Order.sell_against("<market-id>", 1, 0.5))
+    sell_short = self.injective_chain._injective_order(self.wallet, Order.sell_short("<market-id>", 1, 0.5))
 
-    self.assertEqual(sell_against.order_type, OrderType.BUY)
-    self.assertEqual(int(sell_against.margin), 0)
+    self.assertEqual(sell_short.order_type, OrderType.BUY)
+    self.assertEqual(int(sell_short.margin), 0)
 
   async def test_simulate_transaction_success(self):
     expected = SimulationResponse()
@@ -153,7 +153,7 @@ class TestInjectiveChain(IsolatedAsyncioTestCase):
     expected = MagicMock(spec=TxResponse)
     self.injective_chain._execute_transaction = AsyncMock(return_value=expected)
 
-    response = await self.injective_chain.create_orders(self.wallet, [Order.buy_for("<market-id>", 1, 0.5)])
+    response = await self.injective_chain.create_orders(self.wallet, [Order.buy_long("<market-id>", 1, 0.5)])
 
     self.assertEqual(expected, response)
 

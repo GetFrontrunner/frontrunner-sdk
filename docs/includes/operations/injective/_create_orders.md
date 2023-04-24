@@ -12,8 +12,8 @@ other_market = "0x9181874b70fefe3e126b6472c6de647b4dbfa59025ad5dc61be6559532d19e
 
 # Create buy orders
 response = sdk.injective.create_orders([
-  Order.buy_for(some_market, 120, 0.70),
-  Order.buy_for(other_market, 30, 0.90),
+  Order.buy_long(some_market, 120, 0.70),
+  Order.buy_long(other_market, 30, 0.90),
 ])
 ```
 
