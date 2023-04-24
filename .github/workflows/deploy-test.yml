@@ -19,5 +19,8 @@ jobs:
           setup-python-for-plugins: "true"
       - name: Publish
         run: |
-          echo ${{ vars.PANTS_TWINE_CONFIG }}
-          PANTS_TWINE_CONFIG="${{ vars.PANTS_TWINE_CONFIG }}" pants publish ::
+          export PANTS_TWINE_CONFIG="${{ vars.PANTS_TWINE_CONFIG }}"
+          export TWINE_USERNAME="${{ secrets.TWINE_USERNAME }}"
+          export TWINE_PASSWORD="${{ secrets.TWINE_PASSWORD }}"
+
+          pants publish ::
