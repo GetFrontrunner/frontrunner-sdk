@@ -23,7 +23,7 @@ response = sdk.frontrunner.find_markets(
   sports=["formula1"],
   # ...team Williams or Alfa Romeo
   sport_entity_names=["Williams", "Alfa Romeo"],
-  # ...is not the winner
+  # ...is not for a 'winner' type prop
   prop_types=["other"],
 )
 
@@ -44,7 +44,8 @@ response = sdk.frontrunner.find_markets()
 ### Response
 
 ```python
-print("market ids:", response.market_ids)
+for market in response.markets:
+    print(f"Market: {market.address} [{market.long_entity_name} / {market.short_entity_name}]")
 ```
 
 <aside class="notice">
