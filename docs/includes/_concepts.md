@@ -48,5 +48,5 @@ For futures markets, one market exists for each entity with sufficient chances o
 |-------------|----------------------------------------------------------------|-------------|--------------|------------------|
 | Binary      | Leagues that cannot end in a draw: NBA, MLB. Special case: NFL | Away        | Home         | Away @ Home      |
 | Non-Binary  | Leagues that can end in a draw: EPL; futures.                  | n/a*        | n/a          | Home v Away**    |
-*One market per entity where each outcome is the `long_entity`
+*One market per entity where each outcome is the `long_entity`  
 **When relevant
