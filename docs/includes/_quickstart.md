@@ -79,27 +79,29 @@ for sell in orders.sells:
 
 # Frontrunner markets are in USDC while on Injective, USDC has 6 decimals.
 # 1,000,000 from Injective is $1 USDC.
-INJ_TO_USDC = 10 ** -6
+USDC_SCALE_FACTOR = 10 ** -6
 
 # find the lowest and highest buying prices in the order book
-prices = [int(buy.price) * INJ_TO_USDC for buy in orders.buys]
+prices = [int(buy.price) * USDC_SCALE_FACTOR for buy in orders.buys]
 highest_buy, lowest_buy = max(prices), min(prices)
 print(f"price range: [{highest_buy}, {lowest_buy}]")
 ```
 
 Without knowing much else about the market besides its ID, it's hard to price bets and make orders. Here, we'll place buy bids around the current min, max, and midway buy prices.
 
-We'll call `get_order_books`, passing in our market id, to get the current order books. This order book contains both the buys and sells. Using the buys, we can find the highest and lowest buy prices.
+We'll call `get_order_books`, passing in the Injective market id, to get the current order books. This order book contains both the buys and sells. Using the buys, we can find the highest and lowest buy prices.
 
 ## Placing bids
 
 ```python
 from frontrunner_sdk.models import Order
+from decimal import Decimal
 
+avg_buy = round(Decimal(str((highest_buy + lowest_buy) / 2)), 2)
 create_orders = sdk.injective.create_orders([
-    Order.buy_long(market.injective_id, 10, lowest_buy),
-    Order.buy_long(market.injective_id, 100, (highest_buy + lowest_buy) / 2),
-    Order.buy_long(market.injective_id, 10, highest_buy),
+  Order.buy_long(market.injective_id, 10, lowest_buy),
+  Order.buy_long(market.injective_id, 100, float(avg_buy)),
+  Order.buy_long(market.injective_id, 10, highest_buy),
 ])
 
 print(f"""
