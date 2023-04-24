@@ -97,9 +97,9 @@ We'll call `get_order_books`, passing in our market id, to get the current order
 from frontrunner_sdk.models import Order
 
 create_orders = sdk.injective.create_orders([
-  Order.buy_for(market.injective_id, 10, lowest_buy),
-  Order.buy_for(market.injective_id, 100, (highest_buy + lowest_buy) / 2),
-  Order.buy_for(market.injective_id, 10, highest_buy),
+    Order.buy_long(market.injective_id, 10, lowest_buy),
+    Order.buy_long(market.injective_id, 100, (highest_buy + lowest_buy) / 2),
+    Order.buy_long(market.injective_id, 10, highest_buy),
 ])
 
 print(f"""

@@ -11,7 +11,8 @@ toc_footers:
 includes:
   - quickstart
   - configuring
-  - conventions
+  - concepts
+  - technical_conventions
   - operations
   - operations/frontrunner/find_markets
   - operations/injective/cancel_all_orders
