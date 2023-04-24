@@ -19,5 +19,5 @@ jobs:
           setup-python-for-plugins: "true"
       - name: Publish
         run: |
-          echo $PANTS_TWINE_CONFIG
-          pants publish ::
+          echo ${{ env.PANTS_TWINE_CONFIG }}
+          PANTS_TWINE_CONFIG="${{ env.PANTS_TWINE_CONFIG }}" pants publish ::
