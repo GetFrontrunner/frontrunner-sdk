@@ -5,15 +5,21 @@ Participants in Frontrunner markets submit `buy` and `sell` orders of
 two different types:
 * `long`: in favor of the `long_entity` outcome
 * `short`: in favor of the `short_entity` if present. If no `short_entity`
-is present, this outcome is simply the inverse or "not" of the `long_entity`. 
-See the [Non-Binary Markets](#non-binary-markets) section below for additional context.
+is present (i.e. in non-binary markets), this outcome is simply the 
+inverse or "not" of the `long_entity`. See the [Non-Binary Markets](#non-binary-markets) 
+section below for additional context.
 
 ## Market Types
 
 ### Binary markets
 In Frontrunner's binary markets, both the `long` and the `short`
 side represent distinct entities. All `game` markets that **cannot** end in a draw 
-are binary markets because there are only two possible outcomes.
+are binary markets because there are only two possible standard outcomes.
+
+<aside class="notice">
+NFL regular season `game` markets are also binary markets despite the fact that they can end in a draw.  
+If an NFL game ends in a tie, both `long` and `short` positions resolve at $0.50.
+</aside>
 
 For example, the `game` `winner` market `Miami Heat @ Orlando Magic` is a binary market where the Heat are 
 the `long_entity` and the Magic are the `short_entity`.
@@ -37,3 +43,8 @@ represented by 3 distinct Frontrunner markets:
   `short` in this market resolves at $1 if the game does not end in a draw. `short` can be thought of as "Not Draw"
 
 ## Home and Away
+| Market Type | Description                                                    | Long Entity | Short Entity | Sport Event Name |
+|-------------|----------------------------------------------------------------|-------------|--------------|------------------|
+| Binary      | Leagues that cannot end in a draw: NBA, MLB. Special case: NFL | Away        | Home         | Away @ Home      |
+| Non-Binary  | Leagues that can end in a draw: EPL; futures.                  | n/a*        | n/a          | Home v Away      |
+*One market per entity where each outcome is the `long_entity`
