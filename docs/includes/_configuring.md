@@ -39,7 +39,7 @@ To interact with the Frontrunner APIs, you will need a token to authenticate. Re
 
 ### Environment Variable
 
-* `FR_PARTNER_API_AUTHN_TOKEN`
+* `FR_PARTNER_API_TOKEN`
 
 ### Default
 

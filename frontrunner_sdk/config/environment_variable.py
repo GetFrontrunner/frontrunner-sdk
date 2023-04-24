@@ -26,7 +26,7 @@ class EnvironmentVariableFrontrunnerConfig(FrontrunnerConfig):
 
   @property
   def partner_api_authn_token(self) -> Optional[str]:
-    return self.vars.get("FR_PARTNER_API_AUTHN_TOKEN", None)
+    return self.vars.get("FR_PARTNER_API_TOKEN", None)
 
   @property
   def injective_network(self) -> Optional[NetworkEnvironment]:
