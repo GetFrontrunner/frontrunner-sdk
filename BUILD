@@ -23,6 +23,7 @@ python_distribution(
             "_fake": "frontrunner_sdk:_fake",
         },
     },
+    repositories=["@deploy"],
     provides=python_artifact(
         name="frontrunner-sdk",
         version="0.0.1",
@@ -31,6 +32,7 @@ python_distribution(
         author="Frontrunner",
         author_email="support@getfrontrunner.com",
         url="https://github.com/GetFrontrunner/frontrunner-sdk",
+        python_requires=">=3.8,<4",
         classifiers=[
             "Development Status :: 3 - Alpha",
             "Intended Audience :: Financial and Insurance Industry",
