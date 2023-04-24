@@ -100,18 +100,6 @@ Some endpoints are specified as an <a href="https://en.wikipedia.org/wiki/Unifor
 * `FR_INJECTIVE_RPC_BASE_URL`
 * `FR_INJECTIVE_GRPC_AUTHORITY`
 
-### Presets
-
-Environment Variable `FR_PRESET_NODES` is `injective`. This will use Injective's Kubernetes-based nodes on the testnet network.
-
-| Endpoint Type | Default Value |
-| - | - |
-| Exchange Authority | `k8s.testnet.exchange.grpc.injective.network:443` |
-| Explorer Authority | `k8s.testnet.explorer.grpc.injective.network:443` |
-| LCD Base URL | `https://k8s.testnet.lcd.injective.network` |
-| RPC Base URL | `wss://k8s.testnet.tm.injective.network/websocket` |
-| gRPC Authority | `k8s.testnet.chain.grpc.injective.network:443` |
-
 ### Defaults
 
 | Endpoint Type | Default Value |
@@ -121,6 +109,19 @@ Environment Variable `FR_PRESET_NODES` is `injective`. This will use Injective's
 | LCD Base URL | `https://injective-node-v2-prod.lcd.getfrontrunner.com` |
 | RPC Base URL | `wss://injective-node-v2-prod.tm.getfrontrunner.com/websocket` |
 | gRPC Authority | `injective-node-v2-prod.grpc.getfrontrunner.com:443` |
+
+### Presets
+
+By setting the Environment Variable `FR_PRESET_NODES` to `injective`, Injective's Kubernetes-based nodes on the testnet network 
+will be used instead of the defaults above.
+
+| Endpoint Type | Default Value |
+| - | - |
+| Exchange Authority | `k8s.testnet.exchange.grpc.injective.network:443` |
+| Explorer Authority | `k8s.testnet.explorer.grpc.injective.network:443` |
+| LCD Base URL | `https://k8s.testnet.lcd.injective.network` |
+| RPC Base URL | `wss://k8s.testnet.tm.injective.network/websocket` |
+| gRPC Authority | `k8s.testnet.chain.grpc.injective.network:443` |
 
 ## Injective Faucet
 
