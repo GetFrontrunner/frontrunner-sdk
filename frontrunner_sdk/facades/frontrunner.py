@@ -127,7 +127,7 @@ class FrontrunnerFacade(SyncMixin):
     status: Optional[MarketStatus] = None,
   ) -> GetMarketsResponse:
     kwargs = as_request_args(locals())
-    return await self._synchronously(self.impl.get_markets, **kwargs)
+    return self._synchronously(self.impl.get_markets, **kwargs)
 
   def get_props(
     self,
