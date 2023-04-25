@@ -21,15 +21,9 @@ jobs:
       - name: Setup Prerequisites
         run: |
           apt-get update
-          apt-get install -y git rsync
+          apt-get install -y rsync
       - name: Checkout
         uses: actions/checkout@v3
-      # - name: Git Setup
-      #   run: |
-      #     repo_dir=$(pwd)
-
-      #     # suppress "detected dubious ownership in repository" garbage
-      #     git config --global --add safe.directory "${repo_dir}"
       - name: Slate Build
         run: |
           repo_dir=$(pwd)
