@@ -14,17 +14,23 @@ In Frontrunner's binary markets, both the `long` and the `short`
 side represent distinct entities. All `game` markets that **cannot** end in a draw 
 are binary markets because there are only two possible standard outcomes.
 
-<aside class="notice">
-NFL regular season <code>game</code> markets are also binary markets despite the fact that they can end in a draw.  
-If an NFL game ends in a draw, both <code>long</code> and <code>short</code> positions resolve at $0.50.
-</aside>
-
 For example, the `game` `winner` market `Miami Heat @ Orlando Magic` is a binary market where the Heat are 
 the `long_entity` and the Magic are the `short_entity`.
 
 For binary markets, long positions resolve at $1 (and short positions at $0) if the
 outcome represented by the `long_entity` occurs; short positions resolve at $1 (and long positions at $0) 
 if the outcome represented by the `short_entity` occurs.
+
+<aside class="notice">
+Sports with non-standard draw scenarios (i.e. extremely low probabilities of draws occurring) 
+are also binary markets despite the fact that they can end in a draw.  
+If such a game ends in a draw, both <code>long</code> and <code>short</code> positions resolve at $0.50.
+Markets that can resolve at $0.50 are listed here:
+<ul type="disc">
+    <li>NFL regular season games</li>
+    <li>MLB regular season games</li>
+</ul>
+</aside>
 
 ### Non-Binary Markets
 Non-binary markets are represented by a group of binary markets that do not have `short_entity` 
@@ -51,11 +57,11 @@ This definition changes depending on the sport - the different options are liste
 | League    | Sport Event Name | Long Entity | Short Entity |
 |-----------|------------------|-------------|--------------|
 | EPL       | Home v Away      | n/a*        | n/a          |
+| Formula 1 | n/a**            | n/a*        | n/a          |
 | MLB       | Away @ Home      | Away        | Home         |
 | NBA       | Away @ Home      | Away        | Home         |
 | NFL       | Away @ Home      | Away        | Home         |
-| Formula 1 | n/a**            | n/a*        | n/a          |
 *The home/away designation does correlate directly to long/short entities for non-binary markets like EPL markets 
 (as well as futures) due to their structure. However, the home team can still be detected based on the Sport Event Name.
-See the [Non-Binary Markets](#non-binary-markets) section above for additional context.
+See the [Non-Binary Markets](#non-binary-markets) section above for additional context.  
 **Formula 1 information from Frontrunner does not include information about player/team nationalities.
