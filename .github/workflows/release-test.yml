@@ -1,0 +1,31 @@
+name: Release Test
+run-name: Release Test
+
+on:
+  release:
+    types: [prereleased]
+
+jobs:
+
+  PyPI:
+    runs-on: ubuntu-latest
+    environment: pypi/test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Version
+        run: |
+          echo ${{ github.ref_name }} | sed -e "s/^v//g" > VERSION
+      - name: Setup Python
+        uses: actions/setup-python@v4
+      - name: Setup Pants
+        uses: pantsbuild/actions/init-pants@main
+        with:
+          named-caches-hash: ${{ hashFiles('**/*.lockfile') }}
+          setup-python-for-plugins: "true"
+      - name: Publish
+        run: |
+          export PANTS_TWINE_CONFIG="${{ vars.PANTS_TWINE_CONFIG }}"
+          export TWINE_PASSWORD="${{ secrets.TWINE_API_TOKEN }}"
+
+          pants publish ::

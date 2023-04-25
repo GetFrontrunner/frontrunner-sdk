@@ -1,0 +1,56 @@
+[tool.yapf]
+based_on_style = "google"
+indent_width = 2
+column_limit = 120
+spaces_before_comment = 1
+
+split_before_first_argument = true
+split_before_logical_operator = true
+split_complex_comprehension = true
+split_before_expression_after_opening_paren = true
+split_before_dict_set_generator = true
+
+coalesce_brackets = true
+dedent_closing_brackets = true
+continuation_indent_width = 2
+
+[tool.yapfignore]
+
+ignore_patterns = [
+  "frontrunner_sdk/openapi/**/*",
+]
+
+[[tool.mypy.overrides]]
+
+module = [
+  # grpc-stubs exists, but it's missing stuff (can't find AioRpcSupport) and
+  # doesn't support aio yet. Instead, we'll just blanket ignore grpc because
+  # it's easier.
+  #
+  # https://stackoverflow.com/a/72714514
+  # https://github.com/shabbyrobe/grpc-stubs/issues/22
+  "grpc.*",
+
+  # injective-py doesn't export usable type definitions, so mypy barfs on check
+  "pyinjective.*",
+]
+
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+
+module = [
+  # swagger-codegen doesn't generate type stubs/hints for python. It looks like
+  # anything helpful is dead.
+  #
+  # https://github.com/swagger-api/swagger-codegen/issues/5429
+  "frontrunner_sdk.openapi.*",
+]
+
+ignore_errors = true
+
+[tool.coverage.run]
+
+omit = [
+  "frontrunner_sdk/openapi/*",
+]

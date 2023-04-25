@@ -1,0 +1,16 @@
+{
+  "python.linting.mypyEnabled": true,
+  "python.formatting.provider": "yapf",
+  "python.defaultInterpreterPath": "${workspaceFolder}/dist/export/python/virtualenv/3.8.16/bin/python",
+  "markdownlint.config": {
+    "single-h1": false,
+    "no-trailing-punctuation": {
+      "punctuation": ".,;:。，；：！"
+    },
+    "no-duplicate-heading": false,
+    "first-line-heading": false,
+    "no-inline-html": {
+      "allowed_elements": ["a", "aside", "code"]
+    }
+  }
+}

@@ -1,0 +1,91 @@
+[GLOBAL]
+pants_version = "2.15.0"
+
+backend_packages = [
+  "pants.core",
+
+  # provides twine
+  # https://www.pantsbuild.org/docs/reference-twine
+  "pants.backend.experimental.python",
+
+  "pants.backend.python",
+  "pants.backend.python.lint.autoflake",
+  "pants.backend.python.lint.flake8",
+  "pants.backend.python.lint.isort",
+  "pants.backend.python.lint.yapf",
+  "pants.backend.python.typecheck.mypy",
+  "pants.backend.shell",
+  "pants.backend.shell.lint.shellcheck",
+  "pants.backend.shell.lint.shfmt",
+]
+
+pants_ignore = [
+  # default
+  ".*/", "/dist/", "__pycache__",
+
+  # ignore existing code
+  "chain", "data", "examples", "strategy", "utils",
+]
+
+[python]
+interpreter_constraints = ["CPython>=3.8.*,<4"]
+
+[test]
+report = true
+use_coverage = true
+
+[flake8]
+version = "flake8~=5.0.4"
+lockfile = "flake8.lockfile"
+
+extra_requirements = [
+  "flake8-quotes",
+  "flake8-tidy-imports",
+]
+
+[autoflake]
+
+args = [
+  # doesn't look like pyproject.toml is supported in the plugin side, so we'll
+  # directly configure here instead.
+  "--exclude", "frontrunner_sdk/openapi/*",
+  "--remove-all-unused-imports",
+]
+
+[mypy]
+version = "mypy~=1.1.1"
+lockfile = "mypy.lockfile"
+
+extra_type_stubs = [
+  "types-python-dateutil",
+  "types-protobuf",
+  "types-six",
+  "types-urllib3",
+]
+
+[pytest]
+version = "pytest~=7.2.2"
+lockfile = "pytest.lockfile"
+
+xdist_enabled = true
+
+extra_requirements = [
+  "pytest-cov",
+  "pytest-xdist",
+  "pytest-aiohttp",
+]
+
+[coverage-py]
+report = "xml"
+
+[shfmt]
+
+args = [
+  "-i", "2",
+]
+
+[anonymous-telemetry]
+enabled = false
+
+[repl]
+shell = "ipython"

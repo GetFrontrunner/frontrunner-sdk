@@ -1,0 +1,733 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Frontrunner Market Maker",
+    "description": "This is a first draft of the FR External Market Maker API",
+    "version": "0.1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "Frontrunner",
+      "description": "Everything about Frontrunner Markets"
+    }
+  ],
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://partner-api.getfrontrunner.com/api/v1"
+    }
+  ],
+  "paths": {
+    "/markets": {
+      "get": {
+        "tags": [
+          "Frontrunner"
+        ],
+        "summary": "Get Frontrunner Markets",
+        "operationId": "getMarkets",
+        "description": "`status` default is `active` if not provided. If `status` is provided as not `active`, one of `id`, `injectiveId`, `propId`, or `eventId` must be provided as well",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Frontrunner Market id",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "injectiveId",
+            "in": "query",
+            "description": "Injective market id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "propId",
+            "in": "query",
+            "description": "Frontrunner Prop id",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "eventId",
+            "in": "query",
+            "description": "Frontrunner SportEvent id",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "leagueId",
+            "in": "query",
+            "description": "Frontrunner League id",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Frontrunner Market status",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/marketStatus"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Market"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationFailed"
+          },
+          "403": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/leagues": {
+      "get": {
+        "tags": [
+          "Frontrunner"
+        ],
+        "summary": "Get Frontrunner Sports Leagues",
+        "operationId": "getLeagues",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Frontrunner League id",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "sport",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/League"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationFailed"
+          },
+          "403": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/props": {
+      "get": {
+        "tags": [
+          "Frontrunner"
+        ],
+        "summary": "Get Frontrunner Props",
+        "operationId": "getProps",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Frontrunner Prop id",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "leagueId",
+            "in": "query",
+            "description": "Frontrunner League id",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Prop"
+                  }
+                }
+              }
+            },
+            "links": {
+              "propId": {
+                "operationId": "getMarkets",
+                "parameters": {
+                  "propId": "$response.body#/id"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationFailed"
+          },
+          "403": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/sportEntities": {
+      "get": {
+        "tags": [
+          "Frontrunner"
+        ],
+        "summary": "Get list of Frontrunner SportEntity",
+        "operationId": "getSportEntities",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Frontrunner SportEntity id",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "sport",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "leagueId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SportEntity"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationFailed"
+          },
+          "403": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/sportEvents": {
+      "get": {
+        "tags": [
+          "Frontrunner"
+        ],
+        "summary": "Get list of Frontrunner SportEvent",
+        "operationId": "getSportEvents",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Frontrunner SportEvent id",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "sport",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "leagueId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "startsSince",
+            "in": "query",
+            "description": "The minimum start time to return",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SportEvent"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationFailed"
+          },
+          "403": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/UnexpectedError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "BadRequest": {
+        "description": "Bad request, typically due to invalid parameters",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "AuthenticationFailed": {
+        "description": "Authentication failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Unauthorized",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "The specified resource was not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "UnexpectedError": {
+        "description": "Unexpected error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization"
+      }
+    },
+    "schemas": {
+      "propId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "propName": {
+        "type": "string",
+        "example": "Winner"
+      },
+      "propType": {
+        "type": "string",
+        "enum": [
+          "winner",
+          "other"
+        ]
+      },
+      "leagueId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "leagueName": {
+        "type": "string",
+        "example": "English Premier League"
+      },
+      "sportEventId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "sportEventName": {
+        "type": "string"
+      },
+      "sportEventType": {
+        "type": "string",
+        "enum": [
+          "game",
+          "future"
+        ],
+        "example": "game"
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "League": {
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/leagueId"
+          },
+          "name": {
+            "$ref": "#/components/schemas/leagueName"
+          },
+          "updated": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sport": {
+            "type": "string"
+          }
+        }
+      },
+      "SportEntity": {
+        "type": "object",
+        "description": "A sport team or player",
+        "required": [
+          "id",
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "abbreviation": {
+            "type": "string",
+            "description": "The abbreviation used on the Frontrunner UI"
+          },
+          "updated": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "leagueId": {
+            "$ref": "#/components/schemas/leagueId"
+          },
+          "leagueName": {
+            "$ref": "#/components/schemas/leagueName"
+          }
+        }
+      },
+      "SportEvent": {
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/sportEventId"
+          },
+          "name": {
+            "$ref": "#/components/schemas/sportEventName"
+          },
+          "eventType": {
+            "$ref": "#/components/schemas/sportEventType"
+          },
+          "startTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The start time, if applicable, of the SportEvent"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "leagueId": {
+            "$ref": "#/components/schemas/leagueId"
+          },
+          "leagueName": {
+            "$ref": "#/components/schemas/leagueName"
+          }
+        }
+      },
+      "Prop": {
+        "type": "object",
+        "description": "The proposition being asked within a SportEvent",
+        "required": [
+          "id",
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/propId"
+          },
+          "leagueId": {
+            "$ref": "#/components/schemas/leagueId"
+          },
+          "leagueName": {
+            "$ref": "#/components/schemas/leagueName"
+          },
+          "name": {
+            "$ref": "#/components/schemas/propName"
+          },
+          "propType": {
+            "$ref": "#/components/schemas/propType"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sportEventId": {
+            "$ref": "#/components/schemas/sportEventId"
+          },
+          "sportEventName": {
+            "$ref": "#/components/schemas/sportEventName"
+          },
+          "sportEventType": {
+            "$ref": "#/components/schemas/sportEventType"
+          }
+        }
+      },
+      "marketStatus": {
+        "type": "string",
+        "enum": [
+          "active",
+          "closed"
+        ],
+        "default": "active"
+      },
+      "Market": {
+        "type": "object",
+        "description": "A one-to-one Frontrunner to Injective market for trading within a Prop",
+        "required": [
+          "id",
+          "injectiveId",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "leagueId": {
+            "$ref": "#/components/schemas/leagueId"
+          },
+          "leagueName": {
+            "$ref": "#/components/schemas/leagueName"
+          },
+          "injectiveId": {
+            "type": "string",
+            "description": "The marketId on Injective"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "longEntityId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The ID of the SportEntity on the long side of the market; if this side wins the market will go to 1"
+          },
+          "longEntityName": {
+            "type": "string",
+            "description": "The name of the SportEntity on the long side of the market"
+          },
+          "longEntityAbbreviation": {
+            "type": "string",
+            "description": "The abbreviation of the SportEntity on the long side of the market"
+          },
+          "shortEntityId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The ID of the SportEntity, if it exists, on the short side of the market; if this side wins the market will go to 0. If this is null, then the short side of the market is the \\'not\\' of the `longEntity`"
+          },
+          "shortEntityName": {
+            "type": "string",
+            "description": "The name of the SportEntity, if it exists, on the short side of the market"
+          },
+          "shortEntityAbbreviation": {
+            "type": "string",
+            "description": "The abbreviation of the SportEntity, if it exists, on the short side of the market"
+          },
+          "status": {
+            "$ref": "#/components/schemas/marketStatus"
+          },
+          "propId": {
+            "$ref": "#/components/schemas/propId"
+          },
+          "propName": {
+            "$ref": "#/components/schemas/propName"
+          },
+          "propType": {
+            "$ref": "#/components/schemas/propType"
+          },
+          "sportEventId": {
+            "$ref": "#/components/schemas/sportEventId"
+          },
+          "sportEventName": {
+            "$ref": "#/components/schemas/sportEventName"
+          },
+          "sportEventType": {
+            "$ref": "#/components/schemas/sportEventType"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,17 @@
+.env
+.chain_cookie
+__pycache__
+**/__pycache__
+**/examples.env
+test.py
+
+# pants
+/.pants.*
+/dist/
+/.pids
+
+# IntelliJ
+.idea
+
+# osx
+.DS_Store

@@ -1,0 +1,45 @@
+name: Deploy
+run-name: Deploy
+on:
+  push:
+    branches: [master]
+
+jobs:
+
+  GitHub-Pages:
+    runs-on: ubuntu-latest
+    container: slatedocs/slate:v2.13.1
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - name: Setup Prerequisites
+        run: |
+          apt-get update
+          apt-get install -y rsync
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Slate Build
+        run: |
+          repo_dir=$(pwd)
+
+          rsync \
+            --recursive \
+            --delete \
+            docs/ \
+            /srv/slate/source \
+            ;
+
+          cd /srv/slate
+          ./slate.sh build
+      - name: Upload Pages
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: /srv/slate/build
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
