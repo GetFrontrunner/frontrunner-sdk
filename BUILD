@@ -3,6 +3,9 @@ with open("./VERSION", "r") as _version:
     # during release, this will be replaced before the run with a proper version
     VERSION = _version.readline().strip()
 
+with open("./README.md", "r") as _long_description:
+    LONG_DESCRIPTION = _long_description.read().strip()
+
 python_sources(
     name="root",
 )
@@ -32,6 +35,8 @@ python_distribution(
         name="frontrunner-sdk",
         version=VERSION,
         description="Frontrunner SDK",
+        long_description=LONG_DESCRIPTION,
+        long_description_content_type="text/markdown",
         license="Apache-2.0",
         author="Frontrunner",
         author_email="support@getfrontrunner.com",
