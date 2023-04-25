@@ -1,18 +1,10 @@
-name: Release
-run-name: Release ${{ inputs.environment }}
-
 on:
   workflow_call:
-    inputs:
-      environment:
-        required: true
-        type: string
 
 jobs:
 
   PyPI:
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3

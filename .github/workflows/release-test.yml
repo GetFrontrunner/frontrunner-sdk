@@ -1,3 +1,6 @@
+name: Release
+run-name: Release
+
 on:
   release:
     types: [prereleased]
@@ -6,5 +9,4 @@ jobs:
 
   Release:
     uses: ./.github/workflows/release.yml
-    with:
-      environment: pypi/test
+    environment: pypi/test
