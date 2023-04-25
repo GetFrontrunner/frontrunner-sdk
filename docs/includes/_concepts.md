@@ -34,20 +34,28 @@ specified. When there is no `short_entity`, taking a `short` position is simply 
 For example, the `game` `winner` market `Arsenal FC v Chelsea FC` is a non-binary market 
 represented by 3 distinct Frontrunner markets:
 
-* `Arsenal FC`: `long` in this market resolves at $1 if Arsenal wins and $0 if they lose or draw. 
+* `Arsenal FC`: `long` in this market resolves at $1 if Arsenal wins and $0 if they lose or draw.
 `short` in this market resolves at $1 if Arsenal loses or draws. `short` can be thought of as "Not Arsenal"
 * `Chelsea FC`: `long` in this market resolves at $1 if Chelsea wins and $0 if they lose or draw.
 `short` in this market resolves at $1 if Chelsea loses or draws. `short` can be thought of as "Not Chelsea"
 * `Draw`: `long` in this market resolves at $1 if the game ends in a draw.
-  `short` in this market resolves at $1 if the game does not end in a draw. `short` can be thought of as "Not Draw"
+`short` in this market resolves at $1 if the game does not end in a draw. `short` can be thought of as "Not Draw"
 
 Futures markets may exist for season winners like the NFL Championship, Premier League Season, and NBA Finals.
 For futures markets, one market exists for each entity with sufficient chances of winning (at the discretion of Frontrunner).
 
 ## Home and Away
-| Market Type | Description                                                    | Long Entity | Short Entity | Sport Event Name |
-|-------------|----------------------------------------------------------------|-------------|--------------|------------------|
-| Binary      | Leagues that cannot end in a draw: NBA, MLB. Special case: NFL | Away        | Home         | Away @ Home      |
-| Non-Binary  | Leagues that can end in a draw: EPL; futures.                  | n/a*        | n/a          | Home v Away**    |
-*One market per entity where each outcome is the `long_entity`  
-**When relevant
+Frontrunner defines the `long` entity as the first entity in the matchup description.
+This definition changes depending on the sport - the different options are listed below.
+
+| League    | Sport Event Name | Long Entity | Short Entity |
+|-----------|------------------|-------------|--------------|
+| EPL       | Home v Away      | n/a*        | n/a          |
+| MLB       | Away @ Home      | Away        | Home         |
+| NBA       | Away @ Home      | Away        | Home         |
+| NFL       | Away @ Home      | Away        | Home         |
+| Formula 1 | n/a**            | n/a*        | n/a          |
+*The home/away designation does correlate directly to long/short entities for non-binary markets like EPL markets 
+(as well as futures) due to their structure. However, the home team can still be detected based on the Sport Event Name.
+See the [Non-Binary Markets](#non-binary-markets) section above for additional context.
+**Formula 1 information from Frontrunner does not include information about player/team nationalities.
