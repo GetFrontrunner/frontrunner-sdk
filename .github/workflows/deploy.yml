@@ -1,8 +1,9 @@
 name: Deploy
 run-name: Deploy
-on:
-  push:
-    branches: [master]
+on: [push]
+# on:
+#   push:
+#     branches: [master]
 
 jobs:
 
@@ -18,10 +19,6 @@ jobs:
           apt-get install -y git rsync
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          # Fixes conflict with branch protection
-          # https://stackoverflow.com/a/63733988
-          persist-credentials: false
       - name: Git Setup
         run: |
           repo_dir=$(pwd)
@@ -30,7 +27,7 @@ jobs:
           git config --global --add safe.directory "${repo_dir}"
 
           commit_author_name=$(git log -n 1 --format="%an" HEAD)
-          commit_author_email=$(git log -n 1 --format="%ae" HEAD)
+          commit_author_email="${{ github.actor }}@users.noreply.github.com"
 
           # need to configure user details manually
           git config --global user.name "${commit_author_name}"
