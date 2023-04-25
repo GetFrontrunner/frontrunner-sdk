@@ -1,4 +1,6 @@
 with open("./VERSION", "r") as _version:
+    # during default, this does nothing
+    # during release, this will be replaced before the run with a proper version
     VERSION = _version.readline().strip()
 
 python_sources(
@@ -21,8 +23,7 @@ python_distribution(
     generate_setup=True,
     entry_points={
         "console_scripts": {
-            # needed so pants actually detects files to add; otherwise it's
-            # empty :-(
+            # needed so pants actually detects files to add
             "_fake": "frontrunner_sdk:_fake",
         },
     },

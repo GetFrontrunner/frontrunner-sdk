@@ -1,7 +1,8 @@
 name: Deploy
 run-name: Deploy
 on:
-  push: [master]
+  push:
+    branches: [master]
 
 jobs:
 
