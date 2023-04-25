@@ -7,8 +7,6 @@ from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.logging.log_operation import log_operation
 from frontrunner_sdk.openapi.frontrunner_api import MarketStatus
 from frontrunner_sdk.openapi.frontrunner_api.models.market import Market
-from frontrunner_sdk.openapi.frontrunner_api.models.sport_entity import SportEntity  # NOQA
-from frontrunner_sdk.openapi.frontrunner_api.models.sport_event import SportEvent  # NOQA
 
 
 @dataclass
@@ -19,6 +17,7 @@ class GetMarketsRequest:
   event_id: Optional[str] = None
   league_id: Optional[str] = None
   status: Optional[MarketStatus] = None
+
 
 @dataclass
 class GetMarketsResponse:
@@ -38,6 +37,4 @@ class GetMarketsOperation(FrontrunnerOperation[GetMarketsRequest, GetMarketsResp
     request = self.request_as_kwargs()
     markets = await deps.openapi_frontrunner_api.get_markets(**request)
 
-    return GetMarketsResponse(
-      markets=markets,
-    )
+    return GetMarketsResponse(markets=markets,)
