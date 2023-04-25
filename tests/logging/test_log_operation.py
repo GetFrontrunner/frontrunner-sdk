@@ -30,6 +30,8 @@ class TestLogOperation(IsolatedAsyncioTestCase):
     operation = MockOperation("request")
     logging.getLogger(__name__).setLevel(logging.DEBUG)
 
+    # necessary to pass logger and level here for tests to be compatible
+    # with later versions of Python
     with self.assertLogs(logging.getLogger(__name__), logging.DEBUG) as logs:
       await operation.execute(deps)
 
