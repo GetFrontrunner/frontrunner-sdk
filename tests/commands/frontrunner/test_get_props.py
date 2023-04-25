@@ -4,7 +4,8 @@ from unittest import IsolatedAsyncioTestCase
 from unittest.mock import AsyncMock
 from unittest.mock import MagicMock
 
-from frontrunner_sdk.commands.frontrunner.get_props import GetPropsRequest, GetPropsOperation
+from frontrunner_sdk.commands.frontrunner.get_props import GetPropsOperation
+from frontrunner_sdk.commands.frontrunner.get_props import GetPropsRequest
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.openapi.frontrunner_api import Prop
 
