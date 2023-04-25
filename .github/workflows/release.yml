@@ -1,14 +1,20 @@
 name: Release
 run-name: Release
 on:
-  push:
-    tags: v[0-9]+.[0-9]+.[0-9]+*
+  release: [published]
 
 jobs:
 
   PyPI:
     runs-on: ubuntu-latest
-    environment: pypi/test
+    strategy:
+      matrix:
+        - environment: pypi/test
+          prerelease: true
+        - environment: pypi/prod
+          prerelease: false
+    environment: ${{ matrix.environment }}
+    if: github.event.release.prerelease == matrix.prerelease
     steps:
       - name: Checkout
         uses: actions/checkout@v3
