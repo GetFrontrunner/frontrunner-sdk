@@ -10,10 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        - environment: pypi/test
-          prerelease: true
-        - environment: pypi/prod
-          prerelease: false
+        include:
+          - environment: pypi/test
+            prerelease: true
+          - environment: pypi/prod
+            prerelease: false
     environment: ${{ matrix.environment }}
     if: github.event.release.prerelease == matrix.prerelease
     steps:
