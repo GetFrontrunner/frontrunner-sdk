@@ -62,10 +62,6 @@ class FrontrunnerFacadeAsync(FrontrunnerFacadeMixin):
     id: Optional[str] = None,
     sport: Optional[str] = None,
   ) -> GetLeaguesResponse:
-    request = GetLeaguesRequest(
-      id=id,
-      sport=sport,
-    )
     kwargs = as_request_args(locals())
     request = GetLeaguesRequest(**kwargs)
     return await self._run_operation(GetLeaguesOperation, self.deps, request)
