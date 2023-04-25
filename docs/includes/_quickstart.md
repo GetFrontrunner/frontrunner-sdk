@@ -136,5 +136,5 @@ get_orders = sdk.injective.get_orders(mine=True, execution_types=["limit"])
 
 print("orders:")
 for order in get_orders.orders:
-  print(f"{order.order_hash}: {order.quantity} @ {order.price}")
+  print(f"{order.order_hash}: {order.quantity} @ ${int(order.price) / USDC_SCALE_FACTOR}")
 ```
