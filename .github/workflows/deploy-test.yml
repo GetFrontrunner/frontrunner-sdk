@@ -20,7 +20,6 @@ jobs:
       - name: Publish
         run: |
           export PANTS_TWINE_CONFIG="${{ vars.PANTS_TWINE_CONFIG }}"
-          export TWINE_USERNAME="${{ secrets.TWINE_USERNAME }}"
-          export TWINE_PASSWORD="${{ secrets.TWINE_PASSWORD }}"
+          export TWINE_PASSWORD="${{ secrets.TWINE_API_TOKEN }}"
 
           pants publish ::
