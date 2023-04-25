@@ -3,8 +3,8 @@ from unittest.mock import AsyncMock
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
-from frontrunner_sdk.commands.frontrunner.find_markets import FindMarketsOperation # NOQA
-from frontrunner_sdk.commands.frontrunner.find_markets import FindMarketsResponse # NOQA
+from frontrunner_sdk.commands.frontrunner.get_markets import FindMarketsOperation # NOQA
+from frontrunner_sdk.commands.frontrunner.get_markets import FindMarketsResponse # NOQA
 from frontrunner_sdk.facades.frontrunner import FrontrunnerFacadeAsync
 from frontrunner_sdk.ioc import FrontrunnerIoC
 

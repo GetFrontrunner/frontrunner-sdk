@@ -6,7 +6,7 @@ Find Frontrunner markets with specific criteria.
 
 ```python
 # Find Frontrunner markets where...
-response = sdk.frontrunner.find_markets(
+response = sdk.frontrunner.get_markets(
   # ...the winner
   prop_type=["winner"],
   # ...of a basketball
@@ -18,7 +18,7 @@ response = sdk.frontrunner.find_markets(
 )
 
 # Find Frontrunner markets where...
-response = sdk.frontrunner.find_markets(
+response = sdk.frontrunner.get_markets(
   # ...formula one
   sports=["formula1"],
   # ...team Williams or Alfa Romeo
@@ -28,7 +28,7 @@ response = sdk.frontrunner.find_markets(
 )
 
 # Get all active Frontrunner markets
-response = sdk.frontrunner.find_markets()
+response = sdk.frontrunner.get_markets()
 ```
 
 | Name | Type | Req? | Description |
