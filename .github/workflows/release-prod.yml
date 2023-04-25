@@ -1,5 +1,5 @@
-name: Release Test
-run-name: Release Test
+name: Release Prod
+run-name: Release Prod
 
 on:
   release:
