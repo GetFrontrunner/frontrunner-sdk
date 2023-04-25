@@ -11,7 +11,8 @@ toc_footers:
 includes:
   - quickstart
   - configuring
-  - conventions
+  - concepts
+  - technical_conventions
   - operations
   - operations/frontrunner/find_markets
   - operations/injective/cancel_all_orders
@@ -24,6 +25,7 @@ includes:
   - operations/injective/get_orders
   - operations/injective/get_positions
   - operations/injective/get_trades
+  - operations/injective/stream_markets
   - operations/injective/stream_orders
   - operations/injective/stream_positions
   - operations/injective/stream_trades

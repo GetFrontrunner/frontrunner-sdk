@@ -10,7 +10,7 @@ pip install -y frontrunner-sdk
 
 Install the Frontrunner SDK using the following code.
 
-Contact [support@getfrontrunner.com][support] for a Frontrunner API Key. Keep this somewhere safe. When launching a Python REPL or running the scripts in this guide, make sure that API Key is set in the environment variable `FRONTRUNNER_PARTNER_API_AUTHN_TOKEN`.
+Contact [support@getfrontrunner.com][support] for a Frontrunner API Key. Keep this somewhere safe. When launching a Python REPL or running the scripts in this guide, make sure that API Key is set in the environment variable `FR_PARTNER_API_TOKEN`.
 
 [support]: mailto:support@getfrontrunner.com
 
@@ -87,7 +87,7 @@ highest_buy, lowest_buy = max(prices), min(prices)
 print(f"price range: [{highest_buy}, {lowest_buy}]")
 ```
 
-Without knowing much else about the market besides its ID, it's hard to price bets and make orders. Here, we'll use our top-secret proprietary trading algorithm: we'll place buy bids around the current min, max, and midway buy prices.
+Without knowing much else about the market besides its ID, it's hard to price bets and make orders. Here, we'll place buy bids around the current min, max, and midway buy prices.
 
 We'll call `get_order_books`, passing in our market id, to get the current order books. This order book contains both the buys and sells. Using the buys, we can find the highest and lowest buy prices.
 
@@ -97,9 +97,9 @@ We'll call `get_order_books`, passing in our market id, to get the current order
 from frontrunner_sdk.models import Order
 
 create_orders = sdk.injective.create_orders([
-  Order.buy_for(market.injective_id, 10, lowest_buy),
-  Order.buy_for(market.injective_id, 100, (highest_buy + lowest_buy) / 2),
-  Order.buy_for(market.injective_id, 10, highest_buy),
+    Order.buy_long(market.injective_id, 10, lowest_buy),
+    Order.buy_long(market.injective_id, 100, (highest_buy + lowest_buy) / 2),
+    Order.buy_long(market.injective_id, 10, highest_buy),
 ])
 
 print(f"""

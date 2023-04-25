@@ -1,6 +1,6 @@
-# Conventions
+# Technical Conventions
 
-## Synchronous and Asynchronous SDKs
+## Sync and Async SDKs
 
 This SDK is designed with [async/concurrent programming][asyncio] in mind. However, it can be difficult to use in regular scripts because the way `async` code needs to be written requires an all-or-nothing approach. To cater to non-async code, we provide a version of the SDK that can be used without `async`.
 

@@ -1,6 +1,6 @@
 # Configuring
 
-## Ways to Configure SDK Parameters
+## SDK Parameters
 
 There are a few ways to configure values for the SDK. In order of precedence, they are as follows:
 
@@ -8,44 +8,44 @@ There are a few ways to configure values for the SDK. In order of precedence, th
 2. Presets via environment variables
 3. Default values
 
-## Parameter Configuration: Wallet
+## Wallet
 
 This specifies which wallet the SDK will use for mutating the blockchain and querying the blockchain for "my" data. These variables are checked in order.
 
 ### Environment Variables
 
-1. `FRONTRUNNER_WALLET_MNEMONIC`
-1. `FRONTRUNNER_WALLET_PRIVATE_KEY_HEX`
+1. `FR_WALLET_MNEMONIC`
+1. `FR_WALLET_PRIVATE_KEY_HEX`
 
 ### Default
 
 `None`
 
-## Parameter Configuration: Frontrunner Base API URL
+## Frontrunner Base API URL
 
 This is the base URL for Frontrunner-specific operations such as finding markets.
 
 ### Environment Variables
 
-* `FRONTRUNNER_PARTNER_API_BASE_URL`
+* `FR_PARTNER_API_BASE_URL`
 
 ### Default
 
-`https://partner-api-staging.getfrontrunner.com/api/v1`
+`https://partner-api.getfrontrunner.com/api/v1`
 
-## Parameter Configuration: Frontrunner API Token
+## Frontrunner API Token
 
 To interact with the Frontrunner APIs, you will need a token to authenticate. Requests without authentication will fail.
 
 ### Environment Variable
 
-* `FRONTRUNNER_PARTNER_API_AUTHN_TOKEN`
+* `FR_PARTNER_API_TOKEN`
 
 ### Default
 
 `None`
 
-## Parameter Configuration: Injective Network
+## Injective Network
 
 The "network" is which blockchain network to use. Valid values are...
 
@@ -65,14 +65,14 @@ The chain ID must match with the Injective network you are using.
 
 ### Environment Variable
 
-* `FRONTRUNNER_INJECTIVE_NETWORK`
-* `FRONTRUNNER_INJECTIVE_CHAIN_ID`
+* `FR_INJECTIVE_NETWORK`
+* `FR_INJECTIVE_CHAIN_ID`
 
 ### Default
 
 Network is `testnet`, and Chain ID is `injective-888`.
 
-## Parameter Configuration: Injective Endpoints
+## Injective Endpoints
 
 Injective is built on the Cosmos network. Cosmos defines a set of well known endpoint types that are supported for interacting with the blockchain. You can learn more about them here: [Cosmos Good-To-Know Dev Terms][cosmos-terminology].
 
@@ -94,15 +94,15 @@ Some endpoints are specified as an <a href="https://en.wikipedia.org/wiki/Unifor
 
 ### Environment Variables
 
-* `FRONTRUNNER_INJECTIVE_EXCHANGE_AUTHORITY`
-* `FRONTRUNNER_INJECTIVE_EXPLORER_AUTHORITY`
-* `FRONTRUNNER_INJECTIVE_LCD_BASE_URL`
-* `FRONTRUNNER_INJECTIVE_RPC_BASE_URL`
-* `FRONTRUNNER_INJECTIVE_GRPC_AUTHORITY`
+* `FR_INJECTIVE_EXCHANGE_AUTHORITY`
+* `FR_INJECTIVE_EXPLORER_AUTHORITY`
+* `FR_INJECTIVE_LCD_BASE_URL`
+* `FR_INJECTIVE_RPC_BASE_URL`
+* `FR_INJECTIVE_GRPC_AUTHORITY`
 
 ### Presets
 
-Environment Variable `FRONTRUNNER_PRESET_NODES` is `injective`. This will use Injective's Kubernetes-based nodes on the testnet network.
+Environment Variable `FR_PRESET_NODES` is `injective`. This will use Injective's Kubernetes-based nodes on the testnet network.
 
 | Endpoint Type | Default Value |
 | - | - |
@@ -116,13 +116,13 @@ Environment Variable `FRONTRUNNER_PRESET_NODES` is `injective`. This will use In
 
 | Endpoint Type | Default Value |
 | - | - |
-| Exchange Authority | `injective-node-v2-staging.grpc-exchange.getfrontrunner.com:443` |
-| Explorer Authority | `injective-node-v2-staging.grpc-explorer.getfrontrunner.com:443` |
-| LCD Base URL | `https://injective-node-v2-staging.lcd.getfrontrunner.com` |
-| RPC Base URL | `wss://injective-node-v2-staging.tm.getfrontrunner.com/websocket` |
-| gRPC Authority | `injective-node-v2-staging.grpc.getfrontrunner.com:443` |
+| Exchange Authority | `injective-node-v2-prod.grpc-exchange.getfrontrunner.com:443` |
+| Explorer Authority | `injective-node-v2-prod.grpc-explorer.getfrontrunner.com:443` |
+| LCD Base URL | `https://injective-node-v2-prod.lcd.getfrontrunner.com` |
+| RPC Base URL | `wss://injective-node-v2-prod.tm.getfrontrunner.com/websocket` |
+| gRPC Authority | `injective-node-v2-prod.grpc.getfrontrunner.com:443` |
 
-## Parameter Configuration: Injective Faucet
+## Injective Faucet
 
 A [faucet][faucet] is a site that dispenses free tokens to a wallet. Faucets are used to acquire tokens without involving "real" money or mining them yourself.
 
@@ -130,7 +130,7 @@ A [faucet][faucet] is a site that dispenses free tokens to a wallet. Faucets are
 
 ### Environment Variable
 
-* `FRONTRUNNER_INJECTIVE_FAUCET_BASE_URL`
+* `FR_INJECTIVE_FAUCET_BASE_URL`
 
 ### Default
 

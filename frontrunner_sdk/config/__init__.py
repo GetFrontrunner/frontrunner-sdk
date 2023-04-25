@@ -17,11 +17,11 @@ DEFAULT: FrontrunnerConfig = ChainedFrontrunnerConfig([
   ),
 
   # frontrunner api
-  StaticFrontrunnerConfig(partner_api_base_url="https://partner-api-staging.getfrontrunner.com/api/v1"),
+  StaticFrontrunnerConfig(partner_api_base_url="https://partner-api.getfrontrunner.com/api/v1"),
 
   # injective k8s network
   ConditionalFrontrunnerConfig(
-    lambda: os.environ.get("FRONTRUNNER_PRESET_NODES") == "injective",
+    lambda: os.environ.get("FR_PRESET_NODES") == "injective",
     StaticFrontrunnerConfig(
       injective_exchange_authority="k8s.testnet.exchange.grpc.injective.network:443",
       injective_explorer_authority="k8s.testnet.explorer.grpc.injective.network:443",
@@ -33,10 +33,10 @@ DEFAULT: FrontrunnerConfig = ChainedFrontrunnerConfig([
 
   # frontrunner network
   StaticFrontrunnerConfig(
-    injective_exchange_authority="injective-node-v2-staging.grpc-exchange.getfrontrunner.com:443",
-    injective_explorer_authority="injective-node-v2-staging.grpc-explorer.getfrontrunner.com:443",
-    injective_grpc_authority="injective-node-v2-staging.grpc.getfrontrunner.com:443",
-    injective_lcd_base_url="https://injective-node-v2-staging.lcd.getfrontrunner.com",
-    injective_rpc_base_url="wss://injective-node-v2-staging.tm.getfrontrunner.com/websocket",
+    injective_exchange_authority="injective-node-v2-prod.grpc-exchange.getfrontrunner.com:443",
+    injective_explorer_authority="injective-node-v2-prod.grpc-explorer.getfrontrunner.com:443",
+    injective_grpc_authority="injective-node-v2-prod.grpc.getfrontrunner.com:443",
+    injective_lcd_base_url="https://injective-node-v2-prod.lcd.getfrontrunner.com",
+    injective_rpc_base_url="wss://injective-node-v2-prod.tm.getfrontrunner.com/websocket",
   ),
 ])
