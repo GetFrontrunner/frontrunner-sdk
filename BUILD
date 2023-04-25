@@ -1,3 +1,6 @@
+with open("./VERSION", "r") as _version:
+    VERSION = _version.readline().strip()
+
 python_sources(
     name="root",
 )
@@ -26,7 +29,7 @@ python_distribution(
     repositories=["@deploy"],
     provides=python_artifact(
         name="frontrunner-sdk",
-        version="0.0.1",
+        version=VERSION,
         description="Frontrunner SDK",
         license="Apache-2.0",
         author="Frontrunner",
