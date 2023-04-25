@@ -10,6 +10,9 @@ from frontrunner_sdk.commands.frontrunner.get_leagues import GetLeaguesResponse
 from frontrunner_sdk.commands.frontrunner.get_markets import GetMarketsOperation # NOQA
 from frontrunner_sdk.commands.frontrunner.get_markets import GetMarketsRequest
 from frontrunner_sdk.commands.frontrunner.get_markets import GetMarketsResponse
+from frontrunner_sdk.commands.frontrunner.get_props import GetPropsOperation
+from frontrunner_sdk.commands.frontrunner.get_props import GetPropsRequest
+from frontrunner_sdk.commands.frontrunner.get_props import GetPropsResponse
 from frontrunner_sdk.facades.base import FrontrunnerFacadeMixin # NOQA
 from frontrunner_sdk.helpers.parameters import as_request_args
 from frontrunner_sdk.ioc import FrontrunnerIoC
@@ -70,6 +73,15 @@ class FrontrunnerFacadeAsync(FrontrunnerFacadeMixin):
     request = GetMarketsRequest(**kwargs)
     return await self._run_operation(GetMarketsOperation, self.deps, request)
 
+  async def get_props(
+    self,
+    id: Optional[str] = None,
+    league_id: Optional[str] = None,
+  ) -> GetPropsResponse:
+    kwargs = as_request_args(locals())
+    request = GetPropsRequest(**kwargs)
+    return await self._run_operation(GetPropsOperation, self.deps, request)
+
 
 class FrontrunnerFacade(SyncMixin):
 
@@ -116,3 +128,11 @@ class FrontrunnerFacade(SyncMixin):
   ) -> GetMarketsResponse:
     kwargs = as_request_args(locals())
     return await self._synchronously(self.impl.get_markets, **kwargs)
+
+  def get_props(
+    self,
+    id: Optional[str] = None,
+    league_id: Optional[str] = None,
+  ) -> GetPropsResponse:
+    kwargs = as_request_args(locals())
+    return self._synchronously(self.impl.get_props, **kwargs)
