@@ -14,7 +14,7 @@ includes:
   - configuring
   - technical_conventions
   - operations
-  - operations/frontrunner/get_markets
+  - operations/frontrunner/find_markets
   - operations/injective/cancel_all_orders
   - operations/injective/cancel_orders
   - operations/injective/create_orders

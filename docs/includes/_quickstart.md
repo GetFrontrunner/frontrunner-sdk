@@ -49,7 +49,7 @@ Then, we'll call `create_wallet` to create our wallet and receive an airdrop fro
 ## Getting Frontrunner Markets
 
 ```python
-get_markets = sdk.frontrunner.get_markets(
+find_markets = sdk.frontrunner.find_markets(
   sports=["basketball"], # Looking for basketball game markets
   event_types=["game"], # Looking for game (instead of future) markets
   prop_types=["winner"], # Looking for winner (instead of other) markets
@@ -57,7 +57,7 @@ get_markets = sdk.frontrunner.get_markets(
 )
 
 # Pick a market
-market = get_markets.markets[0]
+market = find_markets.markets[0]
 print(f"Market: {market.long_entity_name} [{market.prop_name}] vs {market.short_entity_name}")
 ```
 

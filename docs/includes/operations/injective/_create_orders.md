@@ -2,7 +2,7 @@
 
 Create orders. Order has a market, price, and quantity.
 
-For finding markets, see `get_markets`.
+For finding markets, see `find_markets`.
 
 ### Parameters
 

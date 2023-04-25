@@ -4,8 +4,8 @@ from unittest import IsolatedAsyncioTestCase
 from unittest.mock import AsyncMock
 from unittest.mock import MagicMock
 
-from frontrunner_sdk.commands.frontrunner.get_markets import FindMarketsOperation # NOQA
-from frontrunner_sdk.commands.frontrunner.get_markets import FindMarketsRequest # NOQA
+from frontrunner_sdk.commands.frontrunner.find_markets import FindMarketsOperation # NOQA
+from frontrunner_sdk.commands.frontrunner.find_markets import FindMarketsRequest # NOQA
 from frontrunner_sdk.exceptions import FrontrunnerArgumentException # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.openapi.frontrunner_api.models.league import League
