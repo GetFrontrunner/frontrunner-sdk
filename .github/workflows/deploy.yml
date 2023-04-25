@@ -14,10 +14,11 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     permissions:
+      contents: read
       pages: write
       id-token: write
     steps:
-      - name: Prerequisites
+      - name: Setup Prerequisites
         run: |
           apt-get update
           apt-get install -y git rsync
