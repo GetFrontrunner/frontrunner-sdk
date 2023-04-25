@@ -1,22 +1,18 @@
 name: Release
-run-name: Release
+run-name: Release ${{ inputs.environment }}
+
 on:
-  release:
-    types: [published]
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
 
 jobs:
 
   PyPI:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - environment: pypi/test
-            prerelease: true
-          - environment: pypi/prod
-            prerelease: false
-    environment: ${{ matrix.environment }}
-    if: github.event.release.prerelease == matrix.prerelease
+    environment: ${{ inputs.environment }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
