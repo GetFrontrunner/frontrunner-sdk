@@ -18,6 +18,10 @@ jobs:
           apt-get install -y git rsync
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          # Fixes conflict with branch protection
+          # https://stackoverflow.com/a/63733988
+          persist-credentials: false
       - name: Git Setup
         run: |
           repo_dir=$(pwd)
