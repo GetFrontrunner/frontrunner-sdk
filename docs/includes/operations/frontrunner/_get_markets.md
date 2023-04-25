@@ -8,7 +8,7 @@ Get Frontrunner markets.
 from frontrunner_sdk.openapi.frontrunner_api import MarketStatus
 
 # Get all active NFL markets
-league_id = "c6c521c4-88d0-463d-aa2a-fe3765ec872a"  # NFL
+league_id = "c6c521c4-88d0-463d-aa2a-fe3765ec872a"
 response = sdk.frontrunner.get_markets(
     league_id=league_id,
     status=MarketStatus.ACTIVE,
