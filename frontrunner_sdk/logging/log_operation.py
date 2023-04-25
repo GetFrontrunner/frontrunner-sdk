@@ -20,7 +20,8 @@ def log_operation(module_name: str):
     @functools.wraps(operation)
     async def wrapped(instance: Operation, deps: FrontrunnerIoC) -> Response:
       value = await operation(instance, deps)
-      logger.info("%s with %s, yielding %s", instance.__class__.__name__, instance.request, value)
+      logger.info("%s with %s", instance.__class__.__name__, instance.request)
+      logger.debug("%s yielded %s", instance.request, value)
       return value
 
     return wrapped
