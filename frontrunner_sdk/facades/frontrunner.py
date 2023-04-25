@@ -4,7 +4,11 @@ from typing import Optional
 from frontrunner_sdk.commands.frontrunner.find_markets import FindMarketsOperation # NOQA
 from frontrunner_sdk.commands.frontrunner.find_markets import FindMarketsRequest # NOQA
 from frontrunner_sdk.commands.frontrunner.find_markets import FindMarketsResponse # NOQA
+from frontrunner_sdk.commands.frontrunner.get_leagues import GetLeaguesOperation # NOQA
+from frontrunner_sdk.commands.frontrunner.get_leagues import GetLeaguesRequest
+from frontrunner_sdk.commands.frontrunner.get_leagues import GetLeaguesResponse
 from frontrunner_sdk.facades.base import FrontrunnerFacadeMixin # NOQA
+from frontrunner_sdk.helpers.parameters import as_request_args
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.openapi.frontrunner_api.models.market_status import MarketStatus # NOQA
 from frontrunner_sdk.sync import SyncMixin
@@ -37,6 +41,19 @@ class FrontrunnerFacadeAsync(FrontrunnerFacadeMixin):
 
     return await self._run_operation(FindMarketsOperation, self.deps, request)
 
+  async def get_leagues(
+    self,
+    id: Optional[str] = None,
+    sport: Optional[str] = None,
+  ) -> GetLeaguesResponse:
+    request = GetLeaguesRequest(
+      id=id,
+      sport=sport,
+    )
+    kwargs = as_request_args(locals())
+    request = GetLeaguesRequest(**kwargs)
+    return await self._run_operation(GetLeaguesOperation, self.deps, request)
+
 
 class FrontrunnerFacade(SyncMixin):
 
@@ -63,3 +80,11 @@ class FrontrunnerFacade(SyncMixin):
       prop_types=prop_types,
       market_statuses=market_statuses,
     )
+
+  def get_leagues(
+    self,
+    id: Optional[str] = None,
+    sport: Optional[str] = None,
+  ):
+    kwargs = as_request_args(locals())
+    return self._synchronously(self.impl.get_leagues, **kwargs)
