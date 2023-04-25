@@ -1,4 +1,4 @@
-## Frontrunner: Get Sport Events
+## Frontrunner: Get Sports
 
 Get supported sports on Frontrunner
 
