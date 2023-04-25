@@ -40,18 +40,6 @@ class FindMarketsRequest:
 
 @dataclass
 class FindMarketsResponse:
-  league_ids: Collection[str]
-  leagues: Iterable[League]
-
-  sport_event_ids: Collection[str]
-  sport_events: Iterable[SportEvent]
-
-  sport_entity_ids: Collection[str]
-  sport_entities: Iterable[SportEntity]
-
-  prop_ids: Collection[str]
-  props: Iterable[Prop]
-
   market_ids: Collection[str]
   markets: Iterable[Market]
 
@@ -165,14 +153,6 @@ class FindMarketsOperation(FrontrunnerOperation[FindMarketsRequest, FindMarketsR
 
     if not league_ids:
       return FindMarketsResponse(
-        league_ids=list(league_ids),
-        leagues=leagues,
-        sport_event_ids=list([]),
-        sport_events=[],
-        sport_entity_ids=list([]),
-        sport_entities=[],
-        prop_ids=list([]),
-        props=[],
         market_ids=list([]),
         markets=[],
       )
@@ -189,14 +169,6 @@ class FindMarketsOperation(FrontrunnerOperation[FindMarketsRequest, FindMarketsR
 
     if not sport_event_ids or not sport_entity_ids:
       return FindMarketsResponse(
-        league_ids=list(league_ids),
-        leagues=leagues,
-        sport_event_ids=list(sport_event_ids),
-        sport_events=sport_events,
-        sport_entity_ids=list(sport_entity_ids),
-        sport_entities=sport_entities,
-        prop_ids=list([]),
-        props=[],
         market_ids=list([]),
         markets=[],
       )
@@ -205,14 +177,6 @@ class FindMarketsOperation(FrontrunnerOperation[FindMarketsRequest, FindMarketsR
 
     if not prop_ids:
       return FindMarketsResponse(
-        league_ids=list(league_ids),
-        leagues=leagues,
-        sport_event_ids=list(sport_event_ids),
-        sport_events=sport_events,
-        sport_entity_ids=list(sport_entity_ids),
-        sport_entities=sport_entities,
-        prop_ids=list(prop_ids),
-        props=props,
         market_ids=list([]),
         markets=[],
       )
@@ -220,14 +184,6 @@ class FindMarketsOperation(FrontrunnerOperation[FindMarketsRequest, FindMarketsR
     market_ids, markets = await self.find_markets(deps, sport_entity_ids, prop_ids, market_statuses)
 
     return FindMarketsResponse(
-      league_ids=set(league_ids),
-      leagues=leagues,
-      sport_event_ids=list(sport_event_ids),
-      sport_events=sport_events,
-      sport_entity_ids=list(sport_entity_ids),
-      sport_entities=sport_entities,
-      prop_ids=list(prop_ids),
-      props=props,
       market_ids=list(market_ids),
       markets=markets,
     )

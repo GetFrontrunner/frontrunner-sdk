@@ -1,6 +1,12 @@
 ## Frontrunner: Find Markets
 
-Find Frontrunner markets with specific criteria.
+Enhanced search of Frontrunner markets.
+
+<aside class="notice">
+This operation is a convenience search function built on top of a combination of Frontrunner API calls.
+The other Frontrunner operations map 1:1 to the Frontrunner REST API endpoints.
+</aside>
+
 
 ### Parameters
 
@@ -48,19 +54,7 @@ for market in response.markets:
     print(f"Market: {market.address} [{market.long_entity_name} / {market.short_entity_name}]")
 ```
 
-<aside class="notice">
-The response values aside from <code>market_ids</code> and <code>markets</code> is for debugging. Except for markets, if there are not sufficient constraints, the response fields may contain values unrelated to the final set of markets ie. if your only constraint is for the Seattle Mariners (baseball) team, leagues will contain values for all sports (including baseball).
-</aside>
-
 | Name | Type | Description |
 | - | - | - |
-| `league_ids` | `[str]` | Related sport league IDs, from `sports` and `league_names` constraints |
-| `leagues` | `[League]` | Related sport league objects |
-| `sport_event_ids` | `[str]` | Related sport event IDs, from leagues and `event_types` constraints |
-| `sport_events` | `[SportEvent]` | Related sport event objects |
-| `sport_entity_ids` | `[str]` | Related sport entity IDs, from leagues and entity names/abbreviations constraints |
-| `sport_entities` | `[SportEntity]` | Related sport entity objects |
-| `prop_ids` | `[str]` | Related proposition IDs, from leagues, sport events, and `prop_types` constraints |
-| `props` | `[Prop]` | Related proposition objects |
 | `market_ids` | `[str]` | Related market IDs, from sport entities, props, and `market_statuses` constraints |
 | `markets` | `[Market]` | Related market objects |
