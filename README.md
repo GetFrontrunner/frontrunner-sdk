@@ -37,6 +37,16 @@ languages and tools. Both local builds and CI builds use Pants.
 brew install pantsbuild/tap/pants
 ```
 
+Install [`docker`][docker]. Docker is an open platform for developing, shipping,
+and running applications. Many internal scripts depend on Docker for execution
+instead of requiring local installations of tools.
+
+[docker]: https://www.docker.com/
+
+```sh
+brew install docker
+```
+
 Clone the repository. Then, open up the repository in vscode.
 [Install the recommended extensions][install-recommended-extensions] for this
 workspace. Restart vscode.
