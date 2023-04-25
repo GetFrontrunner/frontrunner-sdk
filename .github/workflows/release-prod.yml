@@ -1,22 +1,15 @@
-name: Release
-run-name: Release
+name: Release Test
+run-name: Release Test
 
 on:
   release:
-    types: [published]
+    types: [release]
 
 jobs:
 
   PyPI:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - environment: pypi/test
-            prerelease: true
-          - environment: pypi/prod
-            prerelease: false
-    environment: ${{ matrix.environment }}
+    environment: pypi/prod
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -31,7 +24,6 @@ jobs:
           named-caches-hash: ${{ hashFiles('**/*.lockfile') }}
           setup-python-for-plugins: "true"
       - name: Publish
-        if: github.event.release.prerelease == matrix.prerelease
         run: |
           export PANTS_TWINE_CONFIG="${{ vars.PANTS_TWINE_CONFIG }}"
           export TWINE_PASSWORD="${{ secrets.TWINE_API_TOKEN }}"
