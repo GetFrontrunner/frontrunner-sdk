@@ -50,6 +50,9 @@ Within the SDK, we split the operations into the following namespaces:
 
 This split exists so that the origin of the call data is transparent. For example, if you only wish to interact with Frontrunner services, only use the calls available in the `frontrunner` namespace in the SDK.
 
+To view the Frontrunner REST API Swagger docs, load `openapi/frontrunner-api/openapi.json` into [https://editor.swagger.io](https://editor.swagger.io).  
+To view the Injective API docs, see [https://api.injective.exchange/#introduction](https://api.injective.exchange/#introduction).
+
 ## Exceptions
 
 In general, this SDK wraps downstream exceptions in our own exception classes. Also, each exception class has a specific meaning.
