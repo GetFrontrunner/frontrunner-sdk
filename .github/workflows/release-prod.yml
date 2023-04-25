@@ -3,7 +3,7 @@ run-name: Release Prod
 
 on:
   release:
-    types: [release]
+    types: [released]
 
 jobs:
 

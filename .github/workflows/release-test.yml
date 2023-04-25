@@ -3,7 +3,7 @@ run-name: Release Test
 
 on:
   release:
-    types: [prerelease]
+    types: [prereleased]
 
 jobs:
 
