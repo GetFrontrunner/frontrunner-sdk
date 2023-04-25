@@ -15,6 +15,12 @@ includes:
   - technical_conventions
   - operations
   - operations/frontrunner/find_markets
+  - operations/frontrunner/get_leagues
+  - operations/frontrunner/get_markets
+  - operations/frontrunner/get_props
+  - operations/frontrunner/get_sport_entities
+  - operations/frontrunner/get_sport_events
+  - operations/frontrunner/get_sports
   - operations/injective/cancel_all_orders
   - operations/injective/cancel_orders
   - operations/injective/create_orders
