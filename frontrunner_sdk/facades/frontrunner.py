@@ -85,6 +85,6 @@ class FrontrunnerFacade(SyncMixin):
     self,
     id: Optional[str] = None,
     sport: Optional[str] = None,
-  ):
+  ) -> GetLeaguesResponse:
     kwargs = as_request_args(locals())
     return self._synchronously(self.impl.get_leagues, **kwargs)
