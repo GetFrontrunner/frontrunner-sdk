@@ -48,19 +48,7 @@ for market in response.markets:
     print(f"Market: {market.address} [{market.long_entity_name} / {market.short_entity_name}]")
 ```
 
-<aside class="notice">
-The response values aside from <code>market_ids</code> and <code>markets</code> is for debugging. Except for markets, if there are not sufficient constraints, the response fields may contain values unrelated to the final set of markets ie. if your only constraint is for the Seattle Mariners (baseball) team, leagues will contain values for all sports (including baseball).
-</aside>
-
 | Name | Type | Description |
 | - | - | - |
-| `league_ids` | `[str]` | Related sport league IDs, from `sports` and `league_names` constraints |
-| `leagues` | `[League]` | Related sport league objects |
-| `sport_event_ids` | `[str]` | Related sport event IDs, from leagues and `event_types` constraints |
-| `sport_events` | `[SportEvent]` | Related sport event objects |
-| `sport_entity_ids` | `[str]` | Related sport entity IDs, from leagues and entity names/abbreviations constraints |
-| `sport_entities` | `[SportEntity]` | Related sport entity objects |
-| `prop_ids` | `[str]` | Related proposition IDs, from leagues, sport events, and `prop_types` constraints |
-| `props` | `[Prop]` | Related proposition objects |
 | `market_ids` | `[str]` | Related market IDs, from sport entities, props, and `market_statuses` constraints |
 | `markets` | `[Market]` | Related market objects |
