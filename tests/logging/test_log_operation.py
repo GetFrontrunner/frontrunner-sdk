@@ -28,6 +28,7 @@ class TestLogOperation(IsolatedAsyncioTestCase):
   async def test_log_operation(self):
     deps = MagicMock(spec=FrontrunnerIoC)
     operation = MockOperation("request")
+    logging.getLogger(__name__).setLevel(logging.DEBUG)
 
     with self.assertLogs() as logs:
       await operation.execute(deps)
@@ -37,3 +38,9 @@ class TestLogOperation(IsolatedAsyncioTestCase):
       self.assertEqual(record.name, __name__)
       self.assertEqual(record.levelno, logging.INFO)
       self.assertEqual(record.message, "MockOperation with request")
+
+      record = logs.records[1]
+
+      self.assertEqual(record.name, __name__)
+      self.assertEqual(record.levelno, logging.DEBUG)
+      self.assertEqual(record.message, "request yielded response")
