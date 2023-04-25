@@ -1,6 +1,12 @@
 ## Frontrunner: Find Markets
 
-Find Frontrunner markets with specific criteria.
+Enhanced search of Frontrunner markets.
+
+<aside class="notice">
+This operation is a convenience search function built on top of a combination of Frontrunner API calls.
+The other operations map 1:1 to the Frontrunner REST API endpoints.
+</aside>
+
 
 ### Parameters
 
