@@ -149,7 +149,7 @@ The slate documentation deploys on every `master` branch merge.
 
 1. Create a tagged release with an appropriate semantic version eg. if the current version is 0.4.2, the next patch version would be 0.4.3, or a next minor version would be 0.5.0. Use the [New Release Form][new-release-form] to create the release. Make sure it is marked as **pre-release**.
 1. Install the SDK from TestPyPI: `pip install --index-url https://test.pypi.org/simple/ frontrunner-sdk`. 
-1. Perform any sanity tests or smoke tests to make sure the SDK is fit for use, eg
+1. Perform any sanity tests or smoke tests to make sure the SDK is fit for use.
 1. Edit the release -- remove the checkmark from "Set as a pre-release" and save.
 1. Install the SDK from PyPI (production): `pip install --index-url https://test.pypi.org/simple/ frontrunner-sdk`
 1. Perform the same sanity tests, but with the prod SDK.
