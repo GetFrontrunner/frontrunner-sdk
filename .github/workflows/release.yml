@@ -1,6 +1,8 @@
-name: Deploy
-run-name: Deploy
-on: [push]
+name: Release
+run-name: Release
+on:
+  push:
+    tags: v[0-9]+.[0-9]+.[0-9]+*
 
 jobs:
 
@@ -10,6 +12,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Setup Version
+        run: |
+          echo ${{ github.ref_name }} | sed -e "s/^v//g" > VERSION
       - name: Setup Python
         uses: actions/setup-python@v4
       - name: Setup Pants
