@@ -28,7 +28,7 @@ pants_ignore = [
 ]
 
 [python]
-interpreter_constraints = ["CPython>=3.8.*,<=3.10"]
+interpreter_constraints = ["CPython>=3.8.*,<=3.10.*"]
 
 [test]
 report = true
