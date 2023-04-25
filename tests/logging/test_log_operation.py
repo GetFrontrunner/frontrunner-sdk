@@ -30,7 +30,7 @@ class TestLogOperation(IsolatedAsyncioTestCase):
     operation = MockOperation("request")
     logging.getLogger(__name__).setLevel(logging.DEBUG)
 
-    with self.assertLogs() as logs:
+    with self.assertLogs(logging.getLogger(__name__), logging.DEBUG) as logs:
       await operation.execute(deps)
 
       record = logs.records[0]
