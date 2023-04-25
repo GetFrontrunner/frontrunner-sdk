@@ -1,4 +1,4 @@
-## Frontrunner: Get Sport Entitiees
+## Frontrunner: Get Sport Entities
 
 Get Frontrunner sport entities (i.e. teams, players, etc.) 
 
