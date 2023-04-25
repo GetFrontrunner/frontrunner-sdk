@@ -3,7 +3,11 @@ pants_version = "2.15.0"
 
 backend_packages = [
   "pants.core",
+
+  # provides twine
+  # https://www.pantsbuild.org/docs/reference-twine
   "pants.backend.experimental.python",
+
   "pants.backend.python",
   "pants.backend.python.lint.autoflake",
   "pants.backend.python.lint.flake8",

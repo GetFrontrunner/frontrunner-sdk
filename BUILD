@@ -38,8 +38,9 @@ python_distribution(
         url="https://github.com/GetFrontrunner/frontrunner-sdk",
         python_requires=">=3.8,<4",
         classifiers=[
+            # https://pypi.org/classifiers/
             "Development Status :: 3 - Alpha",
-            "Intended Audience :: Financial and Insurance Industry",
+            "Intended Audience :: Developers",
             "License :: OSI Approved :: Apache Software License",
             "Natural Language :: English",
             "Topic :: Games/Entertainment",
