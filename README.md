@@ -151,7 +151,7 @@ The slate documentation deploys on every `master` branch merge.
 1. Install the SDK from TestPyPI: `pip install --index-url https://test.pypi.org/simple/ frontrunner-sdk`. 
 1. Perform any sanity tests or smoke tests to make sure the SDK is fit for use.
 1. Edit the release -- remove the checkmark from "Set as a pre-release" and save.
-1. Install the SDK from PyPI (production): `pip install --index-url https://test.pypi.org/simple/ frontrunner-sdk`
+1. Install the SDK from PyPI (production): `pip install frontrunner-sdk`
 1. Perform the same sanity tests, but with the prod SDK.
 1. Announce the new version in any relevant media ie. Twitter, Discord, Slack, ...
 
