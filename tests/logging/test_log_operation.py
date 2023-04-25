@@ -28,12 +28,21 @@ class TestLogOperation(IsolatedAsyncioTestCase):
   async def test_log_operation(self):
     deps = MagicMock(spec=FrontrunnerIoC)
     operation = MockOperation("request")
+    logging.getLogger(__name__).setLevel(logging.DEBUG)
 
-    with self.assertLogs() as logs:
+    # necessary to pass logger and level here for tests to be compatible
+    # with later versions of Python
+    with self.assertLogs(logging.getLogger(__name__), logging.DEBUG) as logs:
       await operation.execute(deps)
 
       record = logs.records[0]
 
       self.assertEqual(record.name, __name__)
       self.assertEqual(record.levelno, logging.INFO)
-      self.assertEqual(record.message, "MockOperation with request, yielding response")
+      self.assertEqual(record.message, "MockOperation with request")
+
+      record = logs.records[1]
+
+      self.assertEqual(record.name, __name__)
+      self.assertEqual(record.levelno, logging.DEBUG)
+      self.assertEqual(record.message, "request yielded response")
