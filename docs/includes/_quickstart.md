@@ -103,7 +103,7 @@ We'll call `get_order_books`, passing in the Injective market id, to get the cur
 from frontrunner_sdk.models import Order
 
 highest_buy = 0.01
-injective_id = "0xb3a7e524c2ba5ec1eb44bf6780881d671992537eeab1428b8a44b205ceb3c304"
+injective_id = "0xd03091c74e4e76878c2afbeb470b1c825677014afdaa3d315fa534884d2d90e1"
 
 create_orders = sdk.injective.create_orders([
     Order.buy_long(injective_id, 10, highest_buy + 0.01),
@@ -136,5 +136,5 @@ get_orders = sdk.injective.get_orders(mine=True, execution_types=["limit"])
 
 print("orders:")
 for order in get_orders.orders:
-  print(f"{order.order_hash}: {order.quantity} @ {order.price}")
+  print(f"{order.order_hash}: {order.quantity} @ ${int(order.price) / USDC_SCALE_FACTOR}")
 ```
