@@ -38,7 +38,6 @@ from frontrunner_sdk.models.cancel_order import CancelOrder
 from frontrunner_sdk.models.order import Order
 from frontrunner_sdk.models.wallet import Wallet
 
-
 T = TypeVar("T")
 
 
