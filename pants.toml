@@ -22,9 +22,6 @@ backend_packages = [
 pants_ignore = [
   # default
   ".*/", "/dist/", "__pycache__",
-
-  # ignore existing code
-  "chain", "data", "examples", "strategy", "utils",
 ]
 
 [python]
