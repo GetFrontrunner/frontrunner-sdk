@@ -149,7 +149,7 @@ class FindMarketsOperation(FrontrunnerOperation[FindMarketsRequest, FindMarketsR
     prop_types = frozenset(self.request.prop_types or [])
     market_statuses = frozenset(self.request.market_statuses or [])
 
-    league_ids, leagues = await self.find_leagues(deps, sports, league_names)
+    league_ids, _ = await self.find_leagues(deps, sports, league_names)
 
     if not league_ids:
       return FindMarketsResponse(
@@ -158,8 +158,8 @@ class FindMarketsOperation(FrontrunnerOperation[FindMarketsRequest, FindMarketsR
       )
 
     (
-      (sport_event_ids, sport_events),
-      (sport_entity_ids, sport_entities),
+      (sport_event_ids, _),
+      (sport_entity_ids, _),
     ) = await asyncio.gather(
       *[
         self.find_sport_events(deps, league_ids, event_types),
@@ -173,7 +173,7 @@ class FindMarketsOperation(FrontrunnerOperation[FindMarketsRequest, FindMarketsR
         markets=[],
       )
 
-    prop_ids, props = await self.find_props(deps, league_ids, sport_event_ids, prop_types)
+    prop_ids, _ = await self.find_props(deps, league_ids, sport_event_ids, prop_types)
 
     if not prop_ids:
       return FindMarketsResponse(

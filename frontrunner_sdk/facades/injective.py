@@ -135,8 +135,6 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     mine: bool = False,
     direction: Optional[Literal["buy", "sell"]] = None,
     side: Optional[Literal["maker", "taker"]] = None,
-    start_time: Optional[datetime] = None,
-    end_time: Optional[datetime] = None,
   ) -> StreamTradesResponse:
     kwargs = as_request_args(locals())
     request = StreamTradesRequest(**kwargs)
