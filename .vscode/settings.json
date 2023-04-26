@@ -12,5 +12,5 @@
     "no-inline-html": {
       "allowed_elements": ["a", "aside", "code", "ul", "li"]
     }
-  },
+  }
 }
