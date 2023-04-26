@@ -14,7 +14,7 @@ class FakeRequest:
 
 @dataclass
 class FakeResponse:
-  result: str
+  pass
 
 
 class FakeOperation(FrontrunnerOperation[FakeRequest, FakeResponse]):
@@ -26,7 +26,7 @@ class FakeOperation(FrontrunnerOperation[FakeRequest, FakeResponse]):
     pass
 
   async def execute(self, deps: FrontrunnerIoC) -> FakeResponse:
-    return None
+    return FakeResponse()
 
 
 class TestFrontrunnerOperation(IsolatedAsyncioTestCase):
