@@ -1,3 +1,4 @@
+from typing import TypeVar
 from unittest import IsolatedAsyncioTestCase
 from unittest.mock import AsyncMock
 from unittest.mock import MagicMock
@@ -23,11 +24,26 @@ from frontrunner_sdk.commands.injective.get_positions import GetPositionsOperati
 from frontrunner_sdk.commands.injective.get_positions import GetPositionsResponse # NOQA
 from frontrunner_sdk.commands.injective.get_trades import GetTradesOperation # NOQA
 from frontrunner_sdk.commands.injective.get_trades import GetTradesResponse
+from frontrunner_sdk.commands.injective.stream_markets import StreamMarketsOperation # NOQA
+from frontrunner_sdk.commands.injective.stream_markets import StreamMarketsResponse # NOQA
+from frontrunner_sdk.commands.injective.stream_orders import StreamOrdersOperation # NOQA
+from frontrunner_sdk.commands.injective.stream_orders import StreamOrdersResponse # NOQA
+from frontrunner_sdk.commands.injective.stream_positions import StreamPositionsOperation # NOQA
+from frontrunner_sdk.commands.injective.stream_positions import StreamPositionsResponse # NOQA
+from frontrunner_sdk.commands.injective.stream_trades import StreamTradesOperation # NOQA
+from frontrunner_sdk.commands.injective.stream_trades import StreamTradesResponse # NOQA
 from frontrunner_sdk.facades.injective import InjectiveFacadeAsync
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.models.cancel_order import CancelOrder
 from frontrunner_sdk.models.order import Order
 from frontrunner_sdk.models.wallet import Wallet
+
+T = TypeVar("T")
+
+
+async def relay(*values: T):
+  for v in values:
+    yield v
 
 
 class TestInjectiveFacadeAsync(IsolatedAsyncioTestCase):
@@ -134,4 +150,44 @@ class TestInjectiveFacadeAsync(IsolatedAsyncioTestCase):
   )
   async def test_get_trades(self, _execute: AsyncMock):
     await self.facade.get_trades(market_ids=["abc"])
+    _execute.assert_awaited_once()
+
+  @patch.object(
+    StreamTradesOperation,
+    "execute",
+    new_callable=AsyncMock,
+    return_value=StreamTradesResponse(trades=relay()),
+  )
+  async def test_stream_trades(self, _execute: AsyncMock):
+    await self.facade.stream_trades(market_ids=["abc"])
+    _execute.assert_awaited_once()
+
+  @patch.object(
+    StreamMarketsOperation,
+    "execute",
+    new_callable=AsyncMock,
+    return_value=StreamMarketsResponse(markets=relay()),
+  )
+  async def test_stream_markets(self, _execute: AsyncMock):
+    await self.facade.stream_markets(market_ids=["abc"])
+    _execute.assert_awaited_once()
+
+  @patch.object(
+    StreamOrdersOperation,
+    "execute",
+    new_callable=AsyncMock,
+    return_value=StreamOrdersResponse(orders=MagicMock()),
+  )
+  async def test_stream_orders(self, _execute: AsyncMock):
+    await self.facade.stream_orders(market_id="abc")
+    _execute.assert_awaited_once()
+
+  @patch.object(
+    StreamPositionsOperation,
+    "execute",
+    new_callable=AsyncMock,
+    return_value=StreamPositionsResponse(positions=relay()),
+  )
+  async def test_stream_positions(self, _execute: AsyncMock):
+    await self.facade.stream_positions(mine=True)
     _execute.assert_awaited_once()

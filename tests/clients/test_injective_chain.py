@@ -149,7 +149,7 @@ class TestInjectiveChain(IsolatedAsyncioTestCase):
     self.injective_chain._simulate_transaction.assert_awaited_once()
     self.injective_chain._send_transaction.assert_awaited_once()
 
-  async def test_create_order(self):
+  async def test_create_orders(self):
     expected = MagicMock(spec=TxResponse)
     self.injective_chain._execute_transaction = AsyncMock(return_value=expected)
 
@@ -158,3 +158,35 @@ class TestInjectiveChain(IsolatedAsyncioTestCase):
     self.assertEqual(expected, response)
 
     self.injective_chain._execute_transaction.assert_awaited_once()
+
+    message = self.injective_chain._execute_transaction.call_args.args[1][0]
+
+    self.assertIsNotNone(message.binary_options_orders_to_create)
+
+  async def test_cancel_all_orders_for_markets(self):
+    expected = MagicMock(spec=TxResponse)
+    self.injective_chain._execute_transaction = AsyncMock(return_value=expected)
+
+    response = await self.injective_chain.cancel_all_orders_for_markets(self.wallet, ["<market-id>"])
+
+    self.assertEqual(expected, response)
+
+    self.injective_chain._execute_transaction.assert_awaited_once()
+
+    message = self.injective_chain._execute_transaction.call_args.args[1][0]
+
+    self.assertIsNotNone(message.binary_options_market_ids_to_cancel_all)
+
+  async def test_cancel_orders(self):
+    expected = MagicMock(spec=TxResponse)
+    self.injective_chain._execute_transaction = AsyncMock(return_value=expected)
+
+    response = await self.injective_chain.cancel_all_orders_for_markets(self.wallet, ["<market-id>"])
+
+    self.assertEqual(expected, response)
+
+    self.injective_chain._execute_transaction.assert_awaited_once()
+
+    message = self.injective_chain._execute_transaction.call_args.args[1][0]
+
+    self.assertIsNotNone(message.binary_options_orders_to_cancel)
