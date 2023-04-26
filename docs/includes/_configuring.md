@@ -110,7 +110,7 @@ Some endpoints are specified as an <a href="https://en.wikipedia.org/wiki/Unifor
 
 ### Presets
 
-By setting the Environment Variable `FR_PRESET_NODES` to `injective`, Injective's Kubernetes-based nodes on the testnet network 
+By setting the Environment Variable `FR_PRESET_NODES` to `injective`, Injective's Kubernetes-based nodes on the testnet network
 will be used instead of the defaults above.
 
 | Endpoint Type | Default Value |

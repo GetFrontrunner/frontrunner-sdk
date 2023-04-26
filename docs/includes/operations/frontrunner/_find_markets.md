@@ -7,7 +7,6 @@ This operation is a convenience search function built on top of a combination of
 The other Frontrunner operations map 1:1 to the Frontrunner REST API endpoints.
 </aside>
 
-
 ### Parameters
 
 ```python

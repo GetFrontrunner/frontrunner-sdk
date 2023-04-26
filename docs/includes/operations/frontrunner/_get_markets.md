@@ -1,6 +1,6 @@
 ## Frontrunner: Get Markets
 
-Get Frontrunner markets. 
+Get Frontrunner markets.
 
 ### Parameters
 

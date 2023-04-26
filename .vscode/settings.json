@@ -10,7 +10,7 @@
     "no-duplicate-heading": false,
     "first-line-heading": false,
     "no-inline-html": {
-      "allowed_elements": ["a", "aside", "code"]
+      "allowed_elements": ["a", "aside", "code", "ul", "li"]
     }
-  }
+  },
 }

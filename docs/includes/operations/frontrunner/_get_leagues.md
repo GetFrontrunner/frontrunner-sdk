@@ -1,6 +1,6 @@
 ## Frontrunner: Get Leagues
 
-Get Frontrunner leagues. 
+Get Frontrunner leagues.
 
 ### Parameters
 
