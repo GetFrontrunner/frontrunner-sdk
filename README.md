@@ -115,11 +115,13 @@ pants fix ::
 
 ### Local Testing via REPL
 
-To get a Python shell to test code, run...
+To get a Python shell to test code, [comment out the `python_distribution` target][pants-16985] in `/BUILD`. Then run...
 
 ```sh
 pants repl ::
 ```
+
+[pants-16985]: https://github.com/pantsbuild/pants/issues/16985
 
 ### Viewing Docs
 
