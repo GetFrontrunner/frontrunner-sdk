@@ -17,6 +17,9 @@ python_requirements(
     }
 )
 
+# To use `pants repl ::`, comment this block out
+# https://github.com/pantsbuild/pants/issues/16985
+
 python_distribution(
     name="distribution",
     dependencies=[

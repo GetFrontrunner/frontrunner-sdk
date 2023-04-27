@@ -40,6 +40,14 @@ Put this somewhere safe!
 """)
 ```
 
+> **Output**
+
+```text
+Put this somewhere safe!
+
+    bip39 bip39 bip39 bip39 bip39 bip39 bip39 bip39 bip39 bip39 bip39 bip39 bip39 bip39 bip39 bip39 bip39 bip39 bip39 bip39 bip39 bip39 bip39 bip39
+```
+
 In a script or Python REPL, run the following code.
 
 This will create an instance of the SDK which will be used to interact with both Frontrunner and Injective. There are two "versions" of this SDK: synchronous and asynchronous. For this quickstart, we will use the synchronous version.
@@ -61,6 +69,12 @@ market = find_markets.markets[0]
 print(f"Market: {market.long_entity_name} [{market.prop_name}] vs {market.short_entity_name}")
 ```
 
+> **Output**
+
+```text
+Market: New York Knicks [Winner] vs Cleveland Cavaliers
+```
+
 Before we can bet on markets, we'll need to find them. The example here finds all markets where the sport is basketball, the event is a game, and the proposition is for a winner. The response object contains the raw market objects and the market IDs, which will be useful for placing bets.
 
 Then, we'll pick one market to place bets on, and print some info about it.
@@ -79,18 +93,33 @@ USDC_SCALE_FACTOR = 10 ** 6
 # print order book buys
 print("buys:")
 for buy in order_book.buys:
-  print(f"{buy.quantity} @ ${int(buy.price) / USDC_SCALE_FACTOR}")
+  print(f"  {buy.quantity} @ ${int(buy.price) / USDC_SCALE_FACTOR}")
 
 # print order book sells
 print("sells:")
 for sell in order_book.sells:
-  print(f"{sell.quantity} @ ${int(sell.price) / USDC_SCALE_FACTOR}")
+  print(f"  {sell.quantity} @ ${int(sell.price) / USDC_SCALE_FACTOR}")
 
 # find the highest buy and lowest sell
 buy_prices = [int(order.price) / USDC_SCALE_FACTOR for order in order_book.buys]
 sell_prices = [int(order.price) / USDC_SCALE_FACTOR for order in order_book.sells]
 highest_buy, lowest_sell = max(buy_prices), min(sell_prices)
 print(f"bid-ask spread: [${highest_buy}, ${lowest_sell}]")
+```
+
+> **Output**
+
+```text
+buys:
+  5882 @ $0.34
+  9091 @ $0.33
+  15625 @ $0.32
+  5000 @ $0.1
+sells:
+  4364 @ $0.36
+  8108 @ $0.37
+  13158 @ $0.38
+bid-ask spread: [$0.34, $0.36]
 ```
 
 Without knowing much else about the market besides its ID, it's hard to price bets and make orders. Here, we'll place multiple buy orders above the highest buy price.
@@ -116,8 +145,17 @@ Transaction: {create_orders.transaction}
 You can view your transaction at:
 
   https://testnet.explorer.injective.network/transaction/{create_orders.transaction}
-
 """)
+```
+
+> **Output**
+
+```text
+Transaction: 917F980F001120A05642F225E9197CCDF1BB5677A6381F81D2CC95410466008C
+
+You can view your transaction at:
+
+  https://testnet.explorer.injective.network/transaction/917F980F001120A05642F225E9197CCDF1BB5677A6381F81D2CC95410466008C
 ```
 
 To place the orders, we'll call `create_orders`. We'll place...
@@ -136,5 +174,13 @@ get_orders = sdk.injective.get_orders(mine=True, execution_types=["limit"])
 
 print("orders:")
 for order in get_orders.orders:
-  print(f"{order.order_hash}: {order.quantity} @ ${int(order.price) / USDC_SCALE_FACTOR}")
+  print(f"  {order.order_hash}: {order.quantity} @ ${int(order.price) / USDC_SCALE_FACTOR}")
+```
+
+> **Output**
+
+```text
+orders:
+  0x642c138d85a8224093665d1c8bd4fc31e2307fcee62157c7175e5865ea850247: 5 @ $0.03
+  0xd82ced802fdf5ce55a1b37238d83ece7677e4aeb0d576ebb76d041a590ecff16: 10 @ $0.02
 ```

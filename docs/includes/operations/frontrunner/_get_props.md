@@ -1,6 +1,6 @@
 ## Frontrunner: Get Props
 
-Get Frontrunner props. 
+Get Frontrunner props.
 
 ### Parameters
 
