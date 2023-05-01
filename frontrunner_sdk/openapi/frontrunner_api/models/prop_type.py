@@ -27,6 +27,7 @@ class PropType(object):
     allowed enum values
     """
     WINNER = "winner"
+    OTHER = "other"
     """
     Attributes:
       swagger_types (dict): The key is attribute name
