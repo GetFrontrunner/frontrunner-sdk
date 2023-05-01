@@ -9,7 +9,7 @@ First install the [Injective SDK pre-requisites][injective-sdk-prereqs].
 [injective-sdk-prereqs]: https://github.com/InjectiveLabs/sdk-python#dependencies
 
 ```sh
-pip install -y frontrunner-sdk
+pip install frontrunner-sdk
 ```
 
 Then install the Frontrunner SDK.
