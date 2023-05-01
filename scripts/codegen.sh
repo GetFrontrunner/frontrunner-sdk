@@ -42,6 +42,7 @@ for api in "${APIS[@]}"; do
     --output "${REPO_ROOT}/dist/codegen/${api}" \
     --lang python \
     --library asyncio \
+    --template-dir "${REPO_ROOT}/openapi/${api}/templates" \
     -DpackageName="${package_name}" \
     ;
 
