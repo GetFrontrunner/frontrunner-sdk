@@ -162,11 +162,9 @@ class RESTClientObject(object):
                          declared content type."""
                 raise ApiException(status=0, reason=msg)
 
-        # custom code: properly open and close aiohttp connection to avoid "ERROR: Unclosed ..." logs
-        async with self.pool_manager as pm:
-            async with pm.request(**args) as r:
-                data = await r.text()
-                r = RESTResponse(r, data)
+        async with self.pool_manager.request(**args) as r:
+            data = await r.text()
+            r = RESTResponse(r, data)
 
         # log response body
         logger.debug("response body: %s", r.data)
