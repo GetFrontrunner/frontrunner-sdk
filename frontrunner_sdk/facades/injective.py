@@ -51,6 +51,9 @@ from frontrunner_sdk.helpers.parameters import as_request_args
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.models.cancel_order import CancelOrder
 from frontrunner_sdk.models.order import Order
+from frontrunner_sdk.models.order import OrderExecutionType
+from frontrunner_sdk.models.order import OrderState
+from frontrunner_sdk.models.order import OrderType
 from frontrunner_sdk.sync import SyncMixin
 
 
@@ -94,9 +97,9 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     subaccount_id: Optional[str] = None,
     direction: Optional[Literal["buy", "sell"]] = None,
     is_conditional: Optional[bool] = None,
-    order_types: Optional[List[str]] = None,
-    state: Optional[str] = None,
-    execution_types: Optional[List[str]] = None,
+    order_types: Optional[List[OrderType]] = None,
+    state: Optional[OrderState] = None,
+    execution_types: Optional[List[OrderExecutionType]] = None,
     start_time: Optional[datetime] = None,
     end_time: Optional[datetime] = None,
   ) -> GetOrdersResponse:
@@ -190,7 +193,7 @@ class InjectiveFacade(SyncMixin):
   def cancel_all_orders(self) -> CancelAllOrdersResponse:
     return self._synchronously(self.impl.cancel_all_orders)
 
-  def cancel_orders(self, orders: Iterable[Order]) -> CancelOrdersResponse:
+  def cancel_orders(self, orders: Iterable[CancelOrder]) -> CancelOrdersResponse:
     return self._synchronously(self.impl.cancel_orders, orders)
 
   def get_account_portfolio(self) -> GetAccountPortfolioResponse:
@@ -206,9 +209,9 @@ class InjectiveFacade(SyncMixin):
     subaccount_id: Optional[str] = None,
     direction: Optional[Literal["buy", "sell"]] = None,
     is_conditional: Optional[bool] = None,
-    order_types: Optional[List[str]] = None,
-    state: Optional[str] = None,
-    execution_types: Optional[List[str]] = None,
+    order_types: Optional[List[OrderType]] = None,
+    state: Optional[OrderState] = None,
+    execution_types: Optional[List[OrderExecutionType]] = None,
     start_time: Optional[datetime] = None,
     end_time: Optional[datetime] = None,
   ) -> GetOrdersResponse:
