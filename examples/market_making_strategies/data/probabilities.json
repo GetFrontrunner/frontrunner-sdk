@@ -1,0 +1,37 @@
+{
+  "orderSizePerSide": 100,
+	"spreadSizeDollars": 0.04,
+  "tickTimeSeconds": 5,
+  "probabilitiesLists": [
+    [
+      {
+        "injectiveMarketId": "0x02a6290d38b91b919421c5ac84b3f7519abcb0c2aa66d0cc8bd2f33d391a40f8",
+        "longProbability": 0.10
+      },
+      {
+        "injectiveMarketId": "0x02e322742acc22022dccb474cf609861a3579f56ee47ff261481ba1bd7d1ff33",
+        "longProbability": 0.15
+      }
+    ],
+    [
+      {
+        "injectiveMarketId": "0x02a6290d38b91b919421c5ac84b3f7519abcb0c2aa66d0cc8bd2f33d391a40f8",
+        "longProbability": 0.12
+      },
+      {
+        "injectiveMarketId": "0x02e322742acc22022dccb474cf609861a3579f56ee47ff261481ba1bd7d1ff33",
+        "longProbability": 0.18
+      }
+    ],
+    [
+      {
+        "injectiveMarketId": "0x02a6290d38b91b919421c5ac84b3f7519abcb0c2aa66d0cc8bd2f33d391a40f8",
+        "longProbability": 0.68
+      },
+      {
+        "injectiveMarketId": "0x02e322742acc22022dccb474cf609861a3579f56ee47ff261481ba1bd7d1ff33",
+        "longProbability": 0.62
+      }
+    ]
+  ]
+}
