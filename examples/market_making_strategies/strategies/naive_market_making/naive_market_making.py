@@ -1,7 +1,8 @@
 """
-1. Reads list in the format below, 
-2. Processing a new sub-list every tickTimeSeconds 
-3. Canceling/re-creating corresponding orders as needed to create a spread of spreadSizeDollars with order sizes of orderSizePerSide
+1. Reads list in the format below,
+2. Processing a new sub-list every tickTimeSeconds
+3. Canceling/re-creating corresponding orders as needed to create a spread of spreadSizeDollars
+with order sizes of orderSizePerSide
 """
 
 import asyncio
@@ -26,29 +27,27 @@ class NaiveMarketMaker(MarketMaker):
     super().__init__(market_id=market_id, n_orders=n_orders)
     self.buy_for = SortedKeyList(key=lambda order: -int(order.price))
     self.buy_against = SortedKeyList(key=lambda order: int(order.price))
-    # self.sleep_time = sleep_time
     self.spread_size_dollars = 0.04
     self.order_size_per_side = 10
-    # self.order_size_per_side = 10
     self.tick_time_seconds = tick_time_seconds
-    # self.long_probabilities = []
 
   def float_round_down(self, probability: float, decimal: int = 2) -> float:
     return floor(probability * (10**decimal)) / (10**decimal)
 
   def read_probability_data(self, data: Dict):
-    self.order_size_per_side = int(data['orderSizePerSide'])
-    self.spread_size_dollars = float(data['spreadSizeDollars'])
-    self.tick_time_seconds = int(data['tickTimeSeconds'])
-    prob_list = data['probabilitiesLists']
-    return [prob['longProbability'] for prob in prob_list if prob['injectiveMarketId'] == self.market_id]
+    self.order_size_per_side = int(data["orderSizePerSide"])
+    self.spread_size_dollars = float(data["spreadSizeDollars"])
+    self.tick_time_seconds = int(data["tickTimeSeconds"])
+    prob_list = data["probabilitiesLists"]
+    return [prob["longProbability"] for prob in prob_list if prob["injectiveMarketId"] == self.market_id]
 
   def _get_prices(self):
     pass
 
   def get_prices(self, probabilities: List[float]) -> Tuple[List[float], List[float]]:
-    buy_long_prices = [] #SortedList()
-    buy_short_prices = [] #SortedList()
+    # TODO: maybe be its better with SortedList()
+    buy_long_prices = []
+    buy_short_prices = []
 
     for probability in probabilities:
       if probability < 1 - probability:
@@ -95,12 +94,14 @@ class NaiveMarketMaker(MarketMaker):
       new_orders = self.get_new_order(prices, quantities)
 
       #  get the old orders, we will cancel them after we send new orders
-      #  TODO ideally we send a new order, and cancel an old order
-      # this can be done in batch order, meaning both new order and cancel order happens in same block, but I can't find it
+      #  TODO: ideally we send a new order, and cancel an old order
+      #  this can be done in batch order, meaning both new order and cancel order happens in same block,
+      #  but I can't find it
       orders_to_cancel = asyncio.run(self.get_my_orders())
       asyncio.run(self.create_orders(new_orders))
 
-      # we canel the outdated orders, because we have sent the new orders to chain. Cancel outdated orders now will not leave orderbook empty
+      # we canel the outdated orders, because we have sent the new orders to chain.
+      # Cancel outdated orders now will not leave orderbook empty
       old_orders_to_cacnel = [
         CancelOrder(market_id=self.market_id, order_hash=order.order_hash) for order in orders_to_cancel.orders
       ]
@@ -126,7 +127,7 @@ class NaiveMarketMaker(MarketMaker):
       if (len(self.buy_for) != self.n_orders):
         if len(self.buy_for) < self.n_orders:
           for i in range(len(self.buy_for), self.n_orders):
-            #FIXME not correct
+            # FIXME not good
             new_buy_for_prices.append(prices[0][i])
             new_buy_for_quantities = self._get_quantities(new_buy_for_prices, self.order_size_per_side)
             # add more orders
@@ -140,9 +141,8 @@ class NaiveMarketMaker(MarketMaker):
           return
       if (len(self.buy_against) != self.n_orders):
         if len(self.buy_against) < self.n_orders:
-          n_missing_orders = self.n_orders - len(self.buy_against)
           for i in range(len(self.buy_against), self.n_orders):
-            #FIXME not correct
+            # FIXME: not good
             new_buy_against_prices.append(prices[1][i])
             new_buy_against_quantities = self._get_quantities(new_buy_against_prices, self.order_size_per_side)
             # add more orders
@@ -182,7 +182,7 @@ class NaiveMarketMaker(MarketMaker):
 # 6 when to stop the bot
 # 7 if there is an error, cancel all my current open orders
 
-if __name__ == '__main__':
+if __name__ == "__main__":
   # We assume the probability data is saved in a json file, this file will be updated every n minutes
   naive_market_maker = NaiveMarketMaker(market_id="market_id", n_orders=10, tick_time_seconds=5)
   naive_market_maker.start()

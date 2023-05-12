@@ -47,7 +47,7 @@ class MarketMaker:
                                                                                              "short"]]) -> List[Order]:
     zipped_orders = zip(prices, quantities, sides)
     return [
-      Order(direction='buy', side=order[2], market_id=self.market_id, quantity=order[1], price=order[0])
+      Order(direction="buy", side=order[2], market_id=self.market_id, quantity=order[1], price=order[0])
       for order in zipped_orders
     ]
 
@@ -58,7 +58,7 @@ class MarketMaker:
     # if no enough position this will fail
     zipped_orders = zip(prices, quantities, sides)
     return [
-      Order(direction='sell', side=order[2], market_id=self.market_id, quantity=order[1], price=order[0])
+      Order(direction="sell", side=order[2], market_id=self.market_id, quantity=order[1], price=order[0])
       for order in zipped_orders
     ]
 
@@ -87,10 +87,10 @@ class MarketMaker:
     return await self.async_inj.cancel_all_orders()
 
   def strategy(self):
-    raise NotImplemented
+    raise NotImplementedError
 
   def initilization(self):
-    raise NotImplemented
+    raise NotImplementedError
 
   def start(self):
-    raise NotImplemented
+    raise NotImplementedError
