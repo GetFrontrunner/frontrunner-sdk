@@ -3,3 +3,4 @@ aiohttp~=3.8.4
 
 # dependency of dependency that we need to reference
 grpcio
+protobuf
