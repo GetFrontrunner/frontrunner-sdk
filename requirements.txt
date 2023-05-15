@@ -1,9 +1,5 @@
 injective-py==0.6.*
 aiohttp~=3.8.4
 
-# injective-py 0.6.* breaks on protobuf 4.x and there's complications pinning
-# it upstream, so we're pinning it here
-protobuf==3.*
-
 # dependency of dependency that we need to reference
 grpcio
