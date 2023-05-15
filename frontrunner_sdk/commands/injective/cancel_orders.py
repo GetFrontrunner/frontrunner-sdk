@@ -1,5 +1,8 @@
 from dataclasses import dataclass
 from typing import Iterable
+from typing import Optional
+
+from pyinjective.proto.exchange.injective_derivative_exchange_rpc_pb2 import DerivativeLimitOrder # NOQA
 
 from frontrunner_sdk.commands.base import FrontrunnerOperation
 from frontrunner_sdk.exceptions import FrontrunnerArgumentException
@@ -15,7 +18,8 @@ class CancelAllOrdersRequest:
 
 @dataclass
 class CancelAllOrdersResponse:
-  transaction: str
+  orders: Iterable[DerivativeLimitOrder]
+  transaction: Optional[str] = None
 
 
 class CancelAllOrdersOperation(FrontrunnerOperation[CancelAllOrdersRequest, CancelAllOrdersResponse]):
@@ -32,11 +36,17 @@ class CancelAllOrdersOperation(FrontrunnerOperation[CancelAllOrdersRequest, Canc
 
     open_orders = await deps.injective_chain.get_all_open_orders(wallet)
 
+    if not open_orders:
+      return CancelAllOrdersResponse(orders=[])
+
     injective_market_ids = {order.market_id for order in open_orders}
 
     response = await deps.injective_chain.cancel_all_orders_for_markets(wallet, injective_market_ids)
 
-    return CancelAllOrdersResponse(transaction=response.txhash)
+    return CancelAllOrdersResponse(
+      transaction=response.txhash,
+      orders=open_orders,
+    )
 
 
 @dataclass

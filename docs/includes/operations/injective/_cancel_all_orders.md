@@ -15,8 +15,12 @@ There are no parameters for this operation.
 
 ```python
 print("transaction:", response.transaction)
+print("orders:")
+for order in response.orders:
+  print(f"\tmarket: {order.market_id[:12]}... price: {order.price} quantity: {order.quantity}")
 ```
 
 | Name | Type | Description |
 | - | - | - |
-| `transaction` | `str` | Transaction ID of the order cancellation |
+| `orders` | `Iterable[DerivativeLimitOrder]` | Cancelled orders |
+| `transaction` | `Optional[str]` | Transaction ID of the order cancellation |

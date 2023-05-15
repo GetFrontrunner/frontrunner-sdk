@@ -41,9 +41,26 @@ class TestCancelOrdersOperation(IsolatedAsyncioTestCase):
     res = await cmd.execute(self.deps)
 
     self.assertEqual(res.transaction, "<txhash>")
+    self.assertEqual(res.orders, self.order_responses)
 
     self.deps.injective_chain.get_all_open_orders.assert_awaited_once()
     self.deps.injective_chain.cancel_all_orders_for_markets.assert_awaited_once_with(wallet, self.market_ids)
+
+  async def test_cancel_all_orders_when_no_orders(self):
+    wallet = Wallet._new()
+
+    self.deps.wallet = AsyncMock(return_value=wallet)
+    self.deps.injective_chain.get_all_open_orders = AsyncMock(return_value=[])
+    self.deps.injective_chain.cancel_all_orders_for_markets = AsyncMock()
+
+    req = CancelAllOrdersRequest()
+    cmd = CancelAllOrdersOperation(req)
+    res = await cmd.execute(self.deps)
+
+    self.assertIsNone(res.transaction)
+    self.assertEqual(res.orders, [])
+
+    self.deps.injective_chain.cancel_all_orders_for_markets.assert_not_awaited()
 
   async def test_cancel_orders(self):
     wallet = Wallet._new()

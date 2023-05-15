@@ -86,7 +86,7 @@ class TestInjectiveFacadeAsync(IsolatedAsyncioTestCase):
     CancelAllOrdersOperation,
     "execute",
     new_callable=AsyncMock,
-    return_value=CancelAllOrdersResponse(transaction="<hash>"),
+    return_value=CancelAllOrdersResponse(transaction="<hash>", orders=[]),
   )
   async def test_cancel_all_orders(self, _execute: AsyncMock):
     await self.facade.cancel_all_orders()
