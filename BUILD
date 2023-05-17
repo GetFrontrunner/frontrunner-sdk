@@ -44,7 +44,7 @@ python_distribution(
         author="Frontrunner",
         author_email="support@getfrontrunner.com",
         url="https://github.com/GetFrontrunner/frontrunner-sdk",
-        python_requires=">=3.8,<=3.10",
+        python_requires=">=3.8,<3.11",
         classifiers=[
             # https://pypi.org/classifiers/
             "Development Status :: 3 - Alpha",
