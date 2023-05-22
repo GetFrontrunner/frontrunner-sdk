@@ -33,10 +33,10 @@ DEFAULT: FrontrunnerConfig = ChainedFrontrunnerConfig([
 
   # frontrunner network
   StaticFrontrunnerConfig(
-    injective_exchange_authority="injective-node-v2-prod.grpc-exchange.getfrontrunner.com:443",
-    injective_explorer_authority="injective-node-v2-prod.grpc-explorer.getfrontrunner.com:443",
-    injective_grpc_authority="injective-node-v2-prod.grpc.getfrontrunner.com:443",
-    injective_lcd_base_url="https://injective-node-v2-prod.lcd.getfrontrunner.com",
-    injective_rpc_base_url="wss://injective-node-v2-prod.tm.getfrontrunner.com/websocket",
+    injective_exchange_authority="injective-node-testnet.grpc-exchange.getfrontrunner.com:443",
+    injective_explorer_authority="injective-node-testnet.grpc-explorer.getfrontrunner.com:443",
+    injective_grpc_authority="injective-node-testnet.grpc.getfrontrunner.com:443",
+    injective_lcd_base_url="https://injective-node-testnet.lcd.getfrontrunner.com",
+    injective_rpc_base_url="wss://injective-node-testnet.tm.getfrontrunner.com/websocket",
   ),
 ])
