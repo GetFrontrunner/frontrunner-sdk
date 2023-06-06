@@ -14,7 +14,7 @@ from frontrunner_sdk.helpers.validation import validate_mutually_exclusive
 from frontrunner_sdk.helpers.validation import validate_start_time_end_time
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.logging.log_operation import log_operation
-from frontrunner_sdk.models import OrderExecutionType
+from frontrunner_sdk.models import OrderExecutionType, FrOrderType, DerivativeOrderHistoryWrapper, wrap_derivative_order_histories
 from frontrunner_sdk.models import OrderState
 from frontrunner_sdk.models import OrderType
 
@@ -37,7 +37,7 @@ class GetOrdersRequest:
 
 @dataclass
 class GetOrdersResponse:
-  orders: Sequence[DerivativeOrderHistory]
+  orders: Sequence[DerivativeOrderHistoryWrapper]
 
 
 class GetOrdersOperation(FrontrunnerOperation[GetOrdersRequest, GetOrdersResponse]):
@@ -66,7 +66,7 @@ class GetOrdersOperation(FrontrunnerOperation[GetOrdersRequest, GetOrdersRespons
     if self.request.end_time:
       request["end_time"] = int(self.request.end_time.timestamp())
 
-    orders: Sequence[DerivativeLimitOrder] = await injective_paginated_list(
+    orders: Sequence[DerivativeOrderHistory] = await injective_paginated_list(
       deps.injective_client.get_historical_derivative_orders,
       "orders",
       # Force market_id=None since we use optional market_ids param instead
@@ -74,5 +74,6 @@ class GetOrdersOperation(FrontrunnerOperation[GetOrdersRequest, GetOrdersRespons
       None,
       **request,
     )
+    wrapped_orders = wrap_derivative_order_histories(orders)
 
-    return GetOrdersResponse(orders=orders)
+    return GetOrdersResponse(orders=wrapped_orders)
