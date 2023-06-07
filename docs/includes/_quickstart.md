@@ -173,14 +173,14 @@ Contact [support@getfrontrunner.com][support] to request testnet USDC to trade i
 get_orders = sdk.injective.get_orders(mine=True, execution_types=["limit"])
 
 print("orders:")
-for order in get_orders.orders:
-  print(f"  {order.order_hash}: {order.quantity} @ ${int(order.price) / USDC_SCALE_FACTOR}")
+for order_history in get_orders.orders:
+  print(f"  {order_history.order_type} {order_history.order.order_hash}: {order_history.order.quantity} @ ${int(order_history.order.price) / USDC_SCALE_FACTOR}")
 ```
 
 > **Output**
 
 ```text
 orders:
-  0x642c138d85a8224093665d1c8bd4fc31e2307fcee62157c7175e5865ea850247: 5 @ $0.03
-  0xd82ced802fdf5ce55a1b37238d83ece7677e4aeb0d576ebb76d041a590ecff16: 10 @ $0.02
+  OrderType.BUY_LONG 0x642c138d85a8224093665d1c8bd4fc31e2307fcee62157c7175e5865ea850247: 5 @ $0.03
+  OrderType.BUY_LONG 0xd82ced802fdf5ce55a1b37238d83ece7677e4aeb0d576ebb76d041a590ecff16: 10 @ $0.02
 ```

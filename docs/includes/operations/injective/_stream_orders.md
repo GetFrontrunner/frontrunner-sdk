@@ -33,10 +33,10 @@ async def run():
 async def run():
   response = ...
 
-  async for order in response.orders:
-    print("order:", order.operation_type, order.order.order_hash)
+  async for order_history in response.orders:
+    print("order:", order_history.order_type, order_history.order.order_hash)
 ```
 
 | Name | Type | Description |
 | - | - | - |
-| `orders` | `AsyncIterator[DerivativeOrderHistory]` | Iterator for orders |
+| `orders` | `AsyncIterator[OrderHistory]` | Iterator for orders |
