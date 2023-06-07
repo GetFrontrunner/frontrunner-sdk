@@ -18,7 +18,7 @@ InjectiveOrderState = Literal["booked", "partial_filled", "filled", "canceled"]
 InjectiveOrderType = Literal["buy", "sell", "stop_buy", "stop_sell", "take_buy", "take_sell", "buy_po", "sell_po"]
 
 
-class FrOrderType(Enum):
+class OrderType(Enum):
   BUY_LONG = 0
   BUY_SHORT = 1
   SELL_LONG = 2
@@ -30,23 +30,23 @@ class OrderHistory:
   order: DerivativeOrderHistory
 
   # https://dataclass-wizard.readthedocs.io/en/latest/using_field_properties.html
-  fr_order_type: FrOrderType = field(init=False)
-  _fr_order_type: FrOrderType = field(repr=False, init=False)
+  fr_order_type: OrderType = field(init=False)
+  _fr_order_type: OrderType = field(repr=False, init=False)
 
   @property # type: ignore[no-redef]
   def fr_order_type(self):
     return self._fr_order_type
 
   @fr_order_type.setter
-  def fr_order_type(self, fr_order_type: FrOrderType):
+  def fr_order_type(self, fr_order_type: OrderType):
     if self.order.direction == "buy" and not self.order.is_reduce_only:
-      self._fr_order_type = FrOrderType.BUY_LONG
+      self._fr_order_type = OrderType.BUY_LONG
     elif self.order.direction == "sell" and not self.order.is_reduce_only:
-      self._fr_order_type = FrOrderType.BUY_SHORT
+      self._fr_order_type = OrderType.BUY_SHORT
     elif self.order.direction == "buy" and self.order.is_reduce_only:
-      self._fr_order_type = FrOrderType.SELL_SHORT
+      self._fr_order_type = OrderType.SELL_SHORT
     elif self.order.direction == "sell" and self.order.is_reduce_only:
-      self._fr_order_type = FrOrderType.SELL_LONG
+      self._fr_order_type = OrderType.SELL_LONG
     else:
       raise FrontrunnerInjectiveException("Unable to compute Frontrunner order type")
 
