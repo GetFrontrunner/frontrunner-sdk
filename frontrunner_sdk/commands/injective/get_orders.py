@@ -67,7 +67,7 @@ class GetOrdersOperation(FrontrunnerOperation[GetOrdersRequest, GetOrdersRespons
     if self.request.end_time:
       request["end_time"] = int(self.request.end_time.timestamp())
 
-    orders: Sequence[DerivativeOrderHistory] = await injective_paginated_list(
+    injective_orders: Sequence[DerivativeOrderHistory] = await injective_paginated_list(
       deps.injective_client.get_historical_derivative_orders,
       "orders",
       # Force market_id=None since we use optional market_ids param instead
@@ -76,6 +76,6 @@ class GetOrdersOperation(FrontrunnerOperation[GetOrdersRequest, GetOrdersRespons
       **request,
     )
 
-    wrapped_orders = OrderHistory._from_injective_derivative_order_histories(orders)
+    orders = OrderHistory._from_injective_derivative_order_histories(injective_orders)
 
-    return GetOrdersResponse(orders=wrapped_orders)
+    return GetOrdersResponse(orders=orders)
