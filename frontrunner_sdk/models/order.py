@@ -8,6 +8,8 @@ from typing import TypeVar
 
 from pyinjective.proto.exchange.injective_derivative_exchange_rpc_pb2 import DerivativeOrderHistory # NOQA
 
+from frontrunner_sdk.exceptions import FrontrunnerInjectiveException
+
 T = TypeVar("T", bound="OrderHistory")
 
 InjectiveOrderExecutionType = Literal["limit", "market"]
@@ -38,12 +40,14 @@ class OrderHistory:
   def fr_order_type(self, fr_order_type: FrOrderType):
     if self.order.direction == "buy" and not self.order.is_reduce_only:
       self._fr_order_type = FrOrderType.BUY_LONG
-    if self.order.direction == "sell" and not self.order.is_reduce_only:
+    elif self.order.direction == "sell" and not self.order.is_reduce_only:
       self._fr_order_type = FrOrderType.BUY_SHORT
-    if self.order.direction == "buy" and self.order.is_reduce_only:
+    elif self.order.direction == "buy" and self.order.is_reduce_only:
       self._fr_order_type = FrOrderType.SELL_SHORT
-    if self.order.direction == "sell" and self.order.is_reduce_only:
+    elif self.order.direction == "sell" and self.order.is_reduce_only:
       self._fr_order_type = FrOrderType.SELL_LONG
+    else:
+      raise FrontrunnerInjectiveException("Unable to compute Frontrunner order type")
 
   @classmethod
   def _from_injective_derivative_order_histories(cls: Type[T], orders: Sequence[DerivativeOrderHistory]) -> Sequence[T]:

@@ -8,6 +8,7 @@ from frontrunner_sdk.commands.injective.get_orders import GetOrdersOperation # N
 from frontrunner_sdk.commands.injective.get_orders import GetOrdersRequest # NOQA
 from frontrunner_sdk.exceptions import FrontrunnerArgumentException # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
+from frontrunner_sdk.models import OrderHistory
 from frontrunner_sdk.models.wallet import Wallet
 
 
@@ -19,7 +20,7 @@ class TestGetOrdersOperation(IsolatedAsyncioTestCase):
     self.market_ids = ["0x1234"]
     self.order_types = ["stop_buy"]
     self.execution_types = ["limit"]
-    self.orders = [MagicMock(), MagicMock()]
+    self.orders = [MagicMock(direction="buy", is_reduce_only=False), MagicMock(direction="buy", is_reduce_only=False)]
 
     self.orders_response = MagicMock(
       orders=self.orders,
@@ -77,7 +78,7 @@ class TestGetOrdersOperation(IsolatedAsyncioTestCase):
     cmd = GetOrdersOperation(req)
     res = await cmd.execute(self.deps)
 
-    self.assertEqual(res.orders, self.orders)
+    self.assertEqual(res.orders, OrderHistory._from_injective_derivative_order_histories(self.orders))
 
     self.deps.injective_client.get_historical_derivative_orders.assert_awaited_once_with(
       None,
@@ -105,7 +106,7 @@ class TestGetOrdersOperation(IsolatedAsyncioTestCase):
     cmd = GetOrdersOperation(req)
     res = await cmd.execute(self.deps)
 
-    self.assertEqual(res.orders, self.orders)
+    self.assertEqual(res.orders, OrderHistory._from_injective_derivative_order_histories(self.orders))
 
     self.deps.injective_client.get_historical_derivative_orders.assert_awaited_once_with(
       None,
