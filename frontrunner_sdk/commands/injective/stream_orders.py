@@ -13,9 +13,10 @@ from frontrunner_sdk.helpers.streams import injective_stream
 from frontrunner_sdk.helpers.validation import validate_mutually_exclusive
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.logging.log_operation import log_operation
-from frontrunner_sdk.models import OrderExecutionType
-from frontrunner_sdk.models import OrderState
-from frontrunner_sdk.models import OrderType
+from frontrunner_sdk.models import InjectiveOrderExecutionType
+from frontrunner_sdk.models import InjectiveOrderState
+from frontrunner_sdk.models import InjectiveOrderType
+from frontrunner_sdk.models import OrderHistory
 
 
 @dataclass
@@ -26,14 +27,14 @@ class StreamOrdersRequest:
   market_id: str
   direction: Optional[Literal["buy", "sell"]] = None
   subaccount_id: Optional[str] = None
-  order_types: Optional[List[OrderType]] = None
-  state: Optional[OrderState] = None
-  execution_types: Optional[List[OrderExecutionType]] = None
+  order_types: Optional[List[InjectiveOrderType]] = None
+  state: Optional[InjectiveOrderState] = None
+  execution_types: Optional[List[InjectiveOrderExecutionType]] = None
 
 
 @dataclass
 class StreamOrdersResponse:
-  orders: AsyncIterator[DerivativeOrderHistory]
+  orders: AsyncIterator[OrderHistory]
 
 
 class StreamOrdersOperation(FrontrunnerOperation[StreamOrdersRequest, StreamOrdersResponse]):
@@ -56,8 +57,9 @@ class StreamOrdersOperation(FrontrunnerOperation[StreamOrdersRequest, StreamOrde
       wallet = await deps.wallet()
       request["subaccount_id"] = wallet.subaccount_address()
 
-    orders: AsyncIterator[DerivativeOrderHistory] = await injective_stream(
+    injective_orders: AsyncIterator[DerivativeOrderHistory] = await injective_stream(
       deps.injective_client.stream_historical_derivative_orders,
       **request,
     )
+    orders: AsyncIterator[OrderHistory] = OrderHistory._from_async_iterator(injective_orders)
     return StreamOrdersResponse(orders)

@@ -28,15 +28,15 @@ response = sdk.injective.get_orders(mine=True)
 
 ```python
 print("orders:")
-for order in response.orders:
+for order_history in response.orders:
   print(
     "order:",
-    order.order_type,
-    order.quantity, "@", order.trigger_price,
-    order.order_hash,
+    order_history.order_type,
+    order_history.order.quantity, "@", order_history.order.trigger_price,
+    order_history.order.order_hash,
   )
 ```
 
 | Name | Type | Description |
 | - | - | - |
-| `orders` | `[Order]` | Orders |
+| `orders` | `[OrderHistory]` | Orders |

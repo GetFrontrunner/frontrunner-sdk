@@ -7,6 +7,7 @@ from frontrunner_sdk.commands.injective.stream_orders import StreamOrdersOperati
 from frontrunner_sdk.commands.injective.stream_orders import StreamOrdersRequest # NOQA
 from frontrunner_sdk.exceptions import FrontrunnerArgumentException # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
+from frontrunner_sdk.models import OrderHistory
 from frontrunner_sdk.models.wallet import Wallet
 
 
@@ -26,8 +27,11 @@ class TestStreamOrdersOperation(IsolatedAsyncioTestCase):
     self.wallet = Wallet._new()
     self.deps = MagicMock(spec=FrontrunnerIoC)
     self.market_id = "0x1234"
-    self.fake_order_contents = ["id1", "id2"]
-    self.orders = [MagicMock(order=self.fake_order_contents[0]), MagicMock(order=self.fake_order_contents[1])]
+    self.fake_order_contents = [
+      MagicMock(direction="buy", is_reduce_only=False),
+      MagicMock(direction="buy", is_reduce_only=False)
+    ]
+    self.orders = [MagicMock(order=o) for o in self.fake_order_contents]
     self.orders_iterator = TestIterator(self.orders)
     self.orders_response = AsyncMock(return_value=self.orders_iterator.response())
 
@@ -59,7 +63,9 @@ class TestStreamOrdersOperation(IsolatedAsyncioTestCase):
 
     # note that it is necessary to evaluate the response iterator (here we do it with list comprehension)
     # in order for the assert_awaited_* calls to succeed
-    self.assertEqual(self.orders, [t async for t in res.orders])
+    self.assertEqual(
+      OrderHistory._from_injective_derivative_order_histories(self.fake_order_contents), [t async for t in res.orders]
+    )
 
     self.deps.injective_client.stream_historical_derivative_orders.assert_awaited_once()
 
@@ -70,7 +76,9 @@ class TestStreamOrdersOperation(IsolatedAsyncioTestCase):
     req = StreamOrdersRequest(market_id=self.market_id, mine=True)
     cmd = StreamOrdersOperation(req)
     res = await cmd.execute(self.deps)
-    self.assertEqual(self.orders, [t async for t in res.orders])
+    self.assertEqual(
+      OrderHistory._from_injective_derivative_order_histories(self.fake_order_contents), [t async for t in res.orders]
+    )
 
     self.deps.injective_client.stream_historical_derivative_orders.assert_awaited_once_with(
       market_id=self.market_id,
@@ -87,7 +95,9 @@ class TestStreamOrdersOperation(IsolatedAsyncioTestCase):
     )
     cmd = StreamOrdersOperation(req)
     res = await cmd.execute(self.deps)
-    self.assertEqual(self.orders, [t async for t in res.orders])
+    self.assertEqual(
+      OrderHistory._from_injective_derivative_order_histories(self.fake_order_contents), [t async for t in res.orders]
+    )
 
     self.deps.injective_client.stream_historical_derivative_orders.assert_awaited_once_with(
       market_id=self.market_id,
@@ -107,7 +117,9 @@ class TestStreamOrdersOperation(IsolatedAsyncioTestCase):
     )
     cmd = StreamOrdersOperation(req)
     res = await cmd.execute(self.deps)
-    self.assertEqual(self.orders, [t async for t in res.orders])
+    self.assertEqual(
+      OrderHistory._from_injective_derivative_order_histories(self.fake_order_contents), [t async for t in res.orders]
+    )
 
     self.deps.injective_client.stream_historical_derivative_orders.assert_awaited_once_with(
       market_id=self.market_id, direction="buy", state="booked", order_types=["buy"], execution_types=["limit"]

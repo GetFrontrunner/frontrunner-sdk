@@ -14,9 +14,10 @@ from frontrunner_sdk.helpers.validation import validate_mutually_exclusive
 from frontrunner_sdk.helpers.validation import validate_start_time_end_time
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.logging.log_operation import log_operation
-from frontrunner_sdk.models import OrderExecutionType
-from frontrunner_sdk.models import OrderState
-from frontrunner_sdk.models import OrderType
+from frontrunner_sdk.models import InjectiveOrderExecutionType
+from frontrunner_sdk.models import InjectiveOrderState
+from frontrunner_sdk.models import InjectiveOrderType
+from frontrunner_sdk.models import OrderHistory
 
 
 @dataclass
@@ -28,16 +29,16 @@ class GetOrdersRequest:
   subaccount_id: Optional[str] = None
   direction: Optional[Literal["buy", "sell"]] = None
   is_conditional: Optional[bool] = None
-  order_types: Optional[List[OrderType]] = None
-  state: Optional[OrderState] = None
-  execution_types: Optional[List[OrderExecutionType]] = None
+  order_types: Optional[List[InjectiveOrderType]] = None
+  state: Optional[InjectiveOrderState] = None
+  execution_types: Optional[List[InjectiveOrderExecutionType]] = None
   start_time: Optional[datetime] = None
   end_time: Optional[datetime] = None
 
 
 @dataclass
 class GetOrdersResponse:
-  orders: Sequence[DerivativeOrderHistory]
+  orders: Sequence[OrderHistory]
 
 
 class GetOrdersOperation(FrontrunnerOperation[GetOrdersRequest, GetOrdersResponse]):
@@ -66,7 +67,7 @@ class GetOrdersOperation(FrontrunnerOperation[GetOrdersRequest, GetOrdersRespons
     if self.request.end_time:
       request["end_time"] = int(self.request.end_time.timestamp())
 
-    orders: Sequence[DerivativeLimitOrder] = await injective_paginated_list(
+    injective_orders: Sequence[DerivativeOrderHistory] = await injective_paginated_list(
       deps.injective_client.get_historical_derivative_orders,
       "orders",
       # Force market_id=None since we use optional market_ids param instead
@@ -74,5 +75,7 @@ class GetOrdersOperation(FrontrunnerOperation[GetOrdersRequest, GetOrdersRespons
       None,
       **request,
     )
+
+    orders = OrderHistory._from_injective_derivative_order_histories(injective_orders)
 
     return GetOrdersResponse(orders=orders)
