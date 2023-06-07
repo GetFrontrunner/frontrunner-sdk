@@ -42,7 +42,7 @@ class OrderHistory:
       raise FrontrunnerInjectiveException(
         "Unable to compute Frontrunner order type",
         direction=self.order.direction,
-        is_reduce_only=self.order.is_reduce_only
+        is_reduce_only=self.order.is_reduce_only,
       )
 
   def __repr__(self):
