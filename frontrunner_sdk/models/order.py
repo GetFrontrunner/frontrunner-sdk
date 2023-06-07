@@ -1,12 +1,17 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
-from typing import Literal, Sequence
+from typing import Literal
+from typing import Sequence
+from typing import Type
+from typing import TypeVar
 
-from pyinjective.proto.exchange.injective_derivative_exchange_rpc_pb2 import DerivativeOrderHistory
+from pyinjective.proto.exchange.injective_derivative_exchange_rpc_pb2 import DerivativeOrderHistory # NOQA
 
-OrderType = Literal["buy", "sell", "stop_buy", "stop_sell", "take_buy", "take_sell", "buy_po", "sell_po"]
-OrderState = Literal["booked", "partial_filled", "filled", "canceled"]
-OrderExecutionType = Literal["limit", "market"]
+T = TypeVar("T", bound="OrderHistory")
+
+InjectiveOrderExecutionType = Literal["limit", "market"]
+InjectiveOrderState = Literal["booked", "partial_filled", "filled", "canceled"]
+InjectiveOrderType = Literal["buy", "sell", "stop_buy", "stop_sell", "take_buy", "take_sell", "buy_po", "sell_po"]
 
 
 class FrOrderType(Enum):
@@ -15,29 +20,25 @@ class FrOrderType(Enum):
   SELL_LONG = 2
   SELL_SHORT = 3
 
+
 @dataclass
-class DerivativeOrderHistoryWrapper:
+class OrderHistory:
   order: DerivativeOrderHistory
-  frOrderType: FrOrderType = field(init=False)
 
-  def __post_init__(self):
-    # https://docs.python.org/3.7/library/dataclasses.html#post-init-processing
-    self.frOrderType = self._order_to_fr_order_type(self.order)
-
-  @staticmethod
-  def _order_to_fr_order_type(order: DerivativeOrderHistory) -> FrOrderType:
-    if order.direction == "buy" and not order.is_reduce_only:
+  @property
+  def order_type(self):
+    if self.order.direction == "buy" and not self.order.is_reduce_only:
       return FrOrderType.BUY_LONG
-    if order.direction == "sell" and not order.is_reduce_only:
+    if self.order.direction == "sell" and not self.order.is_reduce_only:
       return FrOrderType.BUY_SHORT
-    if order.direction == "buy" and order.is_reduce_only:
+    if self.order.direction == "buy" and self.order.is_reduce_only:
       return FrOrderType.SELL_SHORT
-    if order.direction == "sell" and order.is_reduce_only:
+    if self.order.direction == "sell" and self.order.is_reduce_only:
       return FrOrderType.SELL_LONG
 
-
-def wrap_derivative_order_histories(orders: Sequence[DerivativeOrderHistory]) -> Sequence[DerivativeOrderHistoryWrapper]:
-  return [DerivativeOrderHistoryWrapper(order) for order in orders]
+  @classmethod
+  def _from_injective_derivative_order_histories(cls: Type[T], orders: Sequence[DerivativeOrderHistory]) -> Sequence[T]:
+    return [cls(order) for order in orders]
 
 
 @dataclass

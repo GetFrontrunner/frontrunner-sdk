@@ -50,10 +50,10 @@ from frontrunner_sdk.facades.base import FrontrunnerFacadeMixin # NOQA
 from frontrunner_sdk.helpers.parameters import as_request_args
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.models.cancel_order import CancelOrder
+from frontrunner_sdk.models.order import InjectiveOrderExecutionType
+from frontrunner_sdk.models.order import InjectiveOrderState
+from frontrunner_sdk.models.order import InjectiveOrderType
 from frontrunner_sdk.models.order import Order
-from frontrunner_sdk.models.order import OrderExecutionType
-from frontrunner_sdk.models.order import OrderState
-from frontrunner_sdk.models.order import OrderType
 from frontrunner_sdk.sync import SyncMixin
 
 
@@ -97,9 +97,9 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     subaccount_id: Optional[str] = None,
     direction: Optional[Literal["buy", "sell"]] = None,
     is_conditional: Optional[bool] = None,
-    order_types: Optional[List[OrderType]] = None,
-    state: Optional[OrderState] = None,
-    execution_types: Optional[List[OrderExecutionType]] = None,
+    order_types: Optional[List[InjectiveOrderType]] = None,
+    state: Optional[InjectiveOrderState] = None,
+    execution_types: Optional[List[InjectiveOrderExecutionType]] = None,
     start_time: Optional[datetime] = None,
     end_time: Optional[datetime] = None,
   ) -> GetOrdersResponse:
@@ -209,9 +209,9 @@ class InjectiveFacade(SyncMixin):
     subaccount_id: Optional[str] = None,
     direction: Optional[Literal["buy", "sell"]] = None,
     is_conditional: Optional[bool] = None,
-    order_types: Optional[List[OrderType]] = None,
-    state: Optional[OrderState] = None,
-    execution_types: Optional[List[OrderExecutionType]] = None,
+    order_types: Optional[List[InjectiveOrderType]] = None,
+    state: Optional[InjectiveOrderState] = None,
+    execution_types: Optional[List[InjectiveOrderExecutionType]] = None,
     start_time: Optional[datetime] = None,
     end_time: Optional[datetime] = None,
   ) -> GetOrdersResponse:
