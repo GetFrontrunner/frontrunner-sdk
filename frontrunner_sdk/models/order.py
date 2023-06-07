@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from dataclasses import field
 from enum import Enum
 from typing import AsyncIterator
 from typing import Literal
@@ -29,26 +28,26 @@ class OrderType(Enum):
 class OrderHistory:
   order: DerivativeOrderHistory
 
-  # https://dataclass-wizard.readthedocs.io/en/latest/using_field_properties.html
-  order_type: OrderType = field(init=False)
-  _order_type: OrderType = field(repr=False, init=False)
-
-  @property # type: ignore[no-redef]
+  @property
   def order_type(self):
-    return self.order_type
-
-  @order_type.setter
-  def order_type(self, order_type: OrderType):
     if self.order.direction == "buy" and not self.order.is_reduce_only:
-      self.order_type = OrderType.BUY_LONG
+      return OrderType.BUY_LONG
     elif self.order.direction == "sell" and not self.order.is_reduce_only:
-      self.order_type = OrderType.BUY_SHORT
+      return OrderType.BUY_SHORT
     elif self.order.direction == "buy" and self.order.is_reduce_only:
-      self.order_type = OrderType.SELL_SHORT
+      return OrderType.SELL_SHORT
     elif self.order.direction == "sell" and self.order.is_reduce_only:
-      self.order_type = OrderType.SELL_LONG
+      return OrderType.SELL_LONG
     else:
-      raise FrontrunnerInjectiveException("Unable to compute Frontrunner order type")
+      raise FrontrunnerInjectiveException(
+        "Unable to compute Frontrunner order type",
+        direction=self.order.direction,
+        is_reduce_only=self.order.is_reduce_only
+      )
+
+  def __repr__(self):
+    # Custom repr is required to pick up added @property
+    return f"{self.__class__.__qualname__}(order={self.order},order_type={self.order_type})"
 
   @classmethod
   def _from_injective_derivative_order_histories(cls: Type[T], orders: Sequence[DerivativeOrderHistory]) -> Sequence[T]:
