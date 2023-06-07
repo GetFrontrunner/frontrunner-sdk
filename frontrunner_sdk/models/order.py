@@ -1,4 +1,5 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from dataclasses import field
 from enum import Enum
 from typing import Literal
 from typing import Sequence
@@ -29,7 +30,7 @@ class OrderHistory:
   fr_order_type: FrOrderType = field(init=False)
   _fr_order_type: FrOrderType = field(repr=False, init=False)
 
-  @property
+  @property # type: ignore[no-redef]
   def fr_order_type(self):
     return self._fr_order_type
 
