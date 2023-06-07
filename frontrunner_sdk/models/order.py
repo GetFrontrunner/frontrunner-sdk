@@ -56,8 +56,8 @@ class OrderHistory:
 
   @classmethod
   async def _from_async_iterator(cls: Type[T], orders: AsyncIterator[DerivativeOrderHistory]) -> AsyncIterator[T]:
-    async for order in orders:
-      yield cls(order)
+    async for injective_order in orders:
+      yield cls(injective_order.order)
 
 
 @dataclass
