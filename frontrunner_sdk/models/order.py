@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from typing import Literal
 from typing import Sequence
@@ -25,16 +25,24 @@ class FrOrderType(Enum):
 class OrderHistory:
   order: DerivativeOrderHistory
 
+  # https://dataclass-wizard.readthedocs.io/en/latest/using_field_properties.html
+  fr_order_type: FrOrderType = field(init=False)
+  _fr_order_type: FrOrderType = field(repr=False, init=False)
+
   @property
-  def order_type(self):
+  def fr_order_type(self):
+    return self._fr_order_type
+
+  @fr_order_type.setter
+  def fr_order_type(self, fr_order_type: FrOrderType):
     if self.order.direction == "buy" and not self.order.is_reduce_only:
-      return FrOrderType.BUY_LONG
+      self._fr_order_type = FrOrderType.BUY_LONG
     if self.order.direction == "sell" and not self.order.is_reduce_only:
-      return FrOrderType.BUY_SHORT
+      self._fr_order_type = FrOrderType.BUY_SHORT
     if self.order.direction == "buy" and self.order.is_reduce_only:
-      return FrOrderType.SELL_SHORT
+      self._fr_order_type = FrOrderType.SELL_SHORT
     if self.order.direction == "sell" and self.order.is_reduce_only:
-      return FrOrderType.SELL_LONG
+      self._fr_order_type = FrOrderType.SELL_LONG
 
   @classmethod
   def _from_injective_derivative_order_histories(cls: Type[T], orders: Sequence[DerivativeOrderHistory]) -> Sequence[T]:
