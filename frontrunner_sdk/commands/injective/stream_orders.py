@@ -16,6 +16,7 @@ from frontrunner_sdk.logging.log_operation import log_operation
 from frontrunner_sdk.models import InjectiveOrderExecutionType
 from frontrunner_sdk.models import InjectiveOrderState
 from frontrunner_sdk.models import InjectiveOrderType
+from frontrunner_sdk.models import OrderHistory
 
 
 @dataclass
@@ -33,7 +34,7 @@ class StreamOrdersRequest:
 
 @dataclass
 class StreamOrdersResponse:
-  orders: AsyncIterator[DerivativeOrderHistory]
+  orders: AsyncIterator[OrderHistory]
 
 
 class StreamOrdersOperation(FrontrunnerOperation[StreamOrdersRequest, StreamOrdersResponse]):
@@ -56,8 +57,9 @@ class StreamOrdersOperation(FrontrunnerOperation[StreamOrdersRequest, StreamOrde
       wallet = await deps.wallet()
       request["subaccount_id"] = wallet.subaccount_address()
 
-    orders: AsyncIterator[DerivativeOrderHistory] = await injective_stream(
+    injective_orders: AsyncIterator[DerivativeOrderHistory] = await injective_stream(
       deps.injective_client.stream_historical_derivative_orders,
       **request,
     )
+    orders: AsyncIterator[OrderHistory] = OrderHistory._from_async_iterator(injective_orders)
     return StreamOrdersResponse(orders)
