@@ -16,6 +16,15 @@ injective_mainnet_sentry_network = Network.mainnet(node="sentry0")
 DEFAULT: FrontrunnerConfig = ChainedFrontrunnerConfig([
   EnvironmentVariableFrontrunnerConfig(os.environ),
 
+  # mainnet
+  ConditionalFrontrunnerConfig(
+    lambda: os.environ.get("FR_ENVIRONMENT") == "mainnet",
+    StaticFrontrunnerConfig(
+      injective_network=injective_mainnet_global_network.env,
+      injective_chain_id=injective_mainnet_global_network.chain_id,
+    )
+  ),
+
   # testnet
   StaticFrontrunnerConfig(
     injective_network=injective_testnet_k8s_network.env,
