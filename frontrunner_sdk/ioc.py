@@ -75,7 +75,7 @@ class FrontrunnerIoC(SyncMixin):
 
   @cached_property
   def injective_composer(self) -> Composer:
-    return Composer(network=self.network)
+    return Composer(network=self.network.env)
 
   @cached_property
   def injective_client(self) -> AsyncClient:
