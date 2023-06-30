@@ -3,14 +3,23 @@ from typing import Mapping
 from typing import Optional
 
 from frontrunner_sdk.config.base import FrontrunnerConfig
-from frontrunner_sdk.config.base import NETWORK_ENVIRONMENTS
-from frontrunner_sdk.config.base import NetworkEnvironment
+from frontrunner_sdk.config.base import ENVIRONMENTS
+from frontrunner_sdk.config.base import Environment
 
 
 class EnvironmentVariableFrontrunnerConfig(FrontrunnerConfig):
 
   def __init__(self, vars: Mapping[str, str]):
     self.vars = vars
+
+  @property
+  def environment(self) -> Optional[str]:
+    value = self.vars.get("FR_ENVIRONMENT", None)
+
+    if value in ENVIRONMENTS:
+      return cast(Environment, value)
+
+    return None
 
   @property
   def wallet_mnemonic(self) -> Optional[str]:
@@ -29,11 +38,11 @@ class EnvironmentVariableFrontrunnerConfig(FrontrunnerConfig):
     return self.vars.get("FR_PARTNER_API_TOKEN", None)
 
   @property
-  def injective_network(self) -> Optional[NetworkEnvironment]:
+  def injective_network(self) -> Optional[Environment]:
     value = self.vars.get("FR_INJECTIVE_NETWORK", None)
 
-    if value in NETWORK_ENVIRONMENTS:
-      return cast(NetworkEnvironment, value)
+    if value in ENVIRONMENTS:
+      return cast(Environment, value)
 
     return None
 
@@ -64,3 +73,7 @@ class EnvironmentVariableFrontrunnerConfig(FrontrunnerConfig):
   @property
   def injective_faucet_base_url(self) -> Optional[str]:
     return self.vars.get("FR_INJECTIVE_FAUCET_BASE_URL", None)
+
+  @property
+  def injective_insecure(self) -> Optional[bool]:
+    return self.vars.get("FR_INJECTIVE_INSECURE", "false") == "true"

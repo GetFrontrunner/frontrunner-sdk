@@ -4,7 +4,7 @@ from typing import Optional
 from typing import TypeVar
 
 from frontrunner_sdk.config.base import FrontrunnerConfig
-from frontrunner_sdk.config.base import NetworkEnvironment
+from frontrunner_sdk.config.base import Environment
 
 T = TypeVar("T")
 
@@ -24,6 +24,10 @@ class ChainedFrontrunnerConfig(FrontrunnerConfig):
     return None
 
   @property
+  def environment(self) -> Optional[str]:
+    return self._find_next(lambda config: config.environment)
+
+  @property
   def wallet_mnemonic(self) -> Optional[str]:
     return self._find_next(lambda config: config.wallet_mnemonic)
 
@@ -40,7 +44,7 @@ class ChainedFrontrunnerConfig(FrontrunnerConfig):
     return self._find_next(lambda config: config.partner_api_authn_token)
 
   @property
-  def injective_network(self) -> Optional[NetworkEnvironment]:
+  def injective_network(self) -> Optional[Environment]:
     return self._find_next(lambda config: config.injective_network)
 
   @property
@@ -70,3 +74,7 @@ class ChainedFrontrunnerConfig(FrontrunnerConfig):
   @property
   def injective_faucet_base_url(self) -> Optional[str]:
     return self._find_next(lambda config: config.injective_faucet_base_url)
+
+  @property
+  def injective_insecure(self) -> Optional[bool]:
+    return self._find_next(lambda config: config.injective_insecure)

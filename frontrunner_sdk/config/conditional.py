@@ -2,7 +2,7 @@ from typing import Callable
 from typing import Optional
 
 from frontrunner_sdk.config.base import FrontrunnerConfig
-from frontrunner_sdk.config.base import NetworkEnvironment
+from frontrunner_sdk.config.base import Environment
 
 
 class ConditionalFrontrunnerConfig(FrontrunnerConfig):
@@ -10,6 +10,10 @@ class ConditionalFrontrunnerConfig(FrontrunnerConfig):
   def __init__(self, condition: Callable[[], bool], config: FrontrunnerConfig):
     self.condition = condition
     self.config = config
+
+  @property
+  def environment(self) -> Optional[str]:
+    return self.config.environment if self.condition() else None
 
   @property
   def wallet_mnemonic(self) -> Optional[str]:
@@ -28,7 +32,7 @@ class ConditionalFrontrunnerConfig(FrontrunnerConfig):
     return self.config.partner_api_authn_token if self.condition() else None
 
   @property
-  def injective_network(self) -> Optional[NetworkEnvironment]:
+  def injective_network(self) -> Optional[Environment]:
     return self.config.injective_network if self.condition() else None
 
   @property
@@ -58,3 +62,7 @@ class ConditionalFrontrunnerConfig(FrontrunnerConfig):
   @property
   def injective_faucet_base_url(self) -> Optional[str]:
     return self.config.injective_faucet_base_url if self.condition() else None
+
+  @property
+  def injective_insecure(self) -> Optional[bool]:
+    return self.config.injective_insecure if self.condition() else None
