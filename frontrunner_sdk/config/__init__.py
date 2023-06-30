@@ -29,10 +29,13 @@ DEFAULT: FrontrunnerConfig = ChainedFrontrunnerConfig([
       injective_chain_id=injective_mainnet_global_network.chain_id,
     )
   ),
-  StaticFrontrunnerConfig(
-    injective_network=injective_testnet_k8s_network.env,
-    injective_chain_id=injective_testnet_k8s_network.chain_id,
-    injective_faucet_base_url="https://knroo5qf2e.execute-api.us-east-2.amazonaws.com/default/TestnetFaucetAPI",
+  ConditionalFrontrunnerConfig(
+    lambda: os.environ.get("FR_ENVIRONMENT") == "testnet",
+    StaticFrontrunnerConfig(
+      injective_network=injective_testnet_k8s_network.env,
+      injective_chain_id=injective_testnet_k8s_network.chain_id,
+      injective_faucet_base_url="https://knroo5qf2e.execute-api.us-east-2.amazonaws.com/default/TestnetFaucetAPI",
+    )
   ),
 
   # Injective node endpoints and Frontrunner API endpoint config #
