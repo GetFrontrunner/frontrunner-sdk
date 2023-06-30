@@ -7,6 +7,7 @@ from frontrunner_sdk.config.base import FrontrunnerConfig
 
 @dataclass(frozen=True)
 class StaticFrontrunnerConfig(FrontrunnerConfig):
+  environment: Optional[str] = None
   wallet_mnemonic: Optional[str] = None
   wallet_private_key_hex: Optional[str] = None
   partner_api_base_url: Optional[str] = None
@@ -19,3 +20,4 @@ class StaticFrontrunnerConfig(FrontrunnerConfig):
   injective_lcd_base_url: Optional[str] = None
   injective_rpc_base_url: Optional[str] = None
   injective_faucet_base_url: Optional[str] = None
+  injective_insecure: Optional[bool] = None

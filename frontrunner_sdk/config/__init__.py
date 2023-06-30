@@ -13,8 +13,12 @@ injective_mainnet_global_network = Network.mainnet(node="lb")
 injective_mainnet_sentry_network = Network.mainnet(node="sentry0")
 
 
+def fr_environment():
+  return os.environ.get("FR_ENVIRONMENT", "testnet")
+
+
 def should_use_node_set(environment: str, endpoint_set_identifier: str):
-  return os.environ.get("FR_ENVIRONMENT", "testnet") == environment and \
+  return fr_environment() == environment and \
     os.environ.get("FR_PRESET_NODES", "frontrunner") == endpoint_set_identifier
 
 
@@ -23,19 +27,16 @@ DEFAULT: FrontrunnerConfig = ChainedFrontrunnerConfig([
 
   # Injective chain configs #
   ConditionalFrontrunnerConfig(
-    lambda: os.environ.get("FR_ENVIRONMENT") == "mainnet",
+    lambda: fr_environment() == "mainnet",
     StaticFrontrunnerConfig(
       injective_network=injective_mainnet_global_network.env,
       injective_chain_id=injective_mainnet_global_network.chain_id,
     )
   ),
-  ConditionalFrontrunnerConfig(
-    lambda: os.environ.get("FR_ENVIRONMENT") == "testnet",
-    StaticFrontrunnerConfig(
-      injective_network=injective_testnet_k8s_network.env,
-      injective_chain_id=injective_testnet_k8s_network.chain_id,
-      injective_faucet_base_url="https://knroo5qf2e.execute-api.us-east-2.amazonaws.com/default/TestnetFaucetAPI",
-    )
+  StaticFrontrunnerConfig(
+    injective_network=injective_testnet_k8s_network.env,
+    injective_chain_id=injective_testnet_k8s_network.chain_id,
+    injective_faucet_base_url="https://knroo5qf2e.execute-api.us-east-2.amazonaws.com/default/TestnetFaucetAPI",
   ),
 
   # Injective node endpoints and Frontrunner API endpoint config #
@@ -60,12 +61,13 @@ DEFAULT: FrontrunnerConfig = ChainedFrontrunnerConfig([
     )
   ),
 
-  # default mainnet endpoints
+  # default mainnet config
   ConditionalFrontrunnerConfig(
     lambda: should_use_node_set("mainnet", "frontrunner"),
     StaticFrontrunnerConfig(
       injective_exchange_authority="injective-node-mainnet.grpc-exchange.getfrontrunner.com:443",
-      injective_explorer_authority="injective-node-mainnet.grpc-explorer.getfrontrunner.com:443",
+      # Frontrunner doesn't run the explorer, so use Injective's endpoint regardless
+      injective_explorer_authority=injective_mainnet_global_network.grpc_explorer_endpoint,
       injective_grpc_authority="injective-node-mainnet.grpc.getfrontrunner.com:443",
       injective_lcd_base_url="https://injective-node-mainnet.lcd.getfrontrunner.com",
       injective_rpc_base_url="wss://injective-node-mainnet.tm.getfrontrunner.com/websocket",
@@ -83,16 +85,18 @@ DEFAULT: FrontrunnerConfig = ChainedFrontrunnerConfig([
     )
   ),
 
-  # default testnet endpoints
+  # default testnet config
   ConditionalFrontrunnerConfig(
     lambda: should_use_node_set("testnet", "frontrunner"),
     StaticFrontrunnerConfig(
       injective_exchange_authority="injective-node-testnet.grpc-exchange.getfrontrunner.com:443",
-      injective_explorer_authority="injective-node-testnet.grpc-explorer.getfrontrunner.com:443",
+      # Frontrunner doesn't run the explorer, so use Injective's endpoint regardless
+      injective_explorer_authority=injective_testnet_k8s_network.grpc_explorer_endpoint,
       injective_grpc_authority="injective-node-testnet.grpc.getfrontrunner.com:443",
       injective_lcd_base_url="https://injective-node-testnet.lcd.getfrontrunner.com",
       injective_rpc_base_url="wss://injective-node-testnet.tm.getfrontrunner.com/websocket",
       partner_api_base_url="https://partner-api-testnet.getfrontrunner.com/api/v1",
     )
   ),
+  StaticFrontrunnerConfig(environment="testnet",)
 ])
