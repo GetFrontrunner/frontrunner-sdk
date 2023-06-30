@@ -10,7 +10,6 @@ from frontrunner_sdk.config.static import StaticFrontrunnerConfig
 
 injective_testnet_k8s_network = Network.testnet()
 injective_mainnet_global_network = Network.mainnet(node="lb")
-injective_mainnet_k8s_network = Network.mainnet(node="k8s")
 injective_mainnet_sentry_network = Network.mainnet(node="sentry0")
 
 DEFAULT: FrontrunnerConfig = ChainedFrontrunnerConfig([
@@ -53,18 +52,6 @@ DEFAULT: FrontrunnerConfig = ChainedFrontrunnerConfig([
       injective_grpc_authority=injective_mainnet_global_network.grpc_endpoint,
       injective_lcd_base_url=injective_mainnet_global_network.lcd_endpoint,
       injective_rpc_base_url=injective_mainnet_global_network.tm_websocket_endpoint,
-    )
-  ),
-
-  # Injective k8s mainnet
-  ConditionalFrontrunnerConfig(
-    lambda: os.environ.get("FR_ENVIRONMENT") == "mainnet" and os.environ.get("FR_PRESET_NODES") == "injective-k8s",
-    StaticFrontrunnerConfig(
-      injective_exchange_authority=injective_mainnet_k8s_network.grpc_exchange_endpoint,
-      injective_explorer_authority=injective_mainnet_k8s_network.grpc_explorer_endpoint,
-      injective_grpc_authority=injective_mainnet_k8s_network.grpc_endpoint,
-      injective_lcd_base_url=injective_mainnet_k8s_network.lcd_endpoint,
-      injective_rpc_base_url=injective_mainnet_k8s_network.tm_websocket_endpoint,
     )
   ),
 
