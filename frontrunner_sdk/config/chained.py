@@ -3,8 +3,8 @@ from typing import List
 from typing import Optional
 from typing import TypeVar
 
-from frontrunner_sdk.config.base import FrontrunnerConfig
 from frontrunner_sdk.config.base import Environment
+from frontrunner_sdk.config.base import FrontrunnerConfig
 
 T = TypeVar("T")
 

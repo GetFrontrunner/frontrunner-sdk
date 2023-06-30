@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from frontrunner_sdk.config.base import FrontrunnerConfig
 from frontrunner_sdk.config.base import Environment
+from frontrunner_sdk.config.base import FrontrunnerConfig
 
 
 @dataclass(frozen=True)

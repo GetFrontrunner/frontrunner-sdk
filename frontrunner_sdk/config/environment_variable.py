@@ -2,9 +2,9 @@ from typing import cast
 from typing import Mapping
 from typing import Optional
 
-from frontrunner_sdk.config.base import FrontrunnerConfig
-from frontrunner_sdk.config.base import ENVIRONMENTS
 from frontrunner_sdk.config.base import Environment
+from frontrunner_sdk.config.base import ENVIRONMENTS
+from frontrunner_sdk.config.base import FrontrunnerConfig
 
 
 class EnvironmentVariableFrontrunnerConfig(FrontrunnerConfig):
