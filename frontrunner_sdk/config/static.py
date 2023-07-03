@@ -7,7 +7,6 @@ from frontrunner_sdk.config.base import NetworkEnvironment
 
 @dataclass(frozen=True)
 class StaticFrontrunnerConfig(FrontrunnerConfig):
-  environment: Optional[str] = None
   wallet_mnemonic: Optional[str] = None
   wallet_private_key_hex: Optional[str] = None
   partner_api_base_url: Optional[str] = None
