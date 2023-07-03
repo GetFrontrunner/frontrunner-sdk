@@ -31,6 +31,7 @@ DEFAULT: FrontrunnerConfig = ChainedFrontrunnerConfig([
     StaticFrontrunnerConfig(
       injective_network=injective_mainnet_global_network.env,
       injective_chain_id=injective_mainnet_global_network.chain_id,
+      partner_api_base_url="https://partner-api-mainnet.getfrontrunner.com/api/v1",
     )
   ),
   StaticFrontrunnerConfig(
@@ -48,6 +49,7 @@ DEFAULT: FrontrunnerConfig = ChainedFrontrunnerConfig([
       injective_grpc_authority=injective_mainnet_sentry_network.grpc_endpoint,
       injective_lcd_base_url=injective_mainnet_sentry_network.lcd_endpoint,
       injective_rpc_base_url=injective_mainnet_sentry_network.tm_websocket_endpoint,
+      injective_insecure=True,
     )
   ),
   ConditionalFrontrunnerConfig(
@@ -71,7 +73,6 @@ DEFAULT: FrontrunnerConfig = ChainedFrontrunnerConfig([
       injective_grpc_authority="injective-node-mainnet.grpc.getfrontrunner.com:443",
       injective_lcd_base_url="https://injective-node-mainnet.lcd.getfrontrunner.com",
       injective_rpc_base_url="wss://injective-node-mainnet.tm.getfrontrunner.com/websocket",
-      partner_api_base_url="https://partner-api-mainnet.getfrontrunner.com/api/v1",
     )
   ),
   ConditionalFrontrunnerConfig(
@@ -95,8 +96,11 @@ DEFAULT: FrontrunnerConfig = ChainedFrontrunnerConfig([
       injective_grpc_authority="injective-node-testnet.grpc.getfrontrunner.com:443",
       injective_lcd_base_url="https://injective-node-testnet.lcd.getfrontrunner.com",
       injective_rpc_base_url="wss://injective-node-testnet.tm.getfrontrunner.com/websocket",
-      partner_api_base_url="https://partner-api-testnet.getfrontrunner.com/api/v1",
     )
   ),
-  StaticFrontrunnerConfig(environment="testnet",)
+  StaticFrontrunnerConfig(
+    environment="testnet",
+    partner_api_base_url="https://partner-api-testnet.getfrontrunner.com/api/v1",
+    injective_insecure=False,
+  )
 ])

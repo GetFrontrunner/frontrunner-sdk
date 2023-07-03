@@ -76,4 +76,5 @@ class EnvironmentVariableFrontrunnerConfig(FrontrunnerConfig):
 
   @property
   def injective_insecure(self) -> Optional[bool]:
-    return self.vars.get("FR_INJECTIVE_INSECURE") == "true"
+    return None if self.vars.get("FR_INJECTIVE_INSECURE",
+                                 None) is None else self.vars.get("FR_INJECTIVE_INSECURE") == "true"
