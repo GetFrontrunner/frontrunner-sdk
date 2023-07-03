@@ -13,12 +13,12 @@ injective_mainnet_global_network = Network.mainnet(node="lb")
 injective_mainnet_sentry_network = Network.mainnet(node="sentry0")
 
 
-def fr_environment():
-  return os.environ.get("FR_ENVIRONMENT", "testnet")
+def fr_injective_network():
+  return os.environ.get("FR_INJECTIVE_NETWORK", "testnet")
 
 
-def should_use_node_set(environment: str, endpoint_set_identifier: str):
-  return fr_environment() == environment and \
+def should_use_node_set(injective_network: str, endpoint_set_identifier: str):
+  return fr_injective_network() == injective_network and \
     os.environ.get("FR_PRESET_NODES", "frontrunner") == endpoint_set_identifier
 
 
@@ -27,7 +27,7 @@ DEFAULT: FrontrunnerConfig = ChainedFrontrunnerConfig([
 
   # Injective chain configs #
   ConditionalFrontrunnerConfig(
-    lambda: fr_environment() == "mainnet",
+    lambda: fr_injective_network() == "mainnet",
     StaticFrontrunnerConfig(
       injective_network=injective_mainnet_global_network.env,
       injective_chain_id=injective_mainnet_global_network.chain_id,
@@ -99,7 +99,7 @@ DEFAULT: FrontrunnerConfig = ChainedFrontrunnerConfig([
     )
   ),
   StaticFrontrunnerConfig(
-    environment="testnet",
+    injective_network="testnet",
     partner_api_base_url="https://partner-api-testnet.getfrontrunner.com/api/v1",
     injective_insecure=False,
   )

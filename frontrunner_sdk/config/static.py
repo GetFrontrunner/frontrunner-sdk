@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from frontrunner_sdk.config.base import Environment
 from frontrunner_sdk.config.base import FrontrunnerConfig
+from frontrunner_sdk.config.base import NetworkEnvironment
 
 
 @dataclass(frozen=True)
@@ -12,7 +12,7 @@ class StaticFrontrunnerConfig(FrontrunnerConfig):
   wallet_private_key_hex: Optional[str] = None
   partner_api_base_url: Optional[str] = None
   partner_api_authn_token: Optional[str] = None
-  injective_network: Optional[Environment] = None
+  injective_network: Optional[NetworkEnvironment] = None
   injective_chain_id: Optional[str] = None
   injective_exchange_authority: Optional[str] = None
   injective_explorer_authority: Optional[str] = None

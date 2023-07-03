@@ -8,11 +8,10 @@ from frontrunner_sdk.config import DEFAULT
 class TestFrontrunnerConfig(TestCase):
 
   def tearDown(self) -> None:
-    os.environ.pop("FR_ENVIRONMENT", None)
+    os.environ.pop("FR_INJECTIVE_NETWORK", None)
     os.environ.pop("FR_PRESET_NODES", None)
 
   def test_defaults(self):
-    self.assertEqual("testnet", DEFAULT.environment)
     self.assertEqual("testnet", DEFAULT.injective_network)
     self.assertEqual("injective-888", DEFAULT.injective_chain_id)
     self.assertEqual(False, DEFAULT.injective_insecure)
@@ -26,9 +25,8 @@ class TestFrontrunnerConfig(TestCase):
     self.assertEqual("https://partner-api-testnet.getfrontrunner.com/api/v1", DEFAULT.partner_api_base_url)
 
   def test_testnet_k8s(self):
-    os.environ["FR_ENVIRONMENT"] = "testnet"
+    os.environ["FR_INJECTIVE_NETWORK"] = "testnet"
     os.environ["FR_PRESET_NODES"] = "injective-k8s"
-    self.assertEqual("testnet", DEFAULT.environment)
     self.assertEqual("testnet", DEFAULT.injective_network)
     self.assertEqual("injective-888", DEFAULT.injective_chain_id)
     self.assertEqual(False, DEFAULT.injective_insecure)
@@ -40,8 +38,7 @@ class TestFrontrunnerConfig(TestCase):
     self.assertEqual("https://partner-api-testnet.getfrontrunner.com/api/v1", DEFAULT.partner_api_base_url)
 
   def test_default_mainnet(self):
-    os.environ["FR_ENVIRONMENT"] = "mainnet"
-    self.assertEqual("mainnet", DEFAULT.environment)
+    os.environ["FR_INJECTIVE_NETWORK"] = "mainnet"
     self.assertEqual("mainnet", DEFAULT.injective_network)
     self.assertEqual("injective-1", DEFAULT.injective_chain_id)
     self.assertEqual(False, DEFAULT.injective_insecure)
@@ -55,9 +52,8 @@ class TestFrontrunnerConfig(TestCase):
     self.assertEqual("https://partner-api-mainnet.getfrontrunner.com/api/v1", DEFAULT.partner_api_base_url)
 
   def test_mainnet_global(self):
-    os.environ["FR_ENVIRONMENT"] = "mainnet"
+    os.environ["FR_INJECTIVE_NETWORK"] = "mainnet"
     os.environ["FR_PRESET_NODES"] = "injective-global"
-    self.assertEqual("mainnet", DEFAULT.environment)
     self.assertEqual("mainnet", DEFAULT.injective_network)
     self.assertEqual("injective-1", DEFAULT.injective_chain_id)
     self.assertEqual(False, DEFAULT.injective_insecure)
@@ -69,9 +65,8 @@ class TestFrontrunnerConfig(TestCase):
     self.assertEqual("https://partner-api-mainnet.getfrontrunner.com/api/v1", DEFAULT.partner_api_base_url)
 
   def test_mainnet_sentry(self):
-    os.environ["FR_ENVIRONMENT"] = "mainnet"
+    os.environ["FR_INJECTIVE_NETWORK"] = "mainnet"
     os.environ["FR_PRESET_NODES"] = "injective-sentry"
-    self.assertEqual("mainnet", DEFAULT.environment)
     self.assertEqual("mainnet", DEFAULT.injective_network)
     self.assertEqual("injective-1", DEFAULT.injective_chain_id)
     self.assertEqual(True, DEFAULT.injective_insecure)

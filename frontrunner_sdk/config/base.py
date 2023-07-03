@@ -3,15 +3,11 @@ import typing
 from typing import Literal
 from typing import Optional
 
-Environment = Literal["testnet", "mainnet"]
-ENVIRONMENTS = set(typing.get_args(Environment))
+NetworkEnvironment = Literal["testnet", "mainnet"]
+NETWORK_ENVIRONMENTS = set(typing.get_args(NetworkEnvironment))
 
 
 class FrontrunnerConfig:
-
-  @property
-  def environment(self) -> Optional[str]:
-    return None
 
   @property
   def wallet_mnemonic(self) -> Optional[str]:
@@ -30,7 +26,7 @@ class FrontrunnerConfig:
     return None
 
   @property
-  def injective_network(self) -> Optional[Environment]:
+  def injective_network(self) -> Optional[NetworkEnvironment]:
     return None
 
   @property
