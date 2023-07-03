@@ -102,7 +102,7 @@ Some endpoints are specified as an <a href="https://en.wikipedia.org/wiki/Unifor
 
 Frontrunner does not run the Injective Explorer, so Explorer Authority defaults are always Injective's.
 
-### Testnet
+#### Testnet
 
 | Endpoint Type | Default Value |
 | - | - |
@@ -112,7 +112,7 @@ Frontrunner does not run the Injective Explorer, so Explorer Authority defaults 
 | RPC Base URL | `wss://injective-node-testnet.tm.getfrontrunner.com/websocket` |
 | gRPC Authority | `injective-node-testnet.grpc.getfrontrunner.com:443` |
 
-### Mainnet
+#### Mainnet
 
 | Endpoint Type | Default Value |
 | - | - |
@@ -138,6 +138,20 @@ Injective's global, load-balanced endpoints on the mainnet network (`Network.mai
 #### Injective Mainnet Sentry
 When the environment variable `FR_PRESET_NODES` is set to `injective-sentry` and the SDK is configured for `mainnet`,
 one of Injective's standalone sentry nodes on the mainnet network (`Network.mainnet("sentry0")`) will be used.
+
+### SSL
+The environment variable `FR_INJECTIVE_INSECURE` controls whether or not an insecure/plaintext connection is made to Injective endpoints.  
+Preset node groups have this set correctly by default (see below).  
+Set this environment variable to `"true"` or `"false"` as needed.
+
+| Preset | Insecure? |
+| - | - |
+| Frontrunner Testnet | `False` |
+| Frontrunner Mainnet | `False` |
+| Injective Testnet K8s | `False` |
+| Injective Mainnet Global | `False` |
+| Injective Mainnet Sentry | `True` |
+| `FR_PRESET_NODES` unset | `False` |
 
 ## Injective Faucet
 
