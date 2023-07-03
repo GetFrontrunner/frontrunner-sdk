@@ -3,7 +3,7 @@ import typing
 from typing import Literal
 from typing import Optional
 
-NetworkEnvironment = Literal["devnet", "testnet", "mainnet"]
+NetworkEnvironment = Literal["testnet", "mainnet"]
 NETWORK_ENVIRONMENTS = set(typing.get_args(NetworkEnvironment))
 
 
@@ -55,4 +55,8 @@ class FrontrunnerConfig:
 
   @property
   def injective_faucet_base_url(self) -> Optional[str]:
+    return None
+
+  @property
+  def injective_insecure(self) -> Optional[bool]:
     return None

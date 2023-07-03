@@ -31,7 +31,7 @@ This is the base URL for Frontrunner-specific operations such as finding markets
 
 ### Default
 
-`https://partner-api.getfrontrunner.com/api/v1`
+`https://partner-api-testnet.getfrontrunner.com/api/v1`
 
 ## Frontrunner API Token
 
@@ -100,30 +100,63 @@ Some endpoints are specified as an <a href="https://en.wikipedia.org/wiki/Unifor
 
 ### Defaults
 
+Frontrunner does not run the Injective Explorer, so Explorer Authority defaults are always Injective's.
+
+#### Testnet
+
 | Endpoint Type | Default Value |
 | - | - |
-| Exchange Authority | `injective-node-v2-prod.grpc-exchange.getfrontrunner.com:443` |
-| Explorer Authority | `injective-node-v2-prod.grpc-explorer.getfrontrunner.com:443` |
-| LCD Base URL | `https://injective-node-v2-prod.lcd.getfrontrunner.com` |
-| RPC Base URL | `wss://injective-node-v2-prod.tm.getfrontrunner.com/websocket` |
-| gRPC Authority | `injective-node-v2-prod.grpc.getfrontrunner.com:443` |
+| Exchange Authority | `injective-node-testnet.grpc-exchange.getfrontrunner.com:443` |
+| Explorer Authority | `k8s.testnet.explorer.grpc.injective.network:443` |
+| LCD Base URL | `https://injective-node-testnet.lcd.getfrontrunner.com` |
+| RPC Base URL | `wss://injective-node-testnet.tm.getfrontrunner.com/websocket` |
+| gRPC Authority | `injective-node-testnet.grpc.getfrontrunner.com:443` |
+
+#### Mainnet
+
+| Endpoint Type | Default Value |
+| - | - |
+| Exchange Authority | `injective-node-mainnet.grpc-exchange.getfrontrunner.com:443` |
+| Explorer Authority | `k8s.global.mainnet.explorer.grpc.injective.network:443` |
+| LCD Base URL | `https://injective-node-mainnet.lcd.getfrontrunner.com` |
+| RPC Base URL | `wss://injective-node-mainnet.tm.getfrontrunner.com/websocket` |
+| gRPC Authority | `injective-node-mainnet.grpc.getfrontrunner.com:443` |
 
 ### Presets
 
-By setting the Environment Variable `FR_PRESET_NODES` to `injective`, Injective's Kubernetes-based nodes on the testnet network
-will be used instead of the defaults above.
+The preset endpoint groups for Injective are taken from Injective's
+`Network` class [here](https://github.com/InjectiveLabs/sdk-python/blob/master/pyinjective/constant.py).
 
-| Endpoint Type | Default Value |
+#### Injective Testnet K8s
+When the environment variable `FR_PRESET_NODES` is set to `injective-k8s` and the SDK is configured for `testnet`,
+Injective's Kubernetes-based endpoints on the testnet network (`Network.testnet()`) will be used instead of the defaults above.
+
+#### Injective Mainnet Global
+When the environment variable `FR_PRESET_NODES` is set to `injective-global` and the SDK is configured for `mainnet`,
+Injective's global, load-balanced endpoints on the mainnet network (`Network.mainnet("lb")`) will be used.
+
+#### Injective Mainnet Sentry
+When the environment variable `FR_PRESET_NODES` is set to `injective-sentry` and the SDK is configured for `mainnet`,
+one of Injective's standalone sentry nodes on the mainnet network (`Network.mainnet("sentry0")`) will be used.
+
+### SSL
+The environment variable `FR_INJECTIVE_INSECURE` controls whether or not an insecure/plaintext connection is made to Injective endpoints.  
+Preset node groups have this set correctly by default (see below).  
+Set this environment variable to `"true"` or `"false"` as needed.
+
+| Preset | Insecure? |
 | - | - |
-| Exchange Authority | `k8s.testnet.exchange.grpc.injective.network:443` |
-| Explorer Authority | `k8s.testnet.explorer.grpc.injective.network:443` |
-| LCD Base URL | `https://k8s.testnet.lcd.injective.network` |
-| RPC Base URL | `wss://k8s.testnet.tm.injective.network/websocket` |
-| gRPC Authority | `k8s.testnet.chain.grpc.injective.network:443` |
+| Frontrunner Testnet | `False` |
+| Frontrunner Mainnet | `False` |
+| Injective Testnet K8s | `False` |
+| Injective Mainnet Global | `False` |
+| Injective Mainnet Sentry | `True` |
+| `FR_PRESET_NODES` unset | `False` |
 
 ## Injective Faucet
 
-A [faucet][faucet] is a site that dispenses free tokens to a wallet. Faucets are used to acquire tokens without involving "real" money or mining them yourself.
+A [faucet][faucet] is a site that dispenses free tokens to a wallet. Faucets are used to acquire tokens without involving "real" money or mining them yourself.  
+This faucet is only relevant for `testnet` - there is no faucet on mainnet.
 
 [faucet]: https://coinmarketcap.com/alexandria/article/what-is-a-crypto-faucet
 

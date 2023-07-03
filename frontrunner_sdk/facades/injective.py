@@ -62,8 +62,8 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
   def __init__(self, deps: FrontrunnerIoC):
     self.deps = deps
 
-  async def create_wallet(self) -> CreateWalletResponse:
-    request = CreateWalletRequest()
+  async def create_wallet(self, fund_and_initialize: bool = True) -> CreateWalletResponse:
+    request = CreateWalletRequest(fund_and_initialize=fund_and_initialize)
     return await self._run_operation(CreateWalletOperation, self.deps, request)
 
   async def fund_wallet_from_faucet(self) -> FundWalletFromFaucetResponse:

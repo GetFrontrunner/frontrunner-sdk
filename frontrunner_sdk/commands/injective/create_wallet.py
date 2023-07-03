@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 
 from frontrunner_sdk.commands.base import FrontrunnerOperation
 from frontrunner_sdk.ioc import FrontrunnerIoC
@@ -8,7 +9,7 @@ from frontrunner_sdk.models.wallet import Wallet
 
 @dataclass
 class CreateWalletRequest:
-  pass
+  fund_and_initialize: Optional[bool] = None
 
 
 @dataclass
@@ -28,7 +29,8 @@ class CreateWalletOperation(FrontrunnerOperation[CreateWalletRequest, CreateWall
   async def execute(self, deps: FrontrunnerIoC) -> CreateWalletResponse:
     wallet = Wallet._new()
 
-    await deps.injective_faucet.fund_wallet(wallet)
-    await deps.use_wallet(wallet)
+    if self.request.fund_and_initialize:
+      await deps.injective_faucet.fund_wallet(wallet)
+      await deps.use_wallet(wallet)
 
     return CreateWalletResponse(wallet=wallet)

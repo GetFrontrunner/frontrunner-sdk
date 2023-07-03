@@ -64,3 +64,7 @@ class EnvironmentVariableFrontrunnerConfig(FrontrunnerConfig):
   @property
   def injective_faucet_base_url(self) -> Optional[str]:
     return self.vars.get("FR_INJECTIVE_FAUCET_BASE_URL", None)
+
+  @property
+  def injective_insecure(self) -> Optional[bool]:
+    return self.vars.get("FR_INJECTIVE_INSECURE") == "true" if "FR_INJECTIVE_INSECURE" in self.vars else None
