@@ -2,6 +2,7 @@ from unittest import IsolatedAsyncioTestCase
 from unittest.mock import AsyncMock
 from unittest.mock import patch
 
+from frontrunner_sdk.clients.denom_factory import DenomFactory
 from frontrunner_sdk.clients.injective_chain import InjectiveChain
 from frontrunner_sdk.clients.injective_faucet import InjectiveFaucet
 from frontrunner_sdk.clients.injective_light_client_daemon import InjectiveLightClientDaemon # NOQA
@@ -55,6 +56,11 @@ class TestFrontrunnerIoC(IsolatedAsyncioTestCase):
     self.assertIsInstance(await ioc.wallet(), Wallet)
 
     _initialize_wallet.assert_awaited_once()
+
+  def test_denom_factory(self):
+    ioc = self.ioc_for(injective_network="mainnet")
+
+    self.assertIsInstance(ioc.denom_factory, DenomFactory)
 
   def test_openapi_frontrunner_api(self):
     ioc = self.ioc_for(partner_api_base_url="http://frontrunner.example")
