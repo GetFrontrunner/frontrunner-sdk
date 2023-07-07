@@ -1,5 +1,6 @@
 from configparser import ConfigParser
 from typing import Dict
+from typing import Optional
 
 from pyinjective.constant import devnet_config
 from pyinjective.constant import mainnet_config
@@ -13,7 +14,10 @@ from frontrunner_sdk.models.denom import Denom
 
 class DenomFactory:
 
-  def __init__(self, environment: NetworkEnvironment):
+  def __init__(self, environment: Optional[NetworkEnvironment]):
+    if not environment:
+      raise FrontrunnerConfigurationException("No injective network configured")
+
     self.denoms = self._denoms_for_environment(environment)
 
   def __getitem__(self, name: str):
