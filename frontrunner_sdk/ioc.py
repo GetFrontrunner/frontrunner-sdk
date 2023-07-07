@@ -80,11 +80,11 @@ class FrontrunnerIoC(SyncMixin):
 
   @cached_property
   def injective_composer(self) -> Composer:
-    return Composer(network=self.network)
+    return Composer(network=self.network.env)
 
   @cached_property
   def injective_client(self) -> AsyncClient:
-    return AsyncClient(self.network)
+    return AsyncClient(self.network, self.config.injective_insecure)
 
   @cached_property
   def injective_light_client_daemon(self) -> InjectiveLightClientDaemon:

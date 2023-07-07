@@ -70,3 +70,7 @@ class ChainedFrontrunnerConfig(FrontrunnerConfig):
   @property
   def injective_faucet_base_url(self) -> Optional[str]:
     return self._find_next(lambda config: config.injective_faucet_base_url)
+
+  @property
+  def injective_insecure(self) -> Optional[bool]:
+    return self._find_next(lambda config: config.injective_insecure)

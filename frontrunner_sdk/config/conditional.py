@@ -58,3 +58,7 @@ class ConditionalFrontrunnerConfig(FrontrunnerConfig):
   @property
   def injective_faucet_base_url(self) -> Optional[str]:
     return self.config.injective_faucet_base_url if self.condition() else None
+
+  @property
+  def injective_insecure(self) -> Optional[bool]:
+    return self.config.injective_insecure if self.condition() else None

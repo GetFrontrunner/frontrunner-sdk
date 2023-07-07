@@ -19,3 +19,4 @@ class StaticFrontrunnerConfig(FrontrunnerConfig):
   injective_lcd_base_url: Optional[str] = None
   injective_rpc_base_url: Optional[str] = None
   injective_faucet_base_url: Optional[str] = None
+  injective_insecure: Optional[bool] = None
