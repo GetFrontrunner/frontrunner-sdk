@@ -4,6 +4,7 @@ from frontrunner_sdk.facades.frontrunner import FrontrunnerFacade
 from frontrunner_sdk.facades.frontrunner import FrontrunnerFacadeAsync
 from frontrunner_sdk.facades.injective import InjectiveFacade
 from frontrunner_sdk.facades.injective import InjectiveFacadeAsync
+from frontrunner_sdk.facades.utilities import UtilitiesFacade
 from frontrunner_sdk.sdk import FrontrunnerSDK
 from frontrunner_sdk.sdk import FrontrunnerSDKAsync
 
@@ -15,6 +16,7 @@ class TestFrontrunnerSDKAsync(TestCase):
 
     self.assertIsInstance(sdk.frontrunner, FrontrunnerFacadeAsync)
     self.assertIsInstance(sdk.injective, InjectiveFacadeAsync)
+    self.assertIsInstance(sdk.utilities, UtilitiesFacade)
 
 
 class TestFrontrunnerSDK(TestCase):
@@ -24,3 +26,4 @@ class TestFrontrunnerSDK(TestCase):
 
     self.assertIsInstance(sdk.frontrunner, FrontrunnerFacade)
     self.assertIsInstance(sdk.injective, InjectiveFacade)
+    self.assertIsInstance(sdk.utilities, UtilitiesFacade)

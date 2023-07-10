@@ -35,6 +35,8 @@ includes:
   - operations/injective/stream_orders
   - operations/injective/stream_positions
   - operations/injective/stream_trades
+  - utilities
+  - utilities/currency
 
 search: true
 

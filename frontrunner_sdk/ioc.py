@@ -6,6 +6,7 @@ from pyinjective.async_client import AsyncClient
 from pyinjective.composer import Composer
 from pyinjective.constant import Network
 
+from frontrunner_sdk.clients.denom_factory import DenomFactory
 from frontrunner_sdk.clients.injective_chain import InjectiveChain
 from frontrunner_sdk.clients.injective_faucet import InjectiveFaucet
 from frontrunner_sdk.clients.injective_light_client_daemon import InjectiveLightClientDaemon # NOQA
@@ -56,6 +57,10 @@ class FrontrunnerIoC(SyncMixin):
   async def use_wallet(self, wallet: Wallet):
     await self.injective_light_client_daemon.initialize_wallet(wallet)
     self._wallet = wallet
+
+  @cached_property
+  def denom_factory(self) -> DenomFactory:
+    return DenomFactory(self.config.injective_network)
 
   @cached_property
   def openapi_frontrunner_api(self) -> FrontrunnerApi:

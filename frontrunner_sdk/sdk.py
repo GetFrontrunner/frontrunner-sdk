@@ -6,6 +6,7 @@ from frontrunner_sdk.facades.frontrunner import FrontrunnerFacade
 from frontrunner_sdk.facades.frontrunner import FrontrunnerFacadeAsync
 from frontrunner_sdk.facades.injective import InjectiveFacade
 from frontrunner_sdk.facades.injective import InjectiveFacadeAsync
+from frontrunner_sdk.facades.utilities import UtilitiesFacade
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.models.wallet import Wallet
 from frontrunner_sdk.sync import SyncMixin
@@ -27,6 +28,10 @@ class FrontrunnerSDKAsync:
   def injective(self) -> InjectiveFacadeAsync:
     return InjectiveFacadeAsync(self.dependencies)
 
+  @cached_property
+  def utilities(self) -> UtilitiesFacade:
+    return UtilitiesFacade(self.dependencies)
+
 
 class FrontrunnerSDK(SyncMixin):
 
@@ -43,3 +48,7 @@ class FrontrunnerSDK(SyncMixin):
   @cached_property
   def injective(self) -> InjectiveFacade:
     return InjectiveFacade(self.dependencies)
+
+  @cached_property
+  def utilities(self) -> UtilitiesFacade:
+    return UtilitiesFacade(self.dependencies)
