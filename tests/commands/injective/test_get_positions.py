@@ -29,13 +29,6 @@ class TestGetPositionsOperation(IsolatedAsyncioTestCase):
     cmd = GetPositionsOperation(req)
     cmd.validate(self.deps)
 
-  def test_validate_exception_when_no_market_ids(self):
-    req = GetPositionsRequest(market_ids=[], mine=True)
-    cmd = GetPositionsOperation(req)
-
-    with self.assertRaises(FrontrunnerArgumentException):
-      cmd.validate(self.deps)
-
   def test_validate_exception_when_start_in_future(self):
     start = datetime.now() + timedelta(days=1)
     req = GetPositionsRequest(market_ids=self.market_ids, mine=True, start_time=start)

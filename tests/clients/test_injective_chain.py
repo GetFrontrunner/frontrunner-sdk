@@ -14,8 +14,8 @@ from pyinjective.proto.injective.exchange.v1beta1.exchange_pb2 import Derivative
 from pyinjective.proto.injective.exchange.v1beta1.exchange_pb2 import OrderInfo
 from pyinjective.proto.injective.exchange.v1beta1.exchange_pb2 import OrderType
 from pyinjective.transaction import Transaction
-from pyinjective.utils.utils import derivative_price_to_backend
-from pyinjective.utils.utils import derivative_quantity_to_backend
+from pyinjective.utils import derivative_price_to_backend
+from pyinjective.utils import derivative_quantity_to_backend
 
 from frontrunner_sdk.clients.injective_chain import InjectiveChain
 from frontrunner_sdk.exceptions import FrontrunnerInjectiveException

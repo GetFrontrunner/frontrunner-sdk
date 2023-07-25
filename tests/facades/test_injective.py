@@ -139,7 +139,7 @@ class TestInjectiveFacadeAsync(IsolatedAsyncioTestCase):
     return_value=GetPositionsResponse(positions=[]),
   )
   async def test_get_positions(self, _execute: AsyncMock):
-    await self.facade.get_positions(market_ids=["abc"])
+    await self.facade.get_positions()
     _execute.assert_awaited_once()
 
   @patch.object(
