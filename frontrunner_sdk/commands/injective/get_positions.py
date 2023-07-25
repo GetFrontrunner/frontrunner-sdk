@@ -19,8 +19,8 @@ from frontrunner_sdk.logging.log_operation import log_operation
 
 @dataclass
 class GetPositionsRequest:
-  market_ids: Iterable[str]
-  mine: bool
+  mine: bool = False
+  market_ids: Optional[Iterable[str]] = None
   direction: Optional[Literal["buy", "sell"]] = None
   start_time: Optional[datetime] = None
   end_time: Optional[datetime] = None
@@ -37,20 +37,21 @@ class GetPositionsOperation(FrontrunnerOperation[GetPositionsRequest, GetPositio
     super().__init__(request)
 
   def validate(self, deps: FrontrunnerIoC) -> None:
-    if not self.request.market_ids:
-      raise FrontrunnerArgumentException("At least one market id is required")
+    if not self.request.mine and not self.request.market_ids:
+      raise FrontrunnerArgumentException("Either mine must be True, or at least one market id must be provided")
 
     validate_start_time_end_time(self.request.start_time, self.request.end_time)
 
   @log_operation(__name__)
   async def execute(self, deps: FrontrunnerIoC) -> GetPositionsResponse:
-    request: Dict[str, Any] = {
-      "market_ids": list(self.request.market_ids),
-    }
+    request: Dict[str, Any] = {}
 
     if self.request.mine:
       wallet = await deps.wallet()
       request["subaccount_id"] = wallet.subaccount_address()
+
+    if self.request.market_ids:
+      request["market_ids"] = list(self.request.market_ids)
 
     if self.request.start_time:
       request["start_time"] = int(self.request.start_time.timestamp())
