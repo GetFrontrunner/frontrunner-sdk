@@ -24,10 +24,22 @@ class TestGetPositionsOperation(IsolatedAsyncioTestCase):
       paging=MagicMock(total=len(self.positions)),
     )
 
-  def test_validate(self):
-    req = GetPositionsRequest(market_ids=self.market_ids, mine=True)
+  def test_validate_market_ids_only(self):
+    req = GetPositionsRequest(market_ids=self.market_ids)
     cmd = GetPositionsOperation(req)
     cmd.validate(self.deps)
+
+  def test_validate_mine_only(self):
+    req = GetPositionsRequest(mine=True)
+    cmd = GetPositionsOperation(req)
+    cmd.validate(req)
+
+  def test_validate_exception_when_mine_and_market_ids_missing(self):
+    req = GetPositionsRequest()
+    cmd = GetPositionsOperation(req)
+
+    with self.assertRaises(FrontrunnerArgumentException):
+      cmd.validate(req)
 
   def test_validate_exception_when_start_in_future(self):
     start = datetime.now() + timedelta(days=1)

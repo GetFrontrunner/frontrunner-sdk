@@ -18,11 +18,15 @@ response = sdk.injective.get_positions(
 
 | Name | Type | Req? | Description |
 | - | - | - | - |
-| `market_ids` | `[str]` | ◯ `None` | IDs of markets to look up positions for |
-| `mine` | `bool` | ◯ `False` | Only find positions for this wallet |
+| `mine` | `bool` | ? `False` | Only find positions for this wallet |
+| `market_ids` | `[str]` | ? `None` | IDs of markets to look up positions for |
 | `direction` | `"buy", "sell"` | ◯ `None` | Only find positions with this direction |
 | `start_time` | `datetime` | ◯ `None` | Only find positions executing on or after this time |
 | `end_time` | `datetime` | ◯ `None` | Only find positions executing on or before this time |
+
+<aside class="notice">
+At least one of <code>mine</code> or <code>market_ids</code> must be specified.
+</aside>
 
 ### Response
 
