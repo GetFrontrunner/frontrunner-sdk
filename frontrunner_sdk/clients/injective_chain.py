@@ -217,8 +217,7 @@ class InjectiveChain:
 
     batch_message = self.composer.MsgBatchUpdateOrders(
       wallet.injective_address,
-      subaccount_id=wallet.subaccount_address(),
-      binary_options_orders_to_cancel=order_messages
+      binary_options_orders_to_cancel=order_messages,
     )
 
     return await self._execute_transaction(wallet, [batch_message])
