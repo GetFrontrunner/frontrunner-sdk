@@ -1,4 +1,4 @@
-injective-py==0.6.*
+injective-py==0.7.*
 aiohttp~=3.8.4
 
 # dependency of dependency that we need to reference
