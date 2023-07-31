@@ -1,6 +1,6 @@
 ## Currency
 
-Injective operates on raw coin quantities instead of decimal values. For example, 8 USDC would be represented as `"8000000"`. This is because USDC's denomination is to 6 decimal places, and 8 shifted by 6 decimal places is 8,000,000.
+Injective operates on raw coin quantities instead of decimal values. For example, 8 FRCOIN (as well as USDC and USDT) would be represented as `"8000000"`. This is because FRCOIN's denomination is to 6 decimal places, and 8 shifted by 6 decimal places is 8,000,000.
 
 Each denomination has its own fractional resolution, and all are mapped in Injective's SDK. See:
 
@@ -21,7 +21,7 @@ Factory for `Currency`, given the Injective-side quantity and denomination.
 #### Example
 
 ```python
-currency = sdk.utilities.currency_from_quantity(420_690_000, "USDC")
+currency = sdk.utilities.currency_from_quantity(420_690_000, "FRCOIN")
 print(
   "currency:",
   "[", currency.value, currency.denom.name, "]",
@@ -49,7 +49,7 @@ Factory for `Currency`, given the human-readable quantity and denomination.
 #### Example
 
 ```python
-currency = sdk.utilities.currency_from_value(420.69, "USDC")
+currency = sdk.utilities.currency_from_value(420.69, "FRCOIN")
 print(
   "currency:",
   "[", currency.value, currency.denom.name, "]",

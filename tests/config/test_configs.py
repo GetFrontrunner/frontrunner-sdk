@@ -72,7 +72,7 @@ class TestFrontrunnerConfig(TestCase):
     self.assertEqual(True, DEFAULT.injective_insecure)
     self.assertEqual("sentry0.injective.network:9910", DEFAULT.injective_exchange_authority)
     self.assertEqual("sentry0.injective.network:9900", DEFAULT.injective_grpc_authority)
-    self.assertEqual("https://lcd.injective.network", DEFAULT.injective_lcd_base_url)
+    self.assertEqual("http://sentry0.injective.network:10337", DEFAULT.injective_lcd_base_url)
     self.assertEqual("ws://sentry0.injective.network:26657/websocket", DEFAULT.injective_rpc_base_url)
     self.assertEqual("sentry0.injective.network:9911", DEFAULT.injective_explorer_authority)
     self.assertEqual("https://partner-api-mainnet.getfrontrunner.com/api/v1", DEFAULT.partner_api_base_url)

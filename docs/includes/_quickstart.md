@@ -86,23 +86,23 @@ Then, we'll pick one market to place bets on, and print some info about it.
 response = sdk.injective.get_order_books([market.injective_id])
 order_book = response.order_books[market.injective_id]
 
-# Frontrunner markets are in USDC while on Injective, USDC has 6 decimals.
-# 1,000,000 from Injective is $1 USDC.
-USDC_SCALE_FACTOR = 10 ** 6
+# Frontrunner testnet markets are in FRCOIN and on Injective, FRCOIN has 6 decimals.
+# 1,000,000 from Injective is $1 FRCOIN.
+FRCOIN_SCALE_FACTOR = 10 ** 6
 
 # print order book buys
 print("buys:")
 for buy in order_book.buys:
-  print(f"  {buy.quantity} @ ${int(buy.price) / USDC_SCALE_FACTOR}")
+  print(f"  {buy.quantity} @ ${int(buy.price) / FRCOIN_SCALE_FACTOR}")
 
 # print order book sells
 print("sells:")
 for sell in order_book.sells:
-  print(f"  {sell.quantity} @ ${int(sell.price) / USDC_SCALE_FACTOR}")
+  print(f"  {sell.quantity} @ ${int(sell.price) / FRCOIN_SCALE_FACTOR}")
 
 # find the highest buy and lowest sell
-buy_prices = [int(order.price) / USDC_SCALE_FACTOR for order in order_book.buys]
-sell_prices = [int(order.price) / USDC_SCALE_FACTOR for order in order_book.sells]
+buy_prices = [int(order.price) / FRCOIN_SCALE_FACTOR for order in order_book.buys]
+sell_prices = [int(order.price) / FRCOIN_SCALE_FACTOR for order in order_book.sells]
 highest_buy, lowest_sell = max(buy_prices), min(sell_prices)
 print(f"bid-ask spread: [${highest_buy}, ${lowest_sell}]")
 ```
@@ -165,7 +165,7 @@ To place the orders, we'll call `create_orders`. We'll place...
 
 Note that we use a hard-coded market ID here that points to a testnet USDT market that can be traded in with Injective Faucet funds.
 
-Contact [support@getfrontrunner.com][support] to request testnet USDC to trade in real Frontrunner markets.
+Contact [support@getfrontrunner.com][support] to request testnet FRCOIN to trade in real Frontrunner markets.
 
 ## Retrieving Your Orders
 
@@ -174,7 +174,7 @@ get_orders = sdk.injective.get_orders(mine=True, execution_types=["limit"])
 
 print("orders:")
 for order_history in get_orders.orders:
-  print(f"  {order_history.order_type} {order_history.order.order_hash}: {order_history.order.quantity} @ ${int(order_history.order.price) / USDC_SCALE_FACTOR}")
+  print(f"  {order_history.order_type} {order_history.order.order_hash}: {order_history.order.quantity} @ ${int(order_history.order.price) / FRCOIN_SCALE_FACTOR}")
 ```
 
 > **Output**
