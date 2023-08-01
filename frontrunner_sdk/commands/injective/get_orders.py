@@ -53,9 +53,6 @@ class GetOrdersOperation(FrontrunnerOperation[GetOrdersRequest, GetOrdersRespons
     validate_mutually_exclusive("subaccount", self.request.subaccount, "subaccount_id", self.request.subaccount_id)
     validate_mutually_exclusive("subaccount", self.request.subaccount, "subaccount_index", self.request.subaccount_index)
     validate_mutually_exclusive("subaccount_id", self.request.subaccount_id, "subaccount_index", self.request.subaccount_index)
-    if self.request.subaccount_index and not self.request.mine:
-      raise FrontrunnerArgumentException("'mine' must be True if 'subaccount_index' is provided")
-
     validate_start_time_end_time(self.request.start_time, self.request.end_time)
 
   @log_operation(__name__)
@@ -65,7 +62,7 @@ class GetOrdersOperation(FrontrunnerOperation[GetOrdersRequest, GetOrdersRespons
     request.pop("subaccount", None)
     request.pop("subaccount_index", None)
 
-    if self.request.mine:
+    if self.request.mine or self.request.subaccount_index is not None:
       wallet = await deps.wallet()
       request["subaccount_id"] = wallet.subaccount_address(self.request.subaccount_index or 0)
     elif self.request.subaccount:

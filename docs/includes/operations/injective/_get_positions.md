@@ -19,6 +19,8 @@ response = sdk.injective.get_positions(
 | Name | Type | Req? | Description |
 | - | - | - | - |
 | `mine` | `bool` | ? `False` | Only find positions for this wallet |
+| `subaccount` | `Subaccount` | ◯ `None` | Only return orders from this subaccount. |
+| `subaccount_index` | `int` | ◯ `None` | Only return orders from this subaccount index of your wallet. Sets `mine=True` |
 | `market_ids` | `[str]` | ? `None` | IDs of markets to look up positions for |
 | `direction` | `"buy", "sell"` | ◯ `None` | Only find positions with this direction |
 | `start_time` | `datetime` | ◯ `None` | Only find positions executing on or after this time |

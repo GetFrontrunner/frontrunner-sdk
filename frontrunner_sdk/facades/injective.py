@@ -126,6 +126,8 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
   async def get_positions(
     self,
     mine: bool = False,
+    subaccount: Optional[Subaccount] = None,
+    subaccount_index: Optional[int] = None,
     market_ids: Optional[Iterable[str]] = None,
     direction: Optional[Literal["buy", "sell"]] = None,
     start_time: Optional[datetime] = None,
@@ -239,6 +241,8 @@ class InjectiveFacade(SyncMixin):
   def get_positions(
     self,
     mine: bool = False,
+    subaccount: Optional[Subaccount] = None,
+    subaccount_index: Optional[int] = None,
     market_ids: Optional[Iterable[str]] = None,
     direction: Optional[Literal["buy", "sell"]] = None,
     start_time: Optional[datetime] = None,
