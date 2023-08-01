@@ -28,7 +28,9 @@ sdk = FrontrunnerSDKAsync()
 wallet = await sdk.wallet()
 long_subaccount_index = 1
 short_subaccount_index = 2
-print(f"Running with wallet {wallet.injective_address}. {long_subaccount_index=}, {short_subaccount_index=}")
+long_subaccount = wallet.subaccount_address(long_subaccount_index)
+short_subaccount = wallet.subaccount_address(short_subaccount_index)
+print(f"Running with wallet {wallet.injective_address}. {long_subaccount=}, {short_subaccount=}")
 
 response = await sdk.injective.fund_subaccount(1000, "FRCOIN", subaccount_index=long_subaccount_index)
 print(f"View deposit transaction to long side subaccount: https://testnet.explorer.injective.network/transaction/{response.transaction}")
