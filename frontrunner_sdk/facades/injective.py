@@ -208,8 +208,8 @@ class InjectiveFacade(SyncMixin):
   def create_orders(self, orders: Iterable[Order]) -> CreateOrdersResponse:
     return self._synchronously(self.impl.create_orders, orders)
 
-  def cancel_all_orders(self) -> CancelAllOrdersResponse:
-    return self._synchronously(self.impl.cancel_all_orders)
+  def cancel_all_orders(self, subaccount_index: int = 0) -> CancelAllOrdersResponse:
+    return self._synchronously(self.impl.cancel_all_orders, subaccount_index)
 
   def cancel_orders(self, orders: Iterable[CancelOrder]) -> CancelOrdersResponse:
     return self._synchronously(self.impl.cancel_orders, orders)
