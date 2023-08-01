@@ -88,9 +88,9 @@ class InjectiveChain:
       denom=self.DENOM,
     )
 
-  def _injective_order_cancel(self, wallet: Wallet, market_id: str, order_hash: str):
+  def _injective_order_cancel(self, wallet: Wallet, market_id: str, order_hash: str, subaccount_index: int):
     return self.composer.OrderData(
-      market_id=market_id, subaccount_id=wallet.subaccount_address(), order_hash=order_hash
+      market_id=market_id, subaccount_id=wallet.subaccount_address(subaccount_index), order_hash=order_hash
     )
 
   async def _simulate_transaction(self, wallet: Wallet, sequence: int, messages: List[Message]) -> SimulationResponse:
@@ -214,7 +214,7 @@ class InjectiveChain:
   @log_external_exceptions(__name__)
   async def cancel_orders(self, wallet: Wallet, orders: Iterable[CancelOrder]) -> TxResponse:
     order_messages = [
-      self._injective_order_cancel(wallet, order.market_id, order.order_hash) for order in orders if order.order_hash
+      self._injective_order_cancel(wallet, order.market_id, order.order_hash, order.subaccount_index) for order in orders if order.order_hash
     ]
 
     batch_message = self.composer.MsgBatchUpdateOrders(
