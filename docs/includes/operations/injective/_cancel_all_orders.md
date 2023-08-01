@@ -11,7 +11,7 @@ response = sdk.injective.cancel_all_orders()
 
 | Name | Type | Req? | Description |
 | - | - | - | - |
-| `subaccount` | `Subaccount` | ◯ `0` | Subaccount to cancel orders for |
+| `subaccount_index` | `int` | ◯ `0` | Index of the subaccount to cancel orders for |
 
 ### Response
 
