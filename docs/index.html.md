@@ -13,6 +13,7 @@ includes:
   - concepts
   - configuring
   - technical_conventions
+  - subaccount_management
   - operations
   - operations/frontrunner/find_markets
   - operations/frontrunner/get_leagues

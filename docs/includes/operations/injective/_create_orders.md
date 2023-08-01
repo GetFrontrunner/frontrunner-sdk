@@ -10,7 +10,10 @@ For finding markets, see `find_markets`.
 some_market = "0x141e3c92ed55107067ceb60ee412b86256cedef67b1227d6367b4cdf30c55a74"
 other_market = "0x9181874b70fefe3e126b6472c6de647b4dbfa59025ad5dc61be6559532d19e15"
 
-# Create orders
+# Create orders 
+# Note that this specific set of orders (both long and short buys) can't all be executed together due to subaccount
+#   mechanics (see Subaccount Management for more details) and because sells only work with an existing position. 
+#   This list of orders is just to demonstrate all types.
 response = sdk.injective.create_orders([
   Order.buy_long(some_market, 120, 0.70),
   Order.sell_long(some_market, 100, 0.75),

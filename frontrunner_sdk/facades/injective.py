@@ -16,6 +16,9 @@ from frontrunner_sdk.commands.injective.create_orders import CreateOrdersRespons
 from frontrunner_sdk.commands.injective.create_wallet import CreateWalletOperation # NOQA
 from frontrunner_sdk.commands.injective.create_wallet import CreateWalletRequest # NOQA
 from frontrunner_sdk.commands.injective.create_wallet import CreateWalletResponse # NOQA
+from frontrunner_sdk.commands.injective.fund_subaccount import FundSubaccountOperation # NOQA
+from frontrunner_sdk.commands.injective.fund_subaccount import FundSubaccountRequest # NOQA
+from frontrunner_sdk.commands.injective.fund_subaccount import FundSubaccountResponse # NOQA
 from frontrunner_sdk.commands.injective.fund_wallet_from_faucet import FundWalletFromFaucetOperation # NOQA
 from frontrunner_sdk.commands.injective.fund_wallet_from_faucet import FundWalletFromFaucetRequest # NOQA
 from frontrunner_sdk.commands.injective.fund_wallet_from_faucet import FundWalletFromFaucetResponse # NOQA
@@ -49,6 +52,7 @@ from frontrunner_sdk.commands.injective.stream_trades import StreamTradesRespons
 from frontrunner_sdk.facades.base import FrontrunnerFacadeMixin # NOQA
 from frontrunner_sdk.helpers.parameters import as_request_args
 from frontrunner_sdk.ioc import FrontrunnerIoC
+from frontrunner_sdk.models import Subaccount
 from frontrunner_sdk.models.cancel_order import CancelOrder
 from frontrunner_sdk.models.order import InjectiveOrderExecutionType
 from frontrunner_sdk.models.order import InjectiveOrderState
@@ -65,6 +69,16 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
   async def create_wallet(self, fund_and_initialize: bool = True) -> CreateWalletResponse:
     request = CreateWalletRequest(fund_and_initialize=fund_and_initialize)
     return await self._run_operation(CreateWalletOperation, self.deps, request)
+
+  async def fund_subaccount(
+    self,
+    amount: int,
+    denom: str,
+    subaccount_index: Optional[int] = None,
+    subaccount: Optional[Subaccount] = None,
+  ) -> FundSubaccountResponse:
+    request = FundSubaccountRequest(amount, denom, subaccount=subaccount, subaccount_index=subaccount_index)
+    return await self._run_operation(FundSubaccountOperation, self.deps, request)
 
   async def fund_wallet_from_faucet(self) -> FundWalletFromFaucetResponse:
     request = FundWalletFromFaucetRequest()

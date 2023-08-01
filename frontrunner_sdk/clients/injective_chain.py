@@ -60,6 +60,7 @@ class InjectiveChain:
   def _estimate_fee(self, simulation: SimulationResponse) -> Tuple[int, List[Coin]]:
     limit = int(simulation.gas_info.gas_used) + self.ADDITIONAL_GAS_FEE
     amount = self.GAS_PRICE * limit
+    # TODO: remove str() since Coin expects int
     fee = [self.composer.Coin(amount=str(amount), denom=self.network.fee_denom)]
     return (limit, fee)
 
@@ -79,8 +80,8 @@ class InjectiveChain:
       # TODO allow different fee recipient address
       fee_recipient=wallet.injective_address,
 
-      # use default subaccount; can revisit this later
-      subaccount_id=wallet.subaccount_address(),
+      # uses default subaccount if not set explicitly on the order
+      subaccount_id=wallet.subaccount_address(order.subaccount_index),
 
       # We need to specify a placeholder denom because one isn't hardcoded for
       # our ephemeral markets.
@@ -221,3 +222,14 @@ class InjectiveChain:
     )
 
     return await self._execute_transaction(wallet, [batch_message])
+
+  @log_external_exceptions(__name__)
+  async def fund_subaccount(self, wallet: Wallet, subaccount_id: str, amount: int, denom: str) -> TxResponse:
+    message = self.composer.MsgDeposit(
+      wallet.injective_address,
+      subaccount_id=subaccount_id,
+      amount=amount,
+      denom=denom,
+    )
+
+    return await self._execute_transaction(wallet, [message])
