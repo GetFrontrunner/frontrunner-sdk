@@ -28,6 +28,7 @@ response = sdk.injective.create_orders([
 | `orders[].market_id` | `str` | ✓ | Market of the order |
 | `orders[].quantity` | `int` | ✓ | How many orders to place |
 | `orders[].price` | `float` | ✓ | At what price to place the order; must be 0 < price < 1 |
+| `orders[].subaccount_index` | `int` | ◯ `0` | Index of the subaccount to create the order from |
 
 ### Response
 
