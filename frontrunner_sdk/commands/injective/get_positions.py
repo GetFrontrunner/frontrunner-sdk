@@ -54,6 +54,9 @@ class GetPositionsOperation(FrontrunnerOperation[GetPositionsRequest, GetPositio
       wallet = await deps.wallet()
       request["subaccount_id"] = wallet.subaccount_address(self.request.subaccount_index or 0)
 
+    if self.request.subaccount:
+      request["subaccount_id"] = self.request.subaccount.subaccount_id
+
     if self.request.market_ids:
       request["market_ids"] = list(self.request.market_ids)
 

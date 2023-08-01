@@ -65,8 +65,10 @@ class GetOrdersOperation(FrontrunnerOperation[GetOrdersRequest, GetOrdersRespons
     if self.request.mine or self.request.subaccount_index is not None:
       wallet = await deps.wallet()
       request["subaccount_id"] = wallet.subaccount_address(self.request.subaccount_index or 0)
-    elif self.request.subaccount:
+
+    if self.request.subaccount:
       request["subaccount_id"] = self.request.subaccount.subaccount_id
+
     if self.request.is_conditional is not None:
       request["is_conditional"] = str(self.request.is_conditional).lower()
 
