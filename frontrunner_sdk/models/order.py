@@ -70,16 +70,16 @@ class Order:
 
   @classmethod
   def buy_long(clz, market_id: str, quantity: int, price: float, subaccount_index: int = 0) -> "Order":
-    return clz("buy", "long", market_id, quantity, price, subaccount_index=subaccount_index)
+    return clz("buy", "long", market_id, quantity, price, subaccount_index)
 
   @classmethod
   def buy_short(clz, market_id: str, quantity: int, price: float, subaccount_index: int = 0) -> "Order":
-    return clz("buy", "short", market_id, quantity, price, subaccount_index=subaccount_index)
+    return clz("buy", "short", market_id, quantity, price, subaccount_index)
 
   @classmethod
   def sell_long(clz, market_id: str, quantity: int, price: float, subaccount_index: int = 0) -> "Order":
-    return clz("sell", "long", market_id, quantity, price, subaccount_index=subaccount_index)
+    return clz("sell", "long", market_id, quantity, price, subaccount_index)
 
   @classmethod
   def sell_short(clz, market_id: str, quantity: int, price: float, subaccount_index: int = 0) -> "Order":
-    return clz("sell", "short", market_id, quantity, price, subaccount_index=subaccount_index)
+    return clz("sell", "short", market_id, quantity, price, subaccount_index)
