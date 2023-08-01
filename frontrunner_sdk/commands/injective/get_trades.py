@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any
+from typing import Any, List
 from typing import Dict
 from typing import Iterable
 from typing import Literal
@@ -24,6 +24,8 @@ class GetTradesRequest:
   mine: bool
   subaccount: Optional[Subaccount] = None
   subaccount_index: Optional[int] = None
+  subaccounts: Optional[List[Subaccount]] = None
+  subaccount_indexes: Optional[List[int]] = None
   direction: Optional[Literal["buy", "sell"]] = None
   side: Optional[Literal["maker", "taker"]] = None
   start_time: Optional[datetime] = None
@@ -44,6 +46,7 @@ class GetTradesOperation(FrontrunnerOperation[GetTradesRequest, GetTradesRespons
     if not self.request.market_ids:
       raise FrontrunnerArgumentException("At least one market id is required")
 
+    # TODO: validate more mutually exclusive
     validate_mutually_exclusive("subaccount", self.request.subaccount, "subaccount_index", self.request.subaccount_index)
     validate_start_time_end_time(self.request.start_time, self.request.end_time)
 
@@ -59,6 +62,13 @@ class GetTradesOperation(FrontrunnerOperation[GetTradesRequest, GetTradesRespons
 
     if self.request.subaccount:
       request["subaccount_id"] = self.request.subaccount.subaccount_id
+
+    if self.request.subaccount_indexes:
+      wallet = await deps.wallet()
+      request["subaccount_ids"] = [wallet.subaccount_address(index) for index in self.request.subaccount_indexes]
+
+    if self.request.subaccounts:
+      request["subaccount_ids"] = [subaccount.subaccount_id for subaccount in self.request.subaccounts]
 
     if self.request.start_time:
       request["start_time"] = int(self.request.start_time.timestamp())
