@@ -20,6 +20,8 @@ response = sdk.injective.get_trades(
 | - | - | - | - |
 | `market_ids` | `[str]` | ✓ | IDs of markets to look up trades for |
 | `mine` | `bool` | ◯ `False` | Only find trades for this wallet |
+| `subaccount` | `Subaccount` | ◯ `None` | Only return orders from this subaccount. |
+| `subaccount_index` | `int` | ◯ `None` | Only return orders from this subaccount index of your wallet. Sets `mine=True` |
 | `direction` | `"buy", "sell"` | ◯ `None` | Only find trades with this direction |
 | `side` | `"maker", "taker"` | ◯ `None` | Only find trades with this side |
 | `start_time` | `datetime` | ◯ `None` | Only find trades executing on or after this time |
