@@ -23,7 +23,7 @@ from frontrunner_sdk.helpers.paginators import injective_paginated_list
 from frontrunner_sdk.logging.log_external_exceptions import log_external_exceptions # NOQA
 from frontrunner_sdk.models.cancel_order import CancelOrder
 from frontrunner_sdk.models.order import Order
-from frontrunner_sdk.models.wallet import Wallet
+from frontrunner_sdk.models.wallet import Wallet, Subaccount
 
 logger = logging.getLogger(__name__)
 
@@ -174,11 +174,11 @@ class InjectiveChain:
     return await self._send_transaction(wallet, sequence, messages, gas, fee)
 
   @log_external_exceptions(__name__)
-  async def get_all_open_orders(self, wallet: Wallet) -> Iterable[DerivativeLimitOrder]:
+  async def get_all_open_orders(self, subaccount: Subaccount) -> Iterable[DerivativeLimitOrder]:
     return await injective_paginated_list(
       self.client.get_derivative_subaccount_orders,
       "orders",
-      wallet.subaccount_address(),
+      subaccount.subaccount_id,
     )
 
   @log_external_exceptions(__name__)
@@ -200,11 +200,12 @@ class InjectiveChain:
   async def cancel_all_orders_for_markets(
     self,
     wallet: Wallet,
+    subaccount: Subaccount,
     injective_market_ids: Set[str],
   ) -> TxResponse:
     batch_message = self.composer.MsgBatchUpdateOrders(
       wallet.injective_address,
-      subaccount_id=wallet.subaccount_address(),
+      subaccount_id=subaccount.subaccount_id,
       binary_options_market_ids_to_cancel_all=injective_market_ids,
     )
 

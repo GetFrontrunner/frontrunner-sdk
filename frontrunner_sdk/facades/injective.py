@@ -88,8 +88,8 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     request = CreateOrdersRequest(orders=orders)
     return await self._run_operation(CreateOrdersOperation, self.deps, request)
 
-  async def cancel_all_orders(self) -> CancelAllOrdersResponse:
-    request = CancelAllOrdersRequest()
+  async def cancel_all_orders(self, subaccount_index: int = 0) -> CancelAllOrdersResponse:
+    request = CancelAllOrdersRequest(subaccount_index=subaccount_index)
     return await self._run_operation(CancelAllOrdersOperation, self.deps, request)
 
   async def cancel_orders(self, orders: Iterable[CancelOrder]) -> CancelOrdersResponse:

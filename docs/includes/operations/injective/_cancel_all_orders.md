@@ -9,7 +9,9 @@ Cancel all your open orders.
 response = sdk.injective.cancel_all_orders()
 ```
 
-There are no parameters for this operation.
+| Name | Type | Req? | Description |
+| - | - | - | - |
+| `subaccount` | `Subaccount` | ◯ `0` | Subaccount to cancel orders for |
 
 ### Response
 
