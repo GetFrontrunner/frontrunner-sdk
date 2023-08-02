@@ -20,7 +20,7 @@ from pyinjective.utils.utils import derivative_quantity_to_backend
 from frontrunner_sdk.clients.injective_chain import InjectiveChain
 from frontrunner_sdk.exceptions import FrontrunnerInjectiveException
 from frontrunner_sdk.models.order import Order
-from frontrunner_sdk.models.wallet import Wallet
+from frontrunner_sdk.models.wallet import Wallet, Subaccount
 
 
 class TestInjectiveChain(IsolatedAsyncioTestCase):
@@ -47,6 +47,9 @@ class TestInjectiveChain(IsolatedAsyncioTestCase):
       account_num=1234,
       chain_id="<chain-id>",
     )
+
+    self.subaccount_id = "0xfddd3e6d98a236a1df56716ab8c407b1004113df000000000000000000000000"
+    self.subaccount = Subaccount.from_subaccount_id(self.subaccount_id)
 
     self.client = MagicMock(spec=AsyncClient)
     self.network = MagicMock(spec=Network)
@@ -167,7 +170,7 @@ class TestInjectiveChain(IsolatedAsyncioTestCase):
     expected = MagicMock(spec=TxResponse)
     self.injective_chain._execute_transaction = AsyncMock(return_value=expected)
 
-    response = await self.injective_chain.cancel_all_orders_for_markets(self.wallet, ["<market-id>"])
+    response = await self.injective_chain.cancel_all_orders_for_markets(self.wallet, self.subaccount, ["<market-id>"])
 
     self.assertEqual(expected, response)
 
@@ -181,7 +184,7 @@ class TestInjectiveChain(IsolatedAsyncioTestCase):
     expected = MagicMock(spec=TxResponse)
     self.injective_chain._execute_transaction = AsyncMock(return_value=expected)
 
-    response = await self.injective_chain.cancel_all_orders_for_markets(self.wallet, ["<market-id>"])
+    response = await self.injective_chain.cancel_all_orders_for_markets(self.wallet, self.subaccount, ["<market-id>"])
 
     self.assertEqual(expected, response)
 
