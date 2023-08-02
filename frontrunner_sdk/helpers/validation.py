@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import Any
+from typing import List
 from typing import Optional
 
 from frontrunner_sdk.exceptions import FrontrunnerArgumentException
@@ -9,6 +10,12 @@ def validate_mutually_exclusive(name1: str, val1: Optional[Any], name2: str, val
   if val1 is not None and val2 is not None:
     kwargs = {name1: val1, name2: val2}
     raise FrontrunnerArgumentException(f"'{name1}' and '{name2}' are mutually exclusive", **kwargs)
+
+
+def validate_all_mutually_exclusive(request: object, names: List[str]):
+  num_mutually_exclusive_params = sum(getattr(request, prop) is not None for prop in names)
+  if num_mutually_exclusive_params > 1:
+    raise FrontrunnerArgumentException(f"These request params are mutually exclusive: {names}")
 
 
 def validate_start_time_end_time(start_time: Optional[datetime], end_time: Optional[datetime]):

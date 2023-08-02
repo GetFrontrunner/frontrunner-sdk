@@ -16,6 +16,9 @@ from frontrunner_sdk.commands.injective.create_orders import CreateOrdersRespons
 from frontrunner_sdk.commands.injective.create_wallet import CreateWalletOperation # NOQA
 from frontrunner_sdk.commands.injective.create_wallet import CreateWalletRequest # NOQA
 from frontrunner_sdk.commands.injective.create_wallet import CreateWalletResponse # NOQA
+from frontrunner_sdk.commands.injective.fund_subaccount import FundSubaccountOperation # NOQA
+from frontrunner_sdk.commands.injective.fund_subaccount import FundSubaccountRequest # NOQA
+from frontrunner_sdk.commands.injective.fund_subaccount import FundSubaccountResponse # NOQA
 from frontrunner_sdk.commands.injective.fund_wallet_from_faucet import FundWalletFromFaucetOperation # NOQA
 from frontrunner_sdk.commands.injective.fund_wallet_from_faucet import FundWalletFromFaucetRequest # NOQA
 from frontrunner_sdk.commands.injective.fund_wallet_from_faucet import FundWalletFromFaucetResponse # NOQA
@@ -49,6 +52,7 @@ from frontrunner_sdk.commands.injective.stream_trades import StreamTradesRespons
 from frontrunner_sdk.facades.base import FrontrunnerFacadeMixin # NOQA
 from frontrunner_sdk.helpers.parameters import as_request_args
 from frontrunner_sdk.ioc import FrontrunnerIoC
+from frontrunner_sdk.models import Subaccount
 from frontrunner_sdk.models.cancel_order import CancelOrder
 from frontrunner_sdk.models.order import InjectiveOrderExecutionType
 from frontrunner_sdk.models.order import InjectiveOrderState
@@ -66,6 +70,16 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     request = CreateWalletRequest(fund_and_initialize=fund_and_initialize)
     return await self._run_operation(CreateWalletOperation, self.deps, request)
 
+  async def fund_subaccount(
+    self,
+    amount: int,
+    denom: str,
+    subaccount_index: Optional[int] = None,
+    subaccount: Optional[Subaccount] = None,
+  ) -> FundSubaccountResponse:
+    request = FundSubaccountRequest(amount, denom, subaccount=subaccount, subaccount_index=subaccount_index)
+    return await self._run_operation(FundSubaccountOperation, self.deps, request)
+
   async def fund_wallet_from_faucet(self) -> FundWalletFromFaucetResponse:
     request = FundWalletFromFaucetRequest()
     return await self._run_operation(FundWalletFromFaucetOperation, self.deps, request)
@@ -74,8 +88,8 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     request = CreateOrdersRequest(orders=orders)
     return await self._run_operation(CreateOrdersOperation, self.deps, request)
 
-  async def cancel_all_orders(self) -> CancelAllOrdersResponse:
-    request = CancelAllOrdersRequest()
+  async def cancel_all_orders(self, subaccount_index: int = 0) -> CancelAllOrdersResponse:
+    request = CancelAllOrdersRequest(subaccount_index=subaccount_index)
     return await self._run_operation(CancelAllOrdersOperation, self.deps, request)
 
   async def cancel_orders(self, orders: Iterable[CancelOrder]) -> CancelOrdersResponse:
@@ -95,6 +109,8 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     mine: Optional[bool] = None,
     market_ids: Optional[List[str]] = None,
     subaccount_id: Optional[str] = None,
+    subaccount: Optional[Subaccount] = None,
+    subaccount_index: Optional[int] = None,
     direction: Optional[Literal["buy", "sell"]] = None,
     is_conditional: Optional[bool] = None,
     order_types: Optional[List[InjectiveOrderType]] = None,
@@ -110,6 +126,8 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
   async def get_positions(
     self,
     mine: bool = False,
+    subaccount: Optional[Subaccount] = None,
+    subaccount_index: Optional[int] = None,
     market_ids: Optional[Iterable[str]] = None,
     direction: Optional[Literal["buy", "sell"]] = None,
     start_time: Optional[datetime] = None,
@@ -123,6 +141,10 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     self,
     market_ids: Iterable[str],
     mine: bool = False,
+    subaccount: Optional[Subaccount] = None,
+    subaccount_index: Optional[int] = None,
+    subaccounts: Optional[List[Subaccount]] = None,
+    subaccount_indexes: Optional[List[int]] = None,
     direction: Optional[Literal["buy", "sell"]] = None,
     side: Optional[Literal["maker", "taker"]] = None,
     start_time: Optional[datetime] = None,
@@ -155,6 +177,8 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     self,
     market_id: str,
     mine: bool = False,
+    subaccount: Optional[Subaccount] = None,
+    subaccount_index: Optional[int] = None,
     direction: Optional[Literal["buy", "sell"]] = None,
     subaccount_id: Optional[str] = None,
     order_types: Optional[List[str]] = None,
@@ -170,6 +194,8 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     mine: bool = False,
     market_ids: Optional[List[str]] = None,
     subaccount_ids: Optional[List[str]] = None,
+    subaccounts: Optional[List[Subaccount]] = None,
+    subaccount_indexes: Optional[List[int]] = None,
   ) -> StreamPositionsResponse:
     kwargs = as_request_args(locals())
     request = StreamPositionsRequest(**kwargs)
@@ -190,8 +216,8 @@ class InjectiveFacade(SyncMixin):
   def create_orders(self, orders: Iterable[Order]) -> CreateOrdersResponse:
     return self._synchronously(self.impl.create_orders, orders)
 
-  def cancel_all_orders(self) -> CancelAllOrdersResponse:
-    return self._synchronously(self.impl.cancel_all_orders)
+  def cancel_all_orders(self, subaccount_index: int = 0) -> CancelAllOrdersResponse:
+    return self._synchronously(self.impl.cancel_all_orders, subaccount_index)
 
   def cancel_orders(self, orders: Iterable[CancelOrder]) -> CancelOrdersResponse:
     return self._synchronously(self.impl.cancel_orders, orders)
@@ -207,6 +233,8 @@ class InjectiveFacade(SyncMixin):
     mine: Optional[bool] = None,
     market_ids: Optional[List[str]] = None,
     subaccount_id: Optional[str] = None,
+    subaccount: Optional[Subaccount] = None,
+    subaccount_index: Optional[int] = None,
     direction: Optional[Literal["buy", "sell"]] = None,
     is_conditional: Optional[bool] = None,
     order_types: Optional[List[InjectiveOrderType]] = None,
@@ -221,6 +249,8 @@ class InjectiveFacade(SyncMixin):
   def get_positions(
     self,
     mine: bool = False,
+    subaccount: Optional[Subaccount] = None,
+    subaccount_index: Optional[int] = None,
     market_ids: Optional[Iterable[str]] = None,
     direction: Optional[Literal["buy", "sell"]] = None,
     start_time: Optional[datetime] = None,
@@ -233,6 +263,10 @@ class InjectiveFacade(SyncMixin):
     self,
     market_ids: Iterable[str],
     mine: bool = False,
+    subaccount: Optional[Subaccount] = None,
+    subaccount_index: Optional[int] = None,
+    subaccounts: Optional[List[Subaccount]] = None,
+    subaccount_indexes: Optional[List[int]] = None,
     direction: Optional[Literal["buy", "sell"]] = None,
     side: Optional[Literal["maker", "taker"]] = None,
     start_time: Optional[datetime] = None,

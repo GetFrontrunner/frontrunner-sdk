@@ -21,6 +21,10 @@ async def run():
 | - | - | - | - |
 | `market_id` | `str` | ✓ | Market ID to watch for orders |
 | `mine` | `bool` | ◯ `False` | Only watch for my orders |
+| `subaccount` | `Subaccount` | ◯ `None` | Only return orders from this subaccount. |
+| `subaccount_index` | `int` | ◯ `None` | Only return orders from this subaccount index of your wallet. Sets `mine=True` |
+| `subaccounts` | `[Subaccount]` | ◯ `None` | Only return orders from these subaccounts. |
+| `subaccount_indexes` | `[int]` | ◯ `None` | Only return orders from these subaccount indexes of your wallet. Sets `mine=True` |
 | `direction` | `"buy", "sell"` | ◯ `None` | Only watch for orders of this direction |
 | `side` | `"maker", "taker"` | ◯ `None` | Only watch for orders of this side |
 
@@ -28,7 +32,7 @@ async def run():
 
 ```python
 async def run():
-  response = ...
+  response = async_sdk.injective.stream_trades(market_id)
 
   async for trade in response.trades:
     print("trade:", trade.operation_type, trade.trade.order_hash)

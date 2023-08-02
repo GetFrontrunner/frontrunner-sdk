@@ -21,6 +21,8 @@ async def run():
 | - | - | - | - |
 | `market_id` | `str` | ✓ | Market ID to watch for orders |
 | `mine` | `bool` | ◯ `False` | Only watch for my orders |
+| `subaccount` | `Subaccount` | ◯ `None` | Only return orders from this subaccount. |
+| `subaccount_index` | `int` | ◯ `None` | Only return orders from this subaccount index of your wallet. Sets `mine=True` |
 | `direction` | `"buy", "sell"` | ◯ `None` | Only watch for orders of this direction |
 | `subaccount_id` | `bool` | ◯ `False` | Only watch for my orders from this subaccount |
 | `order_types` | `bool` | ◯ `False` | Only watch for orders of this type |

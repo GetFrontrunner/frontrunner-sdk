@@ -19,6 +19,7 @@ response = sdk.injective.cancel_orders([
 | `orders` | `[CancelOrder]` | ✓ | List of order cancellation specs |
 | `orders[].market_id` | `str` | ✓ | Market ID of order to cancel |
 | `orders[].order_hash` | `str` | ✓ | Order hash of order to cancel |
+| `orders[].subaccount_index` | `int` | ◯ `0` | Index of the subaccount to cancel the order for |
 
 ### Response
 

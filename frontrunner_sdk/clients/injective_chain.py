@@ -23,6 +23,7 @@ from frontrunner_sdk.helpers.paginators import injective_paginated_list
 from frontrunner_sdk.logging.log_external_exceptions import log_external_exceptions # NOQA
 from frontrunner_sdk.models.cancel_order import CancelOrder
 from frontrunner_sdk.models.order import Order
+from frontrunner_sdk.models.wallet import Subaccount
 from frontrunner_sdk.models.wallet import Wallet
 
 logger = logging.getLogger(__name__)
@@ -60,8 +61,8 @@ class InjectiveChain:
   def _estimate_fee(self, simulation: SimulationResponse) -> Tuple[int, List[Coin]]:
     limit = int(simulation.gas_info.gas_used) + self.ADDITIONAL_GAS_FEE
     amount = self.GAS_PRICE * limit
-    fee = [self.composer.Coin(amount=str(amount), denom=self.network.fee_denom)]
-    return (limit, fee)
+    fee = [self.composer.Coin(amount=amount, denom=self.network.fee_denom)]
+    return limit, fee
 
   def _injective_order(self, wallet: Wallet, order: Order) -> Message:
     return self.composer.BinaryOptionsOrder(
@@ -79,17 +80,17 @@ class InjectiveChain:
       # TODO allow different fee recipient address
       fee_recipient=wallet.injective_address,
 
-      # use default subaccount; can revisit this later
-      subaccount_id=wallet.subaccount_address(),
+      # uses default subaccount if not set explicitly on the order
+      subaccount_id=wallet.subaccount_address(order.subaccount_index),
 
       # We need to specify a placeholder denom because one isn't hardcoded for
       # our ephemeral markets.
       denom=self.DENOM,
     )
 
-  def _injective_order_cancel(self, wallet: Wallet, market_id: str, order_hash: str):
+  def _injective_order_cancel(self, wallet: Wallet, market_id: str, order_hash: str, subaccount_index: int):
     return self.composer.OrderData(
-      market_id=market_id, subaccount_id=wallet.subaccount_address(), order_hash=order_hash
+      market_id=market_id, subaccount_id=wallet.subaccount_address(subaccount_index), order_hash=order_hash
     )
 
   async def _simulate_transaction(self, wallet: Wallet, sequence: int, messages: List[Message]) -> SimulationResponse:
@@ -173,11 +174,11 @@ class InjectiveChain:
     return await self._send_transaction(wallet, sequence, messages, gas, fee)
 
   @log_external_exceptions(__name__)
-  async def get_all_open_orders(self, wallet: Wallet) -> Iterable[DerivativeLimitOrder]:
+  async def get_all_open_orders(self, subaccount: Subaccount) -> Iterable[DerivativeLimitOrder]:
     return await injective_paginated_list(
       self.client.get_derivative_subaccount_orders,
       "orders",
-      wallet.subaccount_address(),
+      subaccount.subaccount_id,
     )
 
   @log_external_exceptions(__name__)
@@ -199,11 +200,12 @@ class InjectiveChain:
   async def cancel_all_orders_for_markets(
     self,
     wallet: Wallet,
+    subaccount: Subaccount,
     injective_market_ids: Set[str],
   ) -> TxResponse:
     batch_message = self.composer.MsgBatchUpdateOrders(
       wallet.injective_address,
-      subaccount_id=wallet.subaccount_address(),
+      subaccount_id=subaccount.subaccount_id,
       binary_options_market_ids_to_cancel_all=injective_market_ids,
     )
 
@@ -212,7 +214,9 @@ class InjectiveChain:
   @log_external_exceptions(__name__)
   async def cancel_orders(self, wallet: Wallet, orders: Iterable[CancelOrder]) -> TxResponse:
     order_messages = [
-      self._injective_order_cancel(wallet, order.market_id, order.order_hash) for order in orders if order.order_hash
+      self._injective_order_cancel(wallet, order.market_id, order.order_hash, order.subaccount_index)
+      for order in orders
+      if order.order_hash
     ]
 
     batch_message = self.composer.MsgBatchUpdateOrders(
@@ -221,3 +225,14 @@ class InjectiveChain:
     )
 
     return await self._execute_transaction(wallet, [batch_message])
+
+  @log_external_exceptions(__name__)
+  async def fund_subaccount(self, wallet: Wallet, subaccount_id: str, amount: int, denom: str) -> TxResponse:
+    message = self.composer.MsgDeposit(
+      wallet.injective_address,
+      subaccount_id=subaccount_id,
+      amount=amount,
+      denom=denom,
+    )
+
+    return await self._execute_transaction(wallet, [message])
