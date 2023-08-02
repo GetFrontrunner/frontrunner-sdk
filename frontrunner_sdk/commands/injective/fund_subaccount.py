@@ -25,7 +25,7 @@ class FundSubaccountResponse:
 class FundSubaccountOperation(FrontrunnerOperation[FundSubaccountRequest, FundSubaccountResponse]):
 
   def validate(self, deps: FrontrunnerIoC) -> None:
-    if not self.request.subaccount_index and not self.request.subaccount:
+    if self.request.subaccount_index is None and self.request.subaccount is None:
       raise FrontrunnerArgumentException("Must specify either subaccount_index or subaccount")
     validate_mutually_exclusive(
       "subaccount_index", self.request.subaccount_index, "subaccount", self.request.subaccount
