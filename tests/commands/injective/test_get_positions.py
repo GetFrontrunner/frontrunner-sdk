@@ -8,7 +8,8 @@ from frontrunner_sdk.commands.injective.get_positions import GetPositionsOperati
 from frontrunner_sdk.commands.injective.get_positions import GetPositionsRequest # NOQA
 from frontrunner_sdk.exceptions import FrontrunnerArgumentException # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
-from frontrunner_sdk.models.wallet import Wallet, Subaccount
+from frontrunner_sdk.models.wallet import Subaccount
+from frontrunner_sdk.models.wallet import Wallet
 
 
 class TestGetPositionsOperation(IsolatedAsyncioTestCase):

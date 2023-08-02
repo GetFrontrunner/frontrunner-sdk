@@ -8,7 +8,8 @@ from frontrunner_sdk.commands.injective.cancel_orders import CancelOrdersOperati
 from frontrunner_sdk.commands.injective.cancel_orders import CancelOrdersRequest # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.models.cancel_order import CancelOrder
-from frontrunner_sdk.models.wallet import Wallet, Subaccount
+from frontrunner_sdk.models.wallet import Subaccount
+from frontrunner_sdk.models.wallet import Wallet
 
 
 class TestCancelOrdersOperation(IsolatedAsyncioTestCase):
@@ -45,7 +46,9 @@ class TestCancelOrdersOperation(IsolatedAsyncioTestCase):
     self.assertEqual(res.orders, self.order_responses)
 
     self.deps.injective_chain.get_all_open_orders.assert_awaited_once()
-    self.deps.injective_chain.cancel_all_orders_for_markets.assert_awaited_once_with(wallet, subaccount, self.market_ids)
+    self.deps.injective_chain.cancel_all_orders_for_markets.assert_awaited_once_with(
+      wallet, subaccount, self.market_ids
+    )
 
   async def test_cancel_all_orders_subaccount_index(self):
     subaccount_index = 2
@@ -64,7 +67,9 @@ class TestCancelOrdersOperation(IsolatedAsyncioTestCase):
     self.assertEqual(res.orders, self.order_responses)
 
     self.deps.injective_chain.get_all_open_orders.assert_awaited_once()
-    self.deps.injective_chain.cancel_all_orders_for_markets.assert_awaited_once_with(wallet, subaccount, self.market_ids)
+    self.deps.injective_chain.cancel_all_orders_for_markets.assert_awaited_once_with(
+      wallet, subaccount, self.market_ids
+    )
 
   async def test_cancel_all_orders_when_no_orders(self):
     wallet = Wallet._new()

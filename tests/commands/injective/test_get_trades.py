@@ -8,7 +8,8 @@ from frontrunner_sdk.commands.injective.get_trades import GetTradesOperation # N
 from frontrunner_sdk.commands.injective.get_trades import GetTradesRequest # NOQA
 from frontrunner_sdk.exceptions import FrontrunnerArgumentException # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
-from frontrunner_sdk.models.wallet import Wallet, Subaccount
+from frontrunner_sdk.models.wallet import Subaccount
+from frontrunner_sdk.models.wallet import Wallet
 
 
 class TestGetTradesOperation(IsolatedAsyncioTestCase):
@@ -48,16 +49,22 @@ class TestGetTradesOperation(IsolatedAsyncioTestCase):
 
   def test_validate_exception_when_mutually_exclusive_params(self):
     with self.assertRaises(FrontrunnerArgumentException):
-      GetTradesOperation(GetTradesRequest(market_ids=self.market_ids, mine=False, subaccount=self.subaccount, subaccount_index=2)).validate(self.deps)
+      GetTradesOperation(
+        GetTradesRequest(market_ids=self.market_ids, mine=False, subaccount=self.subaccount, subaccount_index=2)
+      ).validate(self.deps)
 
     with self.assertRaises(FrontrunnerArgumentException):
-      GetTradesOperation(GetTradesRequest(market_ids=self.market_ids, mine=False, subaccounts=[self.subaccount], subaccount_index=2)).validate(self.deps)
+      GetTradesOperation(
+        GetTradesRequest(market_ids=self.market_ids, mine=False, subaccounts=[self.subaccount], subaccount_index=2)
+      ).validate(self.deps)
 
     with self.assertRaises(FrontrunnerArgumentException):
-      GetTradesOperation(GetTradesRequest(market_ids=self.market_ids, mine=True, subaccount=self.subaccount)).validate(self.deps)
+      GetTradesOperation(GetTradesRequest(market_ids=self.market_ids, mine=True,
+                                          subaccount=self.subaccount)).validate(self.deps)
 
     with self.assertRaises(FrontrunnerArgumentException):
-      GetTradesOperation(GetTradesRequest(market_ids=self.market_ids, mine=True, subaccounts=[self.subaccount])).validate(self.deps)
+      GetTradesOperation(GetTradesRequest(market_ids=self.market_ids, mine=True,
+                                          subaccounts=[self.subaccount])).validate(self.deps)
 
   def test_validate_exception_when_end_in_future(self):
     end = datetime.now() + timedelta(days=1)
@@ -116,8 +123,7 @@ class TestGetTradesOperation(IsolatedAsyncioTestCase):
       await cmd.execute(self.deps)
 
       self.deps.injective_client.get_derivative_trades.assert_awaited_once_with(
-        market_ids=self.market_ids,
-        subaccount_id=self.wallet.subaccount_address(index=2)
+        market_ids=self.market_ids, subaccount_id=self.wallet.subaccount_address(index=2)
       )
       self.deps.injective_client.get_derivative_trades.reset_mock()
 
@@ -158,7 +164,8 @@ class TestGetTradesOperation(IsolatedAsyncioTestCase):
 
       self.deps.injective_client.get_derivative_trades.assert_awaited_once_with(
         market_ids=self.market_ids,
-        subaccount_ids=[self.wallet.subaccount_address(index=1), self.wallet.subaccount_address(index=2)],
+        subaccount_ids=[self.wallet.subaccount_address(index=1),
+                        self.wallet.subaccount_address(index=2)],
       )
       self.deps.injective_client.get_derivative_trades.reset_mock()
 

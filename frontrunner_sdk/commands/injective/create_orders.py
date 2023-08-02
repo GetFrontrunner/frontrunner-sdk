@@ -6,7 +6,8 @@ from frontrunner_sdk.commands.base import FrontrunnerOperation
 from frontrunner_sdk.exceptions import FrontrunnerArgumentException
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.logging.log_operation import log_operation
-from frontrunner_sdk.models.order import Order, OrderType
+from frontrunner_sdk.models.order import Order
+from frontrunner_sdk.models.order import OrderType
 
 
 @dataclass
@@ -37,9 +38,13 @@ class CreateOrdersOperation(FrontrunnerOperation[CreateOrdersRequest, CreateOrde
         raise FrontrunnerArgumentException("Order price must be within between 0 and 1 exclusive", order=order)
 
       orders_for_subaccount_and_market = orders_by_subaccount_and_market[order.subaccount_index][order.market_id]
-      order_types = set([OrderType.from_direction_and_side(order.direction, order.side) for order in orders_for_subaccount_and_market])
+      order_types = set([
+        OrderType.from_direction_and_side(order.direction, order.side) for order in orders_for_subaccount_and_market
+      ])
       if OrderType.BUY_LONG in order_types and OrderType.BUY_SHORT in order_types:
-        raise FrontrunnerArgumentException(f"Cannot place both short and long orders in market {order.market_id} from a single subaccount")
+        raise FrontrunnerArgumentException(
+          f"Cannot place both short and long orders in market {order.market_id} from a single subaccount"
+        )
       orders_by_subaccount_and_market[order.subaccount_index][order.market_id] += [order]
 
   @log_operation(__name__)

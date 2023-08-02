@@ -7,7 +7,8 @@ from frontrunner_sdk.commands.injective.stream_trades import StreamTradesOperati
 from frontrunner_sdk.commands.injective.stream_trades import StreamTradesRequest # NOQA
 from frontrunner_sdk.exceptions import FrontrunnerArgumentException # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
-from frontrunner_sdk.models.wallet import Wallet, Subaccount
+from frontrunner_sdk.models.wallet import Subaccount
+from frontrunner_sdk.models.wallet import Wallet
 
 
 class TestIterator:

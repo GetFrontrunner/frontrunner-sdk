@@ -8,7 +8,8 @@ from frontrunner_sdk.commands.injective.stream_orders import StreamOrdersRequest
 from frontrunner_sdk.exceptions import FrontrunnerArgumentException # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.models import OrderHistory
-from frontrunner_sdk.models.wallet import Wallet, Subaccount
+from frontrunner_sdk.models.wallet import Subaccount
+from frontrunner_sdk.models.wallet import Wallet
 
 
 class TestIterator:
@@ -51,19 +52,29 @@ class TestStreamOrdersOperation(IsolatedAsyncioTestCase):
 
   def test_validate_exception_when_mutually_exclusive_params(self):
     with self.assertRaises(FrontrunnerArgumentException):
-      StreamOrdersOperation(StreamOrdersRequest(market_id=self.market_id, mine=True, subaccount_id="1234")).validate(self.deps)
+      StreamOrdersOperation(StreamOrdersRequest(market_id=self.market_id, mine=True,
+                                                subaccount_id="1234")).validate(self.deps)
 
     with self.assertRaises(FrontrunnerArgumentException):
-      StreamOrdersOperation(StreamOrdersRequest(market_id=self.market_id, mine=False, subaccount=self.subaccount, subaccount_index=2)).validate(self.deps)
+      StreamOrdersOperation(
+        StreamOrdersRequest(market_id=self.market_id, mine=False, subaccount=self.subaccount, subaccount_index=2)
+      ).validate(self.deps)
 
     with self.assertRaises(FrontrunnerArgumentException):
-      StreamOrdersOperation(StreamOrdersRequest(market_id=self.market_id, mine=False, subaccount_id=self.subaccount_id, subaccount_index=2)).validate(self.deps)
+      StreamOrdersOperation(
+        StreamOrdersRequest(market_id=self.market_id, mine=False, subaccount_id=self.subaccount_id, subaccount_index=2)
+      ).validate(self.deps)
 
     with self.assertRaises(FrontrunnerArgumentException):
-      StreamOrdersOperation(StreamOrdersRequest(market_id=self.market_id, mine=False, subaccount_id=self.subaccount_id, subaccount=self.subaccount)).validate(self.deps)
+      StreamOrdersOperation(
+        StreamOrdersRequest(
+          market_id=self.market_id, mine=False, subaccount_id=self.subaccount_id, subaccount=self.subaccount
+        )
+      ).validate(self.deps)
 
     with self.assertRaises(FrontrunnerArgumentException):
-      StreamOrdersOperation(StreamOrdersRequest(market_id=self.market_id, mine=True, subaccount=self.subaccount)).validate(self.deps)
+      StreamOrdersOperation(StreamOrdersRequest(market_id=self.market_id, mine=True,
+                                                subaccount=self.subaccount)).validate(self.deps)
 
   async def test_stream_orders(self):
     self.deps.injective_client.stream_historical_derivative_orders = self.orders_response

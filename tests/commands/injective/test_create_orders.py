@@ -46,7 +46,10 @@ class TestCreateOrdersOperation(IsolatedAsyncioTestCase):
       CreateOrdersOperation(CreateOrdersRequest(orders=[Order.buy_long("<market-id>", 1, 1.25)])).validate(self.deps)
 
     with self.assertRaises(FrontrunnerArgumentException):
-      CreateOrdersOperation(CreateOrdersRequest(orders=[Order.buy_long("<market-id>", 1, 1.25), Order.buy_short("<market-id>", 1, 1.25)])).validate(self.deps)
+      CreateOrdersOperation(
+        CreateOrdersRequest(orders=[Order.buy_long("<market-id>", 1, 1.25),
+                                    Order.buy_short("<market-id>", 1, 1.25)])
+      ).validate(self.deps)
 
   async def test_create_orders(self):
     self.deps.injective_chain.create_orders = AsyncMock(return_value=MagicMock(txhash="<txhash>"))

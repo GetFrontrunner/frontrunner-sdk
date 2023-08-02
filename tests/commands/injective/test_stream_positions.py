@@ -7,7 +7,8 @@ from frontrunner_sdk.commands.injective.stream_positions import StreamPositionsO
 from frontrunner_sdk.commands.injective.stream_positions import StreamPositionsRequest # NOQA
 from frontrunner_sdk.exceptions import FrontrunnerArgumentException # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
-from frontrunner_sdk.models.wallet import Wallet, Subaccount
+from frontrunner_sdk.models.wallet import Subaccount
+from frontrunner_sdk.models.wallet import Wallet
 
 
 class TestIterator:
@@ -52,16 +53,21 @@ class TestStreamPositionsOperation(IsolatedAsyncioTestCase):
 
   def test_validate_exception_when_mutually_exclusive_params(self):
     with self.assertRaises(FrontrunnerArgumentException):
-      StreamPositionsOperation(StreamPositionsRequest(mine=True, subaccount_ids=self.subaccount_ids)).validate(self.deps)
+      StreamPositionsOperation(StreamPositionsRequest(mine=True,
+                                                      subaccount_ids=self.subaccount_ids)).validate(self.deps)
 
     with self.assertRaises(FrontrunnerArgumentException):
       StreamPositionsOperation(StreamPositionsRequest(mine=True, subaccounts=self.subaccounts)).validate(self.deps)
 
     with self.assertRaises(FrontrunnerArgumentException):
-      StreamPositionsOperation(StreamPositionsRequest(mine=False, subaccounts=self.subaccounts, subaccount_ids=self.subaccount_ids)).validate(self.deps)
+      StreamPositionsOperation(
+        StreamPositionsRequest(mine=False, subaccounts=self.subaccounts, subaccount_ids=self.subaccount_ids)
+      ).validate(self.deps)
 
     with self.assertRaises(FrontrunnerArgumentException):
-      StreamPositionsOperation(StreamPositionsRequest(mine=False, subaccount_ids=self.subaccount_ids, subaccount_indexes=[1, 2])).validate(self.deps)
+      StreamPositionsOperation(
+        StreamPositionsRequest(mine=False, subaccount_ids=self.subaccount_ids, subaccount_indexes=[1, 2])
+      ).validate(self.deps)
 
   async def test_stream_positions(self):
     self.deps.injective_client.stream_derivative_positions = self.positions_response
