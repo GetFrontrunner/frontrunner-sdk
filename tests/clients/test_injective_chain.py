@@ -20,7 +20,8 @@ from pyinjective.utils.utils import derivative_quantity_to_backend
 from frontrunner_sdk.clients.injective_chain import InjectiveChain
 from frontrunner_sdk.exceptions import FrontrunnerInjectiveException
 from frontrunner_sdk.models.order import Order
-from frontrunner_sdk.models.wallet import Wallet, Subaccount
+from frontrunner_sdk.models.wallet import Subaccount
+from frontrunner_sdk.models.wallet import Wallet
 
 
 class TestInjectiveChain(IsolatedAsyncioTestCase):
