@@ -38,6 +38,14 @@ class TestGetTradesOperation(IsolatedAsyncioTestCase):
     with self.assertRaises(FrontrunnerArgumentException):
       cmd.validate(self.deps)
 
+  def test_validate_exception_when_start_in_future(self):
+    start = datetime.now() + timedelta(days=1)
+    req = GetTradesRequest(market_ids=self.market_ids, mine=True, start_time=start)
+    cmd = GetTradesOperation(req)
+
+    with self.assertRaises(FrontrunnerArgumentException):
+      cmd.validate(self.deps)
+
   def test_validate_exception_when_mutually_exclusive_params(self):
     with self.assertRaises(FrontrunnerArgumentException):
       GetTradesOperation(GetTradesRequest(market_ids=self.market_ids, mine=False, subaccount=self.subaccount, subaccount_index=2)).validate(self.deps)
@@ -50,14 +58,6 @@ class TestGetTradesOperation(IsolatedAsyncioTestCase):
 
     with self.assertRaises(FrontrunnerArgumentException):
       GetTradesOperation(GetTradesRequest(market_ids=self.market_ids, mine=True, subaccounts=[self.subaccount])).validate(self.deps)
-
-  def test_validate_exception_when_start_in_future(self):
-    start = datetime.now() + timedelta(days=1)
-    req = GetTradesRequest(market_ids=self.market_ids, mine=True, start_time=start)
-    cmd = GetTradesOperation(req)
-
-    with self.assertRaises(FrontrunnerArgumentException):
-      cmd.validate(self.deps)
 
   def test_validate_exception_when_end_in_future(self):
     end = datetime.now() + timedelta(days=1)
