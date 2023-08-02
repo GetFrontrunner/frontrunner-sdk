@@ -98,8 +98,10 @@ async def main():
   spread_per_side = 0.01
   long_base_price = calculate_price(probability, spread_per_side, OrderType.BUY_LONG)
   short_base_price = calculate_price(probability, spread_per_side, OrderType.BUY_SHORT)
-  buy_long_orders = generate_histogram_orders(injective_market_id, total_value_coefficients, OrderType.BUY_LONG, long_base_price, -1 * spread_per_side, desired_total_liquidity / 2, long_subaccount_index)
-  buy_short_orders = generate_histogram_orders(injective_market_id, total_value_coefficients, OrderType.BUY_SHORT, short_base_price, spread_per_side, desired_total_liquidity / 2, short_subaccount_index)
+  # Note this includes validation of the probability to prevent submitting orders at invalid prices.
+  #   Instead, this case could be detected and a smaller histogram created.
+  buy_long_orders = generate_histogram_orders(injective_market_id, total_value_coefficients, OrderType.BUY_LONG, long_base_price, -1 * spread_per_side, desired_total_liquidity / 2, long_subaccount_index) if probability >= 0.02 else []
+  buy_short_orders = generate_histogram_orders(injective_market_id, total_value_coefficients, OrderType.BUY_SHORT, short_base_price, spread_per_side, desired_total_liquidity / 2, short_subaccount_index)  if probability <= 0.98 else []
   orders = buy_long_orders + buy_short_orders
   print(orders)
   response = await sdk.injective.create_orders(orders)
