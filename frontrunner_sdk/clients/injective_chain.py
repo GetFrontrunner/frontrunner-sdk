@@ -23,7 +23,8 @@ from frontrunner_sdk.helpers.paginators import injective_paginated_list
 from frontrunner_sdk.logging.log_external_exceptions import log_external_exceptions # NOQA
 from frontrunner_sdk.models.cancel_order import CancelOrder
 from frontrunner_sdk.models.order import Order
-from frontrunner_sdk.models.wallet import Wallet, Subaccount
+from frontrunner_sdk.models.wallet import Subaccount
+from frontrunner_sdk.models.wallet import Wallet
 
 logger = logging.getLogger(__name__)
 
@@ -214,7 +215,9 @@ class InjectiveChain:
   @log_external_exceptions(__name__)
   async def cancel_orders(self, wallet: Wallet, orders: Iterable[CancelOrder]) -> TxResponse:
     order_messages = [
-      self._injective_order_cancel(wallet, order.market_id, order.order_hash, order.subaccount_index) for order in orders if order.order_hash
+      self._injective_order_cancel(wallet, order.market_id, order.order_hash, order.subaccount_index)
+      for order in orders
+      if order.order_hash
     ]
 
     batch_message = self.composer.MsgBatchUpdateOrders(
