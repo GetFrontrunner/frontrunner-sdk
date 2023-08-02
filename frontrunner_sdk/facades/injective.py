@@ -177,6 +177,8 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     self,
     market_id: str,
     mine: bool = False,
+    subaccount: Optional[Subaccount] = None,
+    subaccount_index: Optional[int] = None,
     direction: Optional[Literal["buy", "sell"]] = None,
     subaccount_id: Optional[str] = None,
     order_types: Optional[List[str]] = None,
@@ -192,6 +194,8 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     mine: bool = False,
     market_ids: Optional[List[str]] = None,
     subaccount_ids: Optional[List[str]] = None,
+    subaccounts: Optional[List[Subaccount]] = None,
+    subaccount_indexes: Optional[List[int]] = None,
   ) -> StreamPositionsResponse:
     kwargs = as_request_args(locals())
     request = StreamPositionsRequest(**kwargs)

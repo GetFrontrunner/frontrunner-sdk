@@ -20,6 +20,8 @@ async def run():
 | `mine` | `bool` | ◯ | Only stream positions that are mine |
 | `market_ids` | `[str]` `None` | ◯ | Only stream positions for the given markets |
 | `subaccount_ids` | `[str]` `None` | ◯ | Only stream positions that are from the given subaccount |
+| `subaccounts` | `[Subaccount]` | ◯ `None` | Only return orders from these subaccount. |
+| `subaccount_indexes` | `[int]` | ◯ `None` | Only return orders from these subaccount indexes of your wallet. Sets `mine=True` |
 
 ### Response
 
