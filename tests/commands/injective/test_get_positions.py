@@ -8,7 +8,7 @@ from frontrunner_sdk.commands.injective.get_positions import GetPositionsOperati
 from frontrunner_sdk.commands.injective.get_positions import GetPositionsRequest # NOQA
 from frontrunner_sdk.exceptions import FrontrunnerArgumentException # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
-from frontrunner_sdk.models.wallet import Wallet
+from frontrunner_sdk.models.wallet import Wallet, Subaccount
 
 
 class TestGetPositionsOperation(IsolatedAsyncioTestCase):
@@ -17,6 +17,8 @@ class TestGetPositionsOperation(IsolatedAsyncioTestCase):
     self.wallet = Wallet._new()
     self.deps = MagicMock(spec=FrontrunnerIoC)
     self.market_ids = ["0x1234", "0x5678"]
+    self.subaccount_id = "0xfddd3e6d98a236a1df56716ab8c407b1004113df000000000000000000000000"
+    self.subaccount = Subaccount.from_subaccount_id(self.subaccount_id)
     self.positions = [MagicMock(), MagicMock()]
 
     self.position_response = MagicMock(
@@ -32,14 +34,27 @@ class TestGetPositionsOperation(IsolatedAsyncioTestCase):
   def test_validate_mine_only(self):
     req = GetPositionsRequest(mine=True)
     cmd = GetPositionsOperation(req)
-    cmd.validate(req)
+    cmd.validate(self.deps)
 
   def test_validate_exception_when_mine_and_market_ids_missing(self):
     req = GetPositionsRequest()
     cmd = GetPositionsOperation(req)
 
     with self.assertRaises(FrontrunnerArgumentException):
-      cmd.validate(req)
+      cmd.validate(self.deps)
+
+  def test_validate_exception_when_mutually_exclusive_params(self):
+    req = GetPositionsRequest(subaccount=self.subaccount, subaccount_index=2)
+    cmd = GetPositionsOperation(req)
+
+    with self.assertRaises(FrontrunnerArgumentException):
+      cmd.validate(self.deps)
+
+    req = GetPositionsRequest(mine=True, subaccount=self.subaccount)
+    cmd = GetPositionsOperation(req)
+
+    with self.assertRaises(FrontrunnerArgumentException):
+      cmd.validate(self.deps)
 
   def test_validate_exception_when_start_in_future(self):
     start = datetime.now() + timedelta(days=1)
@@ -94,6 +109,32 @@ class TestGetPositionsOperation(IsolatedAsyncioTestCase):
     self.deps.injective_client.get_derivative_positions.assert_awaited_once_with(
       market_ids=self.market_ids,
       subaccount_id=self.wallet.subaccount_address(),
+    )
+
+  async def test_get_positions_when_subaccount_index(self):
+    self.deps.wallet = AsyncMock(return_value=self.wallet)
+    self.deps.injective_client.get_derivative_positions = AsyncMock(return_value=self.position_response)
+
+    req = GetPositionsRequest(market_ids=self.market_ids, subaccount_index=2)
+    cmd = GetPositionsOperation(req)
+    await cmd.execute(self.deps)
+
+    self.deps.injective_client.get_derivative_positions.assert_awaited_once_with(
+      market_ids=self.market_ids,
+      subaccount_id=self.wallet.subaccount_address(index=2),
+    )
+
+  async def test_get_positions_when_subaccount(self):
+    self.deps.wallet = AsyncMock(return_value=self.wallet)
+    self.deps.injective_client.get_derivative_positions = AsyncMock(return_value=self.position_response)
+
+    req = GetPositionsRequest(market_ids=self.market_ids, subaccount=self.subaccount)
+    cmd = GetPositionsOperation(req)
+    await cmd.execute(self.deps)
+
+    self.deps.injective_client.get_derivative_positions.assert_awaited_once_with(
+      market_ids=self.market_ids,
+      subaccount_id=self.subaccount_id,
     )
 
   async def test_get_positions_when_start_end_time(self):
