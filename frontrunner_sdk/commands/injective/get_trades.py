@@ -42,7 +42,8 @@ class GetTradesResponse:
 class GetTradesOperation(FrontrunnerOperation[GetTradesRequest, GetTradesResponse]):
 
   MUTUALLY_EXCLUSIVE_PARAMS = ["subaccount", "subaccount_index", "subaccounts", "subaccount_indexes"]
-  MUTUALLY_EXCLUSIVE_PARAMS_MINE = ["mine", "subaccount_id", "subaccount"]
+  MUTUALLY_EXCLUSIVE_PARAMS_MINE = ["mine", "subaccount"]
+  MUTUALLY_EXCLUSIVE_PARAMS_MINE_PLURAL = ["mine", "subaccounts"]
 
   def __init__(self, request: GetTradesRequest):
     super().__init__(request)
@@ -53,6 +54,7 @@ class GetTradesOperation(FrontrunnerOperation[GetTradesRequest, GetTradesRespons
 
     validate_all_mutually_exclusive(self.request, self.MUTUALLY_EXCLUSIVE_PARAMS)
     validate_all_mutually_exclusive(self.request, self.MUTUALLY_EXCLUSIVE_PARAMS_MINE)
+    validate_all_mutually_exclusive(self.request, self.MUTUALLY_EXCLUSIVE_PARAMS_MINE_PLURAL)
     validate_start_time_end_time(self.request.start_time, self.request.end_time)
 
   @log_operation(__name__)
@@ -61,18 +63,18 @@ class GetTradesOperation(FrontrunnerOperation[GetTradesRequest, GetTradesRespons
       "market_ids": list(self.request.market_ids),
     }
 
-    if self.request.mine or self.request.subaccount_index is not None:
+    if (self.request.mine and not self.request.subaccount_indexes) or self.request.subaccount_index is not None:
       wallet = await deps.wallet()
       request["subaccount_id"] = wallet.subaccount_address(self.request.subaccount_index or 0)
 
-    if self.request.subaccount:
+    elif self.request.subaccount:
       request["subaccount_id"] = self.request.subaccount.subaccount_id
 
-    if self.request.subaccount_indexes:
+    elif self.request.subaccount_indexes:
       wallet = await deps.wallet()
       request["subaccount_ids"] = [wallet.subaccount_address(index) for index in self.request.subaccount_indexes]
 
-    if self.request.subaccounts:
+    elif self.request.subaccounts:
       request["subaccount_ids"] = [subaccount.subaccount_id for subaccount in self.request.subaccounts]
 
     if self.request.start_time:

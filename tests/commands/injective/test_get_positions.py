@@ -44,17 +44,11 @@ class TestGetPositionsOperation(IsolatedAsyncioTestCase):
       cmd.validate(self.deps)
 
   def test_validate_exception_when_mutually_exclusive_params(self):
-    req = GetPositionsRequest(subaccount=self.subaccount, subaccount_index=2)
-    cmd = GetPositionsOperation(req)
+    with self.assertRaises(FrontrunnerArgumentException):
+      GetPositionsOperation(GetPositionsRequest(subaccount=self.subaccount, subaccount_index=2)).validate(self.deps)
 
     with self.assertRaises(FrontrunnerArgumentException):
-      cmd.validate(self.deps)
-
-    req = GetPositionsRequest(mine=True, subaccount=self.subaccount)
-    cmd = GetPositionsOperation(req)
-
-    with self.assertRaises(FrontrunnerArgumentException):
-      cmd.validate(self.deps)
+      GetPositionsOperation(GetPositionsRequest(mine=True, subaccount=self.subaccount)).validate(self.deps)
 
   def test_validate_exception_when_start_in_future(self):
     start = datetime.now() + timedelta(days=1)
