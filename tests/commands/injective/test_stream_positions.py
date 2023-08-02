@@ -7,7 +7,7 @@ from frontrunner_sdk.commands.injective.stream_positions import StreamPositionsO
 from frontrunner_sdk.commands.injective.stream_positions import StreamPositionsRequest # NOQA
 from frontrunner_sdk.exceptions import FrontrunnerArgumentException # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
-from frontrunner_sdk.models.wallet import Wallet
+from frontrunner_sdk.models.wallet import Wallet, Subaccount
 
 
 class TestIterator:
@@ -26,7 +26,10 @@ class TestStreamPositionsOperation(IsolatedAsyncioTestCase):
     self.wallet = Wallet._new()
     self.deps = MagicMock(spec=FrontrunnerIoC)
     self.market_ids = ["0x1234"]
-    self.subaccount_ids = ["0x45789000000"]
+    self.subaccount_id = "0xfddd3e6d98a236a1df56716ab8c407b1004113df000000000000000000000000"
+    self.subaccount = Subaccount.from_subaccount_id(self.subaccount_id)
+    self.subaccount_ids = [self.subaccount_id, self.subaccount_id]
+    self.subaccounts = [self.subaccount, self.subaccount]
     self.fake_position_contents = ["id1", "id2"]
     self.positions = [
       MagicMock(positions=self.fake_position_contents[0]),
@@ -46,6 +49,19 @@ class TestStreamPositionsOperation(IsolatedAsyncioTestCase):
 
     with self.assertRaises(FrontrunnerArgumentException):
       cmd.validate(self.deps)
+
+  def test_validate_exception_when_mutually_exclusive_params(self):
+    with self.assertRaises(FrontrunnerArgumentException):
+      StreamPositionsOperation(StreamPositionsRequest(mine=True, subaccount_ids=self.subaccount_ids)).validate(self.deps)
+
+    with self.assertRaises(FrontrunnerArgumentException):
+      StreamPositionsOperation(StreamPositionsRequest(mine=True, subaccounts=self.subaccounts)).validate(self.deps)
+
+    with self.assertRaises(FrontrunnerArgumentException):
+      StreamPositionsOperation(StreamPositionsRequest(mine=False, subaccounts=self.subaccounts, subaccount_ids=self.subaccount_ids)).validate(self.deps)
+
+    with self.assertRaises(FrontrunnerArgumentException):
+      StreamPositionsOperation(StreamPositionsRequest(mine=False, subaccount_ids=self.subaccount_ids, subaccount_indexes=[1, 2])).validate(self.deps)
 
   async def test_stream_positions(self):
     self.deps.injective_client.stream_derivative_positions = self.positions_response
@@ -72,6 +88,35 @@ class TestStreamPositionsOperation(IsolatedAsyncioTestCase):
     self.deps.injective_client.stream_derivative_positions.assert_awaited_once_with(
       market_ids=self.market_ids,
       subaccount_ids=[self.wallet.subaccount_address()],
+    )
+
+  async def test_stream_positions_when_subaccount_indexes(self):
+    subaccount_indexes = [1, 2]
+    self.deps.wallet = AsyncMock(return_value=self.wallet)
+    self.deps.injective_client.stream_derivative_positions = self.positions_response
+
+    req = StreamPositionsRequest(market_ids=self.market_ids, mine=False, subaccount_indexes=subaccount_indexes)
+    cmd = StreamPositionsOperation(req)
+    res = await cmd.execute(self.deps)
+    self.assertEqual(self.positions, [t async for t in res.positions])
+
+    self.deps.injective_client.stream_derivative_positions.assert_awaited_once_with(
+      market_ids=self.market_ids,
+      subaccount_ids=[self.wallet.subaccount_address(index) for index in subaccount_indexes],
+    )
+
+  async def test_stream_positions_when_subaccounts(self):
+    self.deps.wallet = AsyncMock(return_value=self.wallet)
+    self.deps.injective_client.stream_derivative_positions = self.positions_response
+
+    req = StreamPositionsRequest(market_ids=self.market_ids, mine=False, subaccounts=self.subaccounts)
+    cmd = StreamPositionsOperation(req)
+    res = await cmd.execute(self.deps)
+    self.assertEqual(self.positions, [t async for t in res.positions])
+
+    self.deps.injective_client.stream_derivative_positions.assert_awaited_once_with(
+      market_ids=self.market_ids,
+      subaccount_ids=self.subaccount_ids,
     )
 
   async def test_stream_positions_when_other_fields(self):

@@ -47,6 +47,8 @@ class StreamPositionsOperation(FrontrunnerOperation[StreamPositionsRequest, Stre
   async def execute(self, deps: FrontrunnerIoC) -> StreamPositionsResponse:
     request = self.request_as_kwargs()
     request.pop("mine", None)
+    request.pop("subaccounts", None)
+    request.pop("subaccount_indexes", None)
 
     if self.request.mine:
       wallet = await deps.wallet()
