@@ -39,7 +39,8 @@ class StreamTradesResponse:
 class StreamTradesOperation(FrontrunnerOperation[StreamTradesRequest, StreamTradesResponse]):
 
   MUTUALLY_EXCLUSIVE_PARAMS = ["subaccount", "subaccount_index", "subaccounts", "subaccount_indexes"]
-  MUTUALLY_EXCLUSIVE_PARAMS_MINE = ["mine", "subaccount_id", "subaccount"]
+  MUTUALLY_EXCLUSIVE_PARAMS_MINE = ["mine", "subaccount"]
+  MUTUALLY_EXCLUSIVE_PARAMS_MINE_PLURAL = ["mine", "subaccounts"]
 
   def __init__(self, request: StreamTradesRequest):
     super().__init__(request)
@@ -50,6 +51,7 @@ class StreamTradesOperation(FrontrunnerOperation[StreamTradesRequest, StreamTrad
 
     validate_all_mutually_exclusive(self.request, self.MUTUALLY_EXCLUSIVE_PARAMS)
     validate_all_mutually_exclusive(self.request, self.MUTUALLY_EXCLUSIVE_PARAMS_MINE)
+    validate_all_mutually_exclusive(self.request, self.MUTUALLY_EXCLUSIVE_PARAMS_MINE_PLURAL)
 
   @log_operation(__name__)
   async def execute(self, deps: FrontrunnerIoC) -> StreamTradesResponse:
@@ -57,7 +59,7 @@ class StreamTradesOperation(FrontrunnerOperation[StreamTradesRequest, StreamTrad
       "market_ids": list(self.request.market_ids),
     }
 
-    if self.request.mine or self.request.subaccount_index is not None:
+    if (self.request.mine and not self.request.subaccount_indexes) or self.request.subaccount_index is not None:
       wallet = await deps.wallet()
       request["subaccount_id"] = wallet.subaccount_address(self.request.subaccount_index or 0)
 
