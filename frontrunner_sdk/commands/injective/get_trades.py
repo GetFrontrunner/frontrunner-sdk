@@ -17,6 +17,8 @@ from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.logging.log_operation import log_operation
 from frontrunner_sdk.models import Subaccount
 
+MUTUALLY_EXCLUSIVE_PARAMS = ["subaccount", "subaccount_index", "subaccounts", "subaccount_indexes"]
+
 
 @dataclass
 class GetTradesRequest:
@@ -46,8 +48,10 @@ class GetTradesOperation(FrontrunnerOperation[GetTradesRequest, GetTradesRespons
     if not self.request.market_ids:
       raise FrontrunnerArgumentException("At least one market id is required")
 
-    # TODO: validate more mutually exclusive
-    validate_mutually_exclusive("subaccount", self.request.subaccount, "subaccount_index", self.request.subaccount_index)
+    num_mutually_exclusive_params = sum(getattr(self.request, prop) is not None for prop in MUTUALLY_EXCLUSIVE_PARAMS)
+    if num_mutually_exclusive_params > 1:
+      raise FrontrunnerArgumentException(f"These request params are mutually exclusive: {MUTUALLY_EXCLUSIVE_PARAMS}")
+
     validate_start_time_end_time(self.request.start_time, self.request.end_time)
 
   @log_operation(__name__)
