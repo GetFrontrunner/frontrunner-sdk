@@ -61,9 +61,8 @@ class InjectiveChain:
   def _estimate_fee(self, simulation: SimulationResponse) -> Tuple[int, List[Coin]]:
     limit = int(simulation.gas_info.gas_used) + self.ADDITIONAL_GAS_FEE
     amount = self.GAS_PRICE * limit
-    # TODO: remove str() since Coin expects int
-    fee = [self.composer.Coin(amount=str(amount), denom=self.network.fee_denom)]
-    return (limit, fee)
+    fee = [self.composer.Coin(amount=amount, denom=self.network.fee_denom)]
+    return limit, fee
 
   def _injective_order(self, wallet: Wallet, order: Order) -> Message:
     return self.composer.BinaryOptionsOrder(
