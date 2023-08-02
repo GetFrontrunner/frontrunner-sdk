@@ -12,12 +12,12 @@ from pyinjective.proto.exchange.injective_derivative_exchange_rpc_pb2 import Der
 from frontrunner_sdk.commands.base import FrontrunnerOperation
 from frontrunner_sdk.exceptions import FrontrunnerArgumentException
 from frontrunner_sdk.helpers.paginators import injective_paginated_list
-from frontrunner_sdk.helpers.validation import validate_start_time_end_time, validate_mutually_exclusive
+from frontrunner_sdk.helpers.validation import validate_start_time_end_time, validate_mutually_exclusive, validate_all_mutually_exclusive
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.logging.log_operation import log_operation
 from frontrunner_sdk.models import Subaccount
 
-MUTUALLY_EXCLUSIVE_PARAMS = ["subaccount", "subaccount_index", "subaccounts", "subaccount_indexes"]
+
 
 
 @dataclass
@@ -41,6 +41,9 @@ class GetTradesResponse:
 
 class GetTradesOperation(FrontrunnerOperation[GetTradesRequest, GetTradesResponse]):
 
+  MUTUALLY_EXCLUSIVE_PARAMS = ["subaccount", "subaccount_index", "subaccounts", "subaccount_indexes"]
+  MUTUALLY_EXCLUSIVE_PARAMS_MINE = ["mine", "subaccount_id", "subaccount"]
+
   def __init__(self, request: GetTradesRequest):
     super().__init__(request)
 
@@ -48,10 +51,8 @@ class GetTradesOperation(FrontrunnerOperation[GetTradesRequest, GetTradesRespons
     if not self.request.market_ids:
       raise FrontrunnerArgumentException("At least one market id is required")
 
-    num_mutually_exclusive_params = sum(getattr(self.request, prop) is not None for prop in MUTUALLY_EXCLUSIVE_PARAMS)
-    if num_mutually_exclusive_params > 1:
-      raise FrontrunnerArgumentException(f"These request params are mutually exclusive: {MUTUALLY_EXCLUSIVE_PARAMS}")
-
+    validate_all_mutually_exclusive(self.request, self.MUTUALLY_EXCLUSIVE_PARAMS)
+    validate_all_mutually_exclusive(self.request, self.MUTUALLY_EXCLUSIVE_PARAMS_MINE)
     validate_start_time_end_time(self.request.start_time, self.request.end_time)
 
   @log_operation(__name__)

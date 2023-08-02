@@ -11,7 +11,7 @@ from pyinjective.proto.exchange.injective_derivative_exchange_rpc_pb2 import Der
 from frontrunner_sdk.commands.base import FrontrunnerOperation
 from frontrunner_sdk.exceptions import FrontrunnerArgumentException
 from frontrunner_sdk.helpers.paginators import injective_paginated_list
-from frontrunner_sdk.helpers.validation import validate_mutually_exclusive
+from frontrunner_sdk.helpers.validation import validate_mutually_exclusive, validate_all_mutually_exclusive
 from frontrunner_sdk.helpers.validation import validate_start_time_end_time
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.logging.log_operation import log_operation
@@ -19,6 +19,7 @@ from frontrunner_sdk.models import InjectiveOrderExecutionType, Subaccount
 from frontrunner_sdk.models import InjectiveOrderState
 from frontrunner_sdk.models import InjectiveOrderType
 from frontrunner_sdk.models import OrderHistory
+
 
 
 @dataclass
@@ -46,13 +47,15 @@ class GetOrdersResponse:
 
 class GetOrdersOperation(FrontrunnerOperation[GetOrdersRequest, GetOrdersResponse]):
 
+  MUTUALLY_EXCLUSIVE_PARAMS = ["subaccount_id", "subaccount", "subaccount_index"]
+  MUTUALLY_EXCLUSIVE_PARAMS_MINE = ["mine", "subaccount_id", "subaccount"]
+
   def __init__(self, request: GetOrdersRequest):
     super().__init__(request)
 
   def validate(self, deps: FrontrunnerIoC) -> None:
-    validate_mutually_exclusive("subaccount", self.request.subaccount, "subaccount_id", self.request.subaccount_id)
-    validate_mutually_exclusive("subaccount", self.request.subaccount, "subaccount_index", self.request.subaccount_index)
-    validate_mutually_exclusive("subaccount_id", self.request.subaccount_id, "subaccount_index", self.request.subaccount_index)
+    validate_all_mutually_exclusive(self.request, self.MUTUALLY_EXCLUSIVE_PARAMS)
+    validate_all_mutually_exclusive(self.request, self.MUTUALLY_EXCLUSIVE_PARAMS_MINE)
     validate_start_time_end_time(self.request.start_time, self.request.end_time)
 
   @log_operation(__name__)

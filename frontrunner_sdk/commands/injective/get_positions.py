@@ -12,7 +12,7 @@ from pyinjective.proto.exchange.injective_derivative_exchange_rpc_pb2 import Der
 from frontrunner_sdk.commands.base import FrontrunnerOperation
 from frontrunner_sdk.exceptions import FrontrunnerArgumentException
 from frontrunner_sdk.helpers.paginators import injective_paginated_list
-from frontrunner_sdk.helpers.validation import validate_start_time_end_time, validate_mutually_exclusive
+from frontrunner_sdk.helpers.validation import validate_start_time_end_time, validate_mutually_exclusive, validate_all_mutually_exclusive
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.logging.log_operation import log_operation
 from frontrunner_sdk.models import Subaccount
@@ -36,6 +36,9 @@ class GetPositionsResponse:
 
 class GetPositionsOperation(FrontrunnerOperation[GetPositionsRequest, GetPositionsResponse]):
 
+  MUTUALLY_EXCLUSIVE_PARAMS = ["subaccount", "subaccount_index"]
+  MUTUALLY_EXCLUSIVE_PARAMS_MINE = ["mine", "subaccount"]
+
   def __init__(self, request: GetPositionsRequest):
     super().__init__(request)
 
@@ -43,7 +46,8 @@ class GetPositionsOperation(FrontrunnerOperation[GetPositionsRequest, GetPositio
     if not self.request.mine and not self.request.market_ids:
       raise FrontrunnerArgumentException("Either mine must be True, or at least one market id must be provided")
 
-    validate_mutually_exclusive("subaccount", self.request.subaccount, "subaccount_index", self.request.subaccount_index)
+    validate_all_mutually_exclusive(self.request, self.MUTUALLY_EXCLUSIVE_PARAMS)
+    validate_all_mutually_exclusive(self.request, self.MUTUALLY_EXCLUSIVE_PARAMS_MINE)
     validate_start_time_end_time(self.request.start_time, self.request.end_time)
 
   @log_operation(__name__)

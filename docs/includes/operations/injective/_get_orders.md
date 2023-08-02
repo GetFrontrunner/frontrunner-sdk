@@ -16,7 +16,7 @@ response = sdk.injective.get_orders(mine=True)
 | `mine` | `bool` | ◯ `None` | Only return your orders |
 | `market_ids` | `[str]` | ◯ `None` | Only return orders with this market ID |
 | `subaccount_id` | `str` | ◯ `None` | Only return orders from this subaccount* |
-| `subaccount` | `Subaccount` | ◯ `None` | Only return orders from this subaccount. May replace `subaccount_id` in the future |
+| `subaccount` | `Subaccount` | ◯ `None` | Only return orders from this subaccount. |
 | `subaccount_index` | `int` | ◯ `None` | Only return orders from this subaccount index of your wallet. Sets `mine=True` |
 | `direction` | `"buy", "sell"` | ◯ `None` | Only return orders with this direction |
 | `state` | `"booked"`, `"partial_filled"`, `"filled"`, `"canceled"` | ◯ `None` | Only return orders in this state |
