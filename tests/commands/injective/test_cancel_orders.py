@@ -47,6 +47,25 @@ class TestCancelOrdersOperation(IsolatedAsyncioTestCase):
     self.deps.injective_chain.get_all_open_orders.assert_awaited_once()
     self.deps.injective_chain.cancel_all_orders_for_markets.assert_awaited_once_with(wallet, subaccount, self.market_ids)
 
+  async def test_cancel_all_orders_subaccount_index(self):
+    subaccount_index = 2
+    wallet = Wallet._new()
+    subaccount = Subaccount.from_wallet_and_index(wallet, subaccount_index)
+
+    self.deps.wallet = AsyncMock(return_value=wallet)
+    self.deps.injective_chain.get_all_open_orders = AsyncMock(return_value=self.order_responses)
+    self.deps.injective_chain.cancel_all_orders_for_markets = AsyncMock(return_value=MagicMock(txhash="<txhash>"))
+
+    req = CancelAllOrdersRequest(subaccount_index=subaccount_index)
+    cmd = CancelAllOrdersOperation(req)
+    res = await cmd.execute(self.deps)
+
+    self.assertEqual(res.transaction, "<txhash>")
+    self.assertEqual(res.orders, self.order_responses)
+
+    self.deps.injective_chain.get_all_open_orders.assert_awaited_once()
+    self.deps.injective_chain.cancel_all_orders_for_markets.assert_awaited_once_with(wallet, subaccount, self.market_ids)
+
   async def test_cancel_all_orders_when_no_orders(self):
     wallet = Wallet._new()
 

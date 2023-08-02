@@ -23,6 +23,40 @@ class OrderType(Enum):
   SELL_LONG = 2
   SELL_SHORT = 3
 
+  @classmethod
+  def from_injective_params(cls, direction: str, is_reduce_only: bool):
+    if direction == "buy" and not is_reduce_only:
+      return cls.BUY_LONG
+    elif direction == "sell" and not is_reduce_only:
+      return cls.BUY_SHORT
+    elif direction == "buy" and is_reduce_only:
+      return cls.SELL_SHORT
+    elif direction == "sell" and is_reduce_only:
+      return cls.SELL_LONG
+    else:
+      raise FrontrunnerInjectiveException(
+        "Unable to compute Frontrunner order type",
+        direction=direction,
+        is_reduce_only=is_reduce_only,
+      )
+
+  @classmethod
+  def from_direction_and_side(cls, direction: str, side: str):
+    if direction == "buy" and side == "long":
+      return cls.BUY_LONG
+    elif direction == "buy" and side == "short":
+      return cls.BUY_SHORT
+    elif direction == "sell" and side == "short":
+      return cls.SELL_SHORT
+    elif direction == "sell" and side == "long":
+      return cls.SELL_LONG
+    else:
+      raise FrontrunnerInjectiveException(
+        "Unable to compute Frontrunner order type",
+        direction=direction,
+        side=side,
+      )
+
 
 @dataclass
 class OrderHistory:
@@ -30,20 +64,7 @@ class OrderHistory:
 
   @property
   def order_type(self):
-    if self.order.direction == "buy" and not self.order.is_reduce_only:
-      return OrderType.BUY_LONG
-    elif self.order.direction == "sell" and not self.order.is_reduce_only:
-      return OrderType.BUY_SHORT
-    elif self.order.direction == "buy" and self.order.is_reduce_only:
-      return OrderType.SELL_SHORT
-    elif self.order.direction == "sell" and self.order.is_reduce_only:
-      return OrderType.SELL_LONG
-    else:
-      raise FrontrunnerInjectiveException(
-        "Unable to compute Frontrunner order type",
-        direction=self.order.direction,
-        is_reduce_only=self.order.is_reduce_only,
-      )
+    return OrderType.from_injective_params(self.order.direction, self.order.is_reduce_only)
 
   def __repr__(self):
     # Custom repr is required to pick up added @property
