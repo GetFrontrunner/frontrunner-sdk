@@ -82,7 +82,7 @@ class TestGetPositionsOperation(IsolatedAsyncioTestCase):
     with self.assertRaises(FrontrunnerArgumentException):
       cmd.validate(self.deps)
 
-  async def test_get_positions(self):
+  async def test_get_positions_market_ids(self):
     self.deps.injective_client.get_derivative_positions = AsyncMock(return_value=self.position_response)
 
     req = GetPositionsRequest(market_ids=self.market_ids, mine=False)
@@ -92,6 +92,28 @@ class TestGetPositionsOperation(IsolatedAsyncioTestCase):
     self.assertEqual(res.positions, self.positions)
 
     self.deps.injective_client.get_derivative_positions.assert_awaited_once()
+
+  async def test_get_positions_when_subaccount_index(self):
+    self.deps.wallet = AsyncMock(return_value=self.wallet)
+    self.deps.injective_client.get_derivative_positions = AsyncMock(return_value=self.position_response)
+
+    req = GetPositionsRequest(subaccount_index=2)
+    cmd = GetPositionsOperation(req)
+    await cmd.execute(self.deps)
+
+    self.deps.injective_client.get_derivative_positions.assert_awaited_once_with(
+      subaccount_id=self.wallet.subaccount_address(index=2),
+    )
+
+  async def test_get_positions_when_subaccount(self):
+    self.deps.wallet = AsyncMock(return_value=self.wallet)
+    self.deps.injective_client.get_derivative_positions = AsyncMock(return_value=self.position_response)
+
+    req = GetPositionsRequest(subaccount=self.subaccount)
+    cmd = GetPositionsOperation(req)
+    await cmd.execute(self.deps)
+
+    self.deps.injective_client.get_derivative_positions.assert_awaited_once_with(subaccount_id=self.subaccount_id,)
 
   async def test_get_positions_when_mine(self):
     self.deps.wallet = AsyncMock(return_value=self.wallet)
@@ -106,7 +128,7 @@ class TestGetPositionsOperation(IsolatedAsyncioTestCase):
       subaccount_id=self.wallet.subaccount_address(),
     )
 
-  async def test_get_positions_when_subaccount_index(self):
+  async def test_get_positions_when_subaccount_index_and_markets(self):
     self.deps.wallet = AsyncMock(return_value=self.wallet)
     self.deps.injective_client.get_derivative_positions = AsyncMock(return_value=self.position_response)
 
@@ -119,7 +141,7 @@ class TestGetPositionsOperation(IsolatedAsyncioTestCase):
       subaccount_id=self.wallet.subaccount_address(index=2),
     )
 
-  async def test_get_positions_when_subaccount(self):
+  async def test_get_positions_when_subaccount_and_markets(self):
     self.deps.wallet = AsyncMock(return_value=self.wallet)
     self.deps.injective_client.get_derivative_positions = AsyncMock(return_value=self.position_response)
 
