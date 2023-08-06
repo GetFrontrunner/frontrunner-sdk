@@ -1,9 +1,6 @@
 from dataclasses import dataclass
-from typing import Optional
 
 from frontrunner_sdk.commands.base import FrontrunnerOperation
-from frontrunner_sdk.exceptions import FrontrunnerArgumentException
-from frontrunner_sdk.helpers.validation import validate_mutually_exclusive
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.logging.log_operation import log_operation
 from frontrunner_sdk.models import Subaccount
@@ -13,7 +10,7 @@ from frontrunner_sdk.models import Subaccount
 class FundExternalSubaccountRequest:
   amount: int
   denom: str
-  source_subaccount_index
+  source_subaccount_index: int
   destination_subaccount: Subaccount
 
 
@@ -24,14 +21,21 @@ class FundExternalSubaccountResponse:
 
 class FundExternalSubaccountOperation(FrontrunnerOperation[FundExternalSubaccountRequest, FundExternalSubaccountResponse]):
 
+  def validate(self, deps: FrontrunnerIoC) -> None:
+    pass
+
   def __init__(self, request: FundExternalSubaccountRequest):
     super().__init__(request)
 
   @log_operation(__name__)
   async def execute(self, deps: FrontrunnerIoC) -> FundExternalSubaccountResponse:
-    subaccount = self.request.destination_subaccount
-    response = await deps.injective_chain.fund_subaccount(
-      await deps.wallet(), subaccount.subaccount_id, self.request.amount, self.request.denom
+    source_subaccount = Subaccount.from_wallet_and_index(
+      await deps.wallet(),
+      self.request.source_subaccount_index
+    )
+    destination_subaccount = self.request.destination_subaccount
+    response = await deps.injective_chain.fund_external_subaccount(
+      await deps.wallet(), source_subaccount.subaccount_id, destination_subaccount.subaccount_id, self.request.amount, self.request.denom
     )
 
     return FundExternalSubaccountResponse(transaction=response.txhash)

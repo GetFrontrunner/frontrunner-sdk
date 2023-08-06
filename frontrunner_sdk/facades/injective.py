@@ -16,6 +16,8 @@ from frontrunner_sdk.commands.injective.create_orders import CreateOrdersRespons
 from frontrunner_sdk.commands.injective.create_wallet import CreateWalletOperation # NOQA
 from frontrunner_sdk.commands.injective.create_wallet import CreateWalletRequest # NOQA
 from frontrunner_sdk.commands.injective.create_wallet import CreateWalletResponse # NOQA
+from frontrunner_sdk.commands.injective.fund_external_subaccount import FundExternalSubaccountResponse, FundExternalSubaccountRequest, \
+  FundExternalSubaccountOperation
 from frontrunner_sdk.commands.injective.fund_subaccount import FundSubaccountOperation # NOQA
 from frontrunner_sdk.commands.injective.fund_subaccount import FundSubaccountRequest # NOQA
 from frontrunner_sdk.commands.injective.fund_subaccount import FundSubaccountResponse # NOQA
@@ -69,6 +71,16 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
   async def create_wallet(self, fund_and_initialize: bool = True) -> CreateWalletResponse:
     request = CreateWalletRequest(fund_and_initialize=fund_and_initialize)
     return await self._run_operation(CreateWalletOperation, self.deps, request)
+
+  async def fund_external_subaccount(
+      self,
+      amount: int,
+      denom: str,
+      destination_subaccount: Subaccount,
+      source_subaccount_index: Optional[int] = None,
+  ) -> FundExternalSubaccountResponse:
+    request = FundExternalSubaccountRequest(amount, denom, source_subaccount_index or 0, destination_subaccount)
+    return await self._run_operation(FundExternalSubaccountOperation, self.deps, request)
 
   async def fund_subaccount(
     self,
@@ -209,6 +221,24 @@ class InjectiveFacade(SyncMixin):
 
   def create_wallet(self) -> CreateWalletResponse:
     return self._synchronously(self.impl.create_wallet)
+
+  def fund_external_subaccount(
+      self,
+      amount: int,
+      denom: str,
+      destination_subaccount: Subaccount,
+      source_subaccount_index: Optional[int] = None,
+  ) -> FundExternalSubaccountResponse:
+    return self._synchronously(self.impl.fund_external_subaccount, amount, denom, destination_subaccount, source_subaccount_index=source_subaccount_index)
+
+  def fund_subaccount(
+      self,
+      amount: int,
+      denom: str,
+      subaccount_index: Optional[int] = None,
+      subaccount: Optional[Subaccount] = None,
+  ) -> FundSubaccountResponse:
+    return self._synchronously(self.impl.fund_subaccount, amount, denom, subaccount_index=subaccount_index, subaccount=subaccount)
 
   def fund_wallet_from_faucet(self) -> FundWalletFromFaucetResponse:
     return self._synchronously(self.impl.fund_wallet_from_faucet)
