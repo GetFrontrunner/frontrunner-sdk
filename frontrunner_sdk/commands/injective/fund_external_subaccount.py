@@ -34,8 +34,15 @@ class FundExternalSubaccountOperation(FrontrunnerOperation[FundExternalSubaccoun
       self.request.source_subaccount_index
     )
     destination_subaccount = self.request.destination_subaccount
-    response = await deps.injective_chain.fund_external_subaccount(
-      await deps.wallet(), source_subaccount.subaccount_id, destination_subaccount.subaccount_id, self.request.amount, self.request.denom
-    )
+    # Use fund_subaccount (MsgDeposit) to send from bank balance shared with subaccount 0 because
+    # fund_external_subaccount (MsgExternalTransfer) doesn't work from subaccount 0
+    if self.request.source_subaccount_index == 0:
+      response = await deps.injective_chain.fund_subaccount(
+        await deps.wallet(), destination_subaccount.subaccount_id, self.request.amount, self.request.denom
+      )
+    else:
+      response = await deps.injective_chain.fund_external_subaccount(
+        await deps.wallet(), source_subaccount.subaccount_id, destination_subaccount.subaccount_id, self.request.amount, self.request.denom
+      )
 
     return FundExternalSubaccountResponse(transaction=response.txhash)
