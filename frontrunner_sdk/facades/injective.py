@@ -52,6 +52,8 @@ from frontrunner_sdk.commands.injective.stream_positions import StreamPositionsR
 from frontrunner_sdk.commands.injective.stream_trades import StreamTradesOperation # NOQA
 from frontrunner_sdk.commands.injective.stream_trades import StreamTradesRequest # NOQA
 from frontrunner_sdk.commands.injective.stream_trades import StreamTradesResponse # NOQA
+from frontrunner_sdk.commands.injective.withdraw_from_subaccount import WithdrawFromSubaccountResponse, WithdrawFromSubaccountRequest, \
+  WithdrawFromSubaccountOperation
 from frontrunner_sdk.facades.base import FrontrunnerFacadeMixin # NOQA
 from frontrunner_sdk.helpers.parameters import as_request_args
 from frontrunner_sdk.ioc import FrontrunnerIoC
@@ -214,6 +216,15 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     request = StreamPositionsRequest(**kwargs)
     return await self._run_operation(StreamPositionsOperation, self.deps, request)
 
+  async def withdraw_from_subaccount(
+      self,
+      amount: int,
+      denom: str,
+      subaccount_index: int,
+  ) -> WithdrawFromSubaccountResponse:
+    request = WithdrawFromSubaccountRequest(amount, denom, subaccount_index=subaccount_index)
+    return await self._run_operation(WithdrawFromSubaccountOperation, self.deps, request)
+
 
 class InjectiveFacade(SyncMixin):
 
@@ -313,3 +324,11 @@ class InjectiveFacade(SyncMixin):
   ) -> GetTradesResponse:
     kwargs = as_request_args(locals())
     return self._synchronously(self.impl.get_trades, **kwargs)
+
+  def withdraw_from_subaccount(
+      self,
+      amount: int,
+      denom: str,
+      subaccount_index: int,
+  ) -> WithdrawFromSubaccountResponse:
+    return self._synchronously(self.impl.withdraw_from_subaccount, amount, denom, subaccount_index)

@@ -250,3 +250,14 @@ class InjectiveChain:
     )
 
     return await self._execute_transaction(wallet, [message])
+
+  @log_external_exceptions(__name__)
+  async def withdraw_from_subaccount(self, wallet: Wallet, subaccount_id: str, amount: int, denom: str) -> TxResponse:
+    message = self.composer.MsgWithdraw(
+      wallet.injective_address,
+      subaccount_id=subaccount_id,
+      amount=amount,
+      denom=denom,
+    )
+
+    return await self._execute_transaction(wallet, [message])
