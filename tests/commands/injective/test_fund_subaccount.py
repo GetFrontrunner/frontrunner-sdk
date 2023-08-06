@@ -18,7 +18,7 @@ class TestFundSubaccountOperation(IsolatedAsyncioTestCase):
     self.subaccount = Subaccount.from_subaccount_id(self.subaccount_id)
 
   def test_validate(self):
-    req = FundSubaccountRequest(amount=10, denom="FRCOIN", subaccount_index=0)
+    req = FundSubaccountRequest(amount=10, denom="FRCOIN", destination_subaccount_index=0)
     cmd = FundSubaccountOperation(req)
     cmd.validate(self.deps)
 
@@ -29,13 +29,15 @@ class TestFundSubaccountOperation(IsolatedAsyncioTestCase):
   def test_validate_both_subaccounts_exception(self):
     with self.assertRaises(FrontrunnerArgumentException):
       FundSubaccountOperation(
-        FundSubaccountRequest(amount=10, denom="FRCOIN", subaccount_index=0, subaccount=self.subaccount)
+        FundSubaccountRequest(
+          amount=10, denom="FRCOIN", destination_subaccount_index=0, destination_subaccount=self.subaccount
+        )
       ).validate(self.deps)
 
   async def test_fund_subaccount(self):
     self.deps.injective_chain.fund_subaccount_from_bank = AsyncMock(return_value=MagicMock(txhash="<txhash>"))
 
-    req = FundSubaccountRequest(amount=10, denom="FRCOIN", subaccount=self.subaccount)
+    req = FundSubaccountRequest(amount=10, denom="FRCOIN", destination_subaccount=self.subaccount)
     cmd = FundSubaccountOperation(req)
     res = await cmd.execute(self.deps)
 
@@ -46,14 +48,14 @@ class TestFundSubaccountOperation(IsolatedAsyncioTestCase):
     )
 
   async def test_fund_subaccount_by_index(self):
-    subaccount_index = 2
+    destination_subaccount_index = 2
     wallet = Wallet._new()
-    subaccount = Subaccount.from_wallet_and_index(wallet, subaccount_index)
+    subaccount = Subaccount.from_wallet_and_index(wallet, destination_subaccount_index)
 
     self.deps.wallet = AsyncMock(return_value=wallet)
     self.deps.injective_chain.fund_subaccount_from_bank = AsyncMock(return_value=MagicMock(txhash="<txhash>"))
 
-    req = FundSubaccountRequest(amount=10, denom="FRCOIN", subaccount_index=subaccount_index)
+    req = FundSubaccountRequest(amount=10, denom="FRCOIN", destination_subaccount_index=destination_subaccount_index)
     cmd = FundSubaccountOperation(req)
     res = await cmd.execute(self.deps)
 
