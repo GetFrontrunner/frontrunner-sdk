@@ -241,10 +241,24 @@ class InjectiveChain:
     return await self._execute_transaction(wallet, [message])
 
   @log_external_exceptions(__name__)
-  async def fund_subaccount(self, wallet: Wallet, subaccount_id: str, amount: int, denom: str) -> TxResponse:
+  async def fund_subaccount_from_bank(self, wallet: Wallet, subaccount_id: str, amount: int, denom: str) -> TxResponse:
     message = self.composer.MsgDeposit(
       wallet.injective_address,
       subaccount_id=subaccount_id,
+      amount=amount,
+      denom=denom,
+    )
+
+    return await self._execute_transaction(wallet, [message])
+
+  @log_external_exceptions(__name__)
+  async def fund_subaccount_from_subaccount(
+    self, wallet: Wallet, source_subaccount_id: str, destination_subaccount_id: str, amount: int, denom: str
+  ) -> TxResponse:
+    message = self.composer.MsgSubaccountTransfer(
+      wallet.injective_address,
+      source_subaccount_id=source_subaccount_id,
+      destination_subaccount_id=destination_subaccount_id,
       amount=amount,
       denom=denom,
     )

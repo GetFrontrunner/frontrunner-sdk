@@ -33,7 +33,7 @@ class TestFundSubaccountOperation(IsolatedAsyncioTestCase):
       ).validate(self.deps)
 
   async def test_fund_subaccount(self):
-    self.deps.injective_chain.fund_subaccount = AsyncMock(return_value=MagicMock(txhash="<txhash>"))
+    self.deps.injective_chain.fund_subaccount_from_bank = AsyncMock(return_value=MagicMock(txhash="<txhash>"))
 
     req = FundSubaccountRequest(amount=10, denom="FRCOIN", subaccount=self.subaccount)
     cmd = FundSubaccountOperation(req)
@@ -41,7 +41,7 @@ class TestFundSubaccountOperation(IsolatedAsyncioTestCase):
 
     self.assertEqual(res.transaction, "<txhash>")
 
-    self.deps.injective_chain.fund_subaccount.assert_awaited_once_with(
+    self.deps.injective_chain.fund_subaccount_from_bank.assert_awaited_once_with(
       await self.deps.wallet(), self.subaccount_id, 10, "FRCOIN"
     )
 
@@ -51,7 +51,7 @@ class TestFundSubaccountOperation(IsolatedAsyncioTestCase):
     subaccount = Subaccount.from_wallet_and_index(wallet, subaccount_index)
 
     self.deps.wallet = AsyncMock(return_value=wallet)
-    self.deps.injective_chain.fund_subaccount = AsyncMock(return_value=MagicMock(txhash="<txhash>"))
+    self.deps.injective_chain.fund_subaccount_from_bank = AsyncMock(return_value=MagicMock(txhash="<txhash>"))
 
     req = FundSubaccountRequest(amount=10, denom="FRCOIN", subaccount_index=subaccount_index)
     cmd = FundSubaccountOperation(req)
@@ -59,6 +59,6 @@ class TestFundSubaccountOperation(IsolatedAsyncioTestCase):
 
     self.assertEqual(res.transaction, "<txhash>")
 
-    self.deps.injective_chain.fund_subaccount.assert_awaited_once_with(
+    self.deps.injective_chain.fund_subaccount_from_bank.assert_awaited_once_with(
       await self.deps.wallet(), subaccount.subaccount_id, 10, "FRCOIN"
     )
