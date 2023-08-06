@@ -64,3 +64,26 @@ class TestFundSubaccountOperation(IsolatedAsyncioTestCase):
     self.deps.injective_chain.fund_subaccount_from_bank.assert_awaited_once_with(
       await self.deps.wallet(), subaccount.subaccount_id, 10, "FRCOIN"
     )
+
+  async def test_fund_subaccount_source_index(self):
+    source_subaccount_index = 2
+    wallet = Wallet._new()
+    source_subaccount = Subaccount.from_wallet_and_index(wallet, source_subaccount_index)
+
+    self.deps.wallet = AsyncMock(return_value=wallet)
+    self.deps.injective_chain.fund_subaccount_from_subaccount = AsyncMock(return_value=MagicMock(txhash="<txhash>"))
+
+    req = FundSubaccountRequest(
+      amount=10,
+      denom="FRCOIN",
+      source_subaccount_index=source_subaccount_index,
+      destination_subaccount=self.subaccount
+    )
+    cmd = FundSubaccountOperation(req)
+    res = await cmd.execute(self.deps)
+
+    self.assertEqual(res.transaction, "<txhash>")
+
+    self.deps.injective_chain.fund_subaccount_from_subaccount.assert_awaited_once_with(
+      await self.deps.wallet(), source_subaccount.subaccount_id, self.subaccount_id, 10, "FRCOIN"
+    )
