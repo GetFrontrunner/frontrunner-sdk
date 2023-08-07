@@ -30,7 +30,8 @@ class FundExternalSubaccountOperation(FrontrunnerOperation[FundExternalSubaccoun
 
   @log_operation(__name__)
   async def execute(self, deps: FrontrunnerIoC) -> FundExternalSubaccountResponse:
-    source_subaccount = Subaccount.from_wallet_and_index(await deps.wallet(), self.request.source_subaccount_index)
+    wallet = await deps.wallet()
+    source_subaccount = wallet.subaccount(self.request.source_subaccount_index)
     destination_subaccount = self.request.destination_subaccount
     # Use fund_subaccount_from_bank (MsgDeposit) to send from bank balance shared with subaccount 0 because
     # fund_external_subaccount (MsgExternalTransfer) doesn't work from subaccount 0

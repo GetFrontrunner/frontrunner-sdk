@@ -4,7 +4,6 @@ from frontrunner_sdk.commands.base import FrontrunnerOperation
 from frontrunner_sdk.exceptions import FrontrunnerArgumentException
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.logging.log_operation import log_operation
-from frontrunner_sdk.models import Subaccount
 
 
 @dataclass
@@ -34,7 +33,8 @@ class WithdrawFromSubaccountOperation(FrontrunnerOperation[WithdrawFromSubaccoun
 
   @log_operation(__name__)
   async def execute(self, deps: FrontrunnerIoC) -> WithdrawFromSubaccountResponse:
-    subaccount = Subaccount.from_wallet_and_index(await deps.wallet(), self.request.subaccount_index)
+    wallet = await deps.wallet()
+    subaccount = wallet.subaccount(self.request.subaccount_index)
     response = await deps.injective_chain.withdraw_from_subaccount(
       await deps.wallet(), subaccount.subaccount_id, self.request.amount, self.request.denom
     )

@@ -7,7 +7,7 @@ Send funds from the main bank balance to a subaccount that IS owned by the SDK w
 ```python
 destination_subaccount_index = 2
 wallet = await sdk.wallet()
-destination_subaccount = Subaccount.from_wallet_and_index(wallet, destination_subaccount_index)
+destination_subaccount = wallet.subaccount(destination_subaccount_index)
 
 # Equivalent methods of transferring from main bank balance to a subaccount
 response = await sdk.injective.fund_subaccount(5, "FRCOIN", destination_subaccount_index=1)

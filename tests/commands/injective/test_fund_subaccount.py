@@ -67,7 +67,7 @@ class TestFundSubaccountOperation(IsolatedAsyncioTestCase):
   async def test_fund_subaccount_by_index(self):
     destination_subaccount_index = 2
     wallet = Wallet._new()
-    subaccount = Subaccount.from_wallet_and_index(wallet, destination_subaccount_index)
+    subaccount = wallet.subaccount(destination_subaccount_index)
 
     self.deps.wallet = AsyncMock(return_value=wallet)
     self.deps.injective_chain.fund_subaccount_from_bank = AsyncMock(return_value=MagicMock(txhash="<txhash>"))
@@ -85,7 +85,7 @@ class TestFundSubaccountOperation(IsolatedAsyncioTestCase):
   async def test_fund_subaccount_source_index(self):
     source_subaccount_index = 2
     wallet = Wallet._new()
-    source_subaccount = Subaccount.from_wallet_and_index(wallet, source_subaccount_index)
+    source_subaccount = wallet.subaccount(source_subaccount_index)
 
     self.deps.wallet = AsyncMock(return_value=wallet)
     self.deps.injective_chain.fund_subaccount_from_subaccount = AsyncMock(return_value=MagicMock(txhash="<txhash>"))

@@ -29,10 +29,12 @@ Where operations involve subaccounts owned by the SDK wallet, either a `Subaccou
 A `Subaccount` object can be created in a few different ways:
 
 ```python
-from frontrunner_sdk.models import Subaccount
+from frontrunner_sdk.models import Subaccount, Wallet
+
+wallet = Wallet._new()
 
 Subaccount.from_subaccount_id("0xb4efdbe3240d3d2a1bc6be8a1f717944e734a0dd000000000000000000000001")
-Subaccount.from_wallet_and_index(await sdk.wallet(), 1)
+wallet.subaccount(1)
 Subaccount.from_injective_address_and_index("inj1knhahceyp57j5x7xh69p7utegnnnfgxavmahjr", 1)
 Subaccount.from_ethereum_address_and_index("0xb4efdbe3240d3d2a1bc6be8a1f717944e734a0dd", 1)
 ```

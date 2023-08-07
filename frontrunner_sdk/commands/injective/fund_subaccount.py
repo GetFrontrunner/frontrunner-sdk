@@ -51,17 +51,13 @@ class FundSubaccountOperation(FrontrunnerOperation[FundSubaccountRequest, FundSu
     if self.request.destination_subaccount:
       destination_subaccount = self.request.destination_subaccount
     else:
-      destination_subaccount = Subaccount.from_wallet_and_index(
-        await deps.wallet(),
-        self.request.destination_subaccount_index # type: ignore[arg-type]
-      )
+      wallet = await deps.wallet()
+      destination_subaccount = wallet.subaccount(self.request.destination_subaccount_index) # type: ignore[arg-type]
     # Use fund_subaccount_from_subaccount (MsgSubaccountTransfer) if source subaccount is provided and non-zero.
     # Otherwise, use fund_subaccount_from_bank (MsgDeposit).
     if self.request.source_subaccount_index:
-      source_subaccount = Subaccount.from_wallet_and_index(
-        await deps.wallet(),
-        self.request.source_subaccount_index,
-      )
+      wallet = await deps.wallet()
+      source_subaccount = wallet.subaccount(self.request.source_subaccount_index)
       response = await deps.injective_chain.fund_subaccount_from_subaccount(
         await deps.wallet(), source_subaccount.subaccount_id, destination_subaccount.subaccount_id, self.request.amount,
         self.request.denom

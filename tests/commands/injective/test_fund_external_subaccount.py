@@ -28,7 +28,7 @@ class TestFundExternalSubaccountOperation(IsolatedAsyncioTestCase):
 
   async def test_fund_external_subaccount_nonzero_source_index(self):
     source_subaccount_index = 1
-    source_subaccount = Subaccount.from_wallet_and_index(self.wallet, source_subaccount_index)
+    source_subaccount = self.wallet.subaccount(source_subaccount_index)
     self.deps.injective_chain.fund_external_subaccount = AsyncMock(return_value=MagicMock(txhash="<txhash>"))
 
     req = FundExternalSubaccountRequest(

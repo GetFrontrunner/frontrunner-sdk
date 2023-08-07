@@ -8,7 +8,6 @@ from frontrunner_sdk.commands.base import FrontrunnerOperation
 from frontrunner_sdk.exceptions import FrontrunnerArgumentException
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.logging.log_operation import log_operation
-from frontrunner_sdk.models import Subaccount
 from frontrunner_sdk.models.cancel_order import CancelOrder
 
 
@@ -34,7 +33,7 @@ class CancelAllOrdersOperation(FrontrunnerOperation[CancelAllOrdersRequest, Canc
   @log_operation(__name__)
   async def execute(self, deps: FrontrunnerIoC) -> CancelAllOrdersResponse:
     wallet = await deps.wallet()
-    subaccount = Subaccount.from_wallet_and_index(wallet, self.request.subaccount_index)
+    subaccount = wallet.subaccount(self.request.subaccount_index)
 
     open_orders = await deps.injective_chain.get_all_open_orders(subaccount)
 
