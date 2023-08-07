@@ -44,8 +44,10 @@ class GetPositionsOperation(FrontrunnerOperation[GetPositionsRequest, GetPositio
     super().__init__(request)
 
   def validate(self, deps: FrontrunnerIoC) -> None:
-    if not self.request.mine and not self.request.market_ids:
-      raise FrontrunnerArgumentException("Either mine must be True, or at least one market id must be provided")
+    if not any([self.request.mine, self.request.subaccount, self.request.subaccount_index, self.request.market_ids]):
+      raise FrontrunnerArgumentException(
+        "Either mine must be True, subaccount[_index] provided, or at least one market id provided"
+      )
 
     validate_all_mutually_exclusive(self.request, self.MUTUALLY_EXCLUSIVE_PARAMS)
     validate_all_mutually_exclusive(self.request, self.MUTUALLY_EXCLUSIVE_PARAMS_MINE)
