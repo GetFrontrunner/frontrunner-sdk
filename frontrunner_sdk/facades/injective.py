@@ -16,6 +16,9 @@ from frontrunner_sdk.commands.injective.create_orders import CreateOrdersRespons
 from frontrunner_sdk.commands.injective.create_wallet import CreateWalletOperation # NOQA
 from frontrunner_sdk.commands.injective.create_wallet import CreateWalletRequest # NOQA
 from frontrunner_sdk.commands.injective.create_wallet import CreateWalletResponse # NOQA
+from frontrunner_sdk.commands.injective.fund_external_subaccount import FundExternalSubaccountOperation # NOQA
+from frontrunner_sdk.commands.injective.fund_external_subaccount import FundExternalSubaccountRequest # NOQA
+from frontrunner_sdk.commands.injective.fund_external_subaccount import FundExternalSubaccountResponse # NOQA
 from frontrunner_sdk.commands.injective.fund_subaccount import FundSubaccountOperation # NOQA
 from frontrunner_sdk.commands.injective.fund_subaccount import FundSubaccountRequest # NOQA
 from frontrunner_sdk.commands.injective.fund_subaccount import FundSubaccountResponse # NOQA
@@ -49,6 +52,9 @@ from frontrunner_sdk.commands.injective.stream_positions import StreamPositionsR
 from frontrunner_sdk.commands.injective.stream_trades import StreamTradesOperation # NOQA
 from frontrunner_sdk.commands.injective.stream_trades import StreamTradesRequest # NOQA
 from frontrunner_sdk.commands.injective.stream_trades import StreamTradesResponse # NOQA
+from frontrunner_sdk.commands.injective.withdraw_from_subaccount import WithdrawFromSubaccountOperation # NOQA
+from frontrunner_sdk.commands.injective.withdraw_from_subaccount import WithdrawFromSubaccountRequest # NOQA
+from frontrunner_sdk.commands.injective.withdraw_from_subaccount import WithdrawFromSubaccountResponse # NOQA
 from frontrunner_sdk.facades.base import FrontrunnerFacadeMixin # NOQA
 from frontrunner_sdk.helpers.parameters import as_request_args
 from frontrunner_sdk.ioc import FrontrunnerIoC
@@ -70,14 +76,31 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     request = CreateWalletRequest(fund_and_initialize=fund_and_initialize)
     return await self._run_operation(CreateWalletOperation, self.deps, request)
 
+  async def fund_external_subaccount(
+    self,
+    amount: int,
+    denom: str,
+    destination_subaccount: Subaccount,
+    source_subaccount_index: Optional[int] = None,
+  ) -> FundExternalSubaccountResponse:
+    request = FundExternalSubaccountRequest(amount, denom, source_subaccount_index or 0, destination_subaccount)
+    return await self._run_operation(FundExternalSubaccountOperation, self.deps, request)
+
   async def fund_subaccount(
     self,
     amount: int,
     denom: str,
-    subaccount_index: Optional[int] = None,
-    subaccount: Optional[Subaccount] = None,
+    source_subaccount_index: Optional[int] = None,
+    destination_subaccount_index: Optional[int] = None,
+    destination_subaccount: Optional[Subaccount] = None,
   ) -> FundSubaccountResponse:
-    request = FundSubaccountRequest(amount, denom, subaccount=subaccount, subaccount_index=subaccount_index)
+    request = FundSubaccountRequest(
+      amount,
+      denom,
+      source_subaccount_index=source_subaccount_index,
+      destination_subaccount=destination_subaccount,
+      destination_subaccount_index=destination_subaccount_index
+    )
     return await self._run_operation(FundSubaccountOperation, self.deps, request)
 
   async def fund_wallet_from_faucet(self) -> FundWalletFromFaucetResponse:
@@ -201,6 +224,15 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     request = StreamPositionsRequest(**kwargs)
     return await self._run_operation(StreamPositionsOperation, self.deps, request)
 
+  async def withdraw_from_subaccount(
+    self,
+    amount: int,
+    denom: str,
+    subaccount_index: int,
+  ) -> WithdrawFromSubaccountResponse:
+    request = WithdrawFromSubaccountRequest(amount, denom, subaccount_index=subaccount_index)
+    return await self._run_operation(WithdrawFromSubaccountOperation, self.deps, request)
+
 
 class InjectiveFacade(SyncMixin):
 
@@ -209,6 +241,38 @@ class InjectiveFacade(SyncMixin):
 
   def create_wallet(self) -> CreateWalletResponse:
     return self._synchronously(self.impl.create_wallet)
+
+  def fund_external_subaccount(
+    self,
+    amount: int,
+    denom: str,
+    destination_subaccount: Subaccount,
+    source_subaccount_index: Optional[int] = None,
+  ) -> FundExternalSubaccountResponse:
+    return self._synchronously(
+      self.impl.fund_external_subaccount,
+      amount,
+      denom,
+      destination_subaccount,
+      source_subaccount_index=source_subaccount_index
+    )
+
+  def fund_subaccount(
+    self,
+    amount: int,
+    denom: str,
+    source_subaccount_index: Optional[int] = None,
+    destination_subaccount_index: Optional[int] = None,
+    destination_subaccount: Optional[Subaccount] = None,
+  ) -> FundSubaccountResponse:
+    return self._synchronously(
+      self.impl.fund_subaccount,
+      amount,
+      denom,
+      source_subaccount_index=source_subaccount_index,
+      destination_subaccount_index=destination_subaccount_index,
+      destination_subaccount=destination_subaccount
+    )
 
   def fund_wallet_from_faucet(self) -> FundWalletFromFaucetResponse:
     return self._synchronously(self.impl.fund_wallet_from_faucet)
@@ -274,3 +338,11 @@ class InjectiveFacade(SyncMixin):
   ) -> GetTradesResponse:
     kwargs = as_request_args(locals())
     return self._synchronously(self.impl.get_trades, **kwargs)
+
+  def withdraw_from_subaccount(
+    self,
+    amount: int,
+    denom: str,
+    subaccount_index: int,
+  ) -> WithdrawFromSubaccountResponse:
+    return self._synchronously(self.impl.withdraw_from_subaccount, amount, denom, subaccount_index)

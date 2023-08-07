@@ -13,8 +13,9 @@ from frontrunner_sdk.models import Subaccount
 class FundSubaccountRequest:
   amount: int
   denom: str
-  subaccount_index: Optional[int] = None
-  subaccount: Optional[Subaccount] = None
+  source_subaccount_index: Optional[int] = None
+  destination_subaccount_index: Optional[int] = None
+  destination_subaccount: Optional[Subaccount] = None
 
 
 @dataclass
@@ -25,10 +26,21 @@ class FundSubaccountResponse:
 class FundSubaccountOperation(FrontrunnerOperation[FundSubaccountRequest, FundSubaccountResponse]):
 
   def validate(self, deps: FrontrunnerIoC) -> None:
-    if self.request.subaccount_index is None and self.request.subaccount is None:
-      raise FrontrunnerArgumentException("Must specify either subaccount_index or subaccount")
+    if self.request.destination_subaccount_index is None and self.request.destination_subaccount is None:
+      raise FrontrunnerArgumentException("Must specify either destination_subaccount_index or destination_subaccount")
+    if self.request.destination_subaccount_index == 0:
+      raise FrontrunnerArgumentException(
+        "destination_subaccount_index must be > 0 if provided",
+        destination_subaccount_index=self.request.destination_subaccount_index
+      )
+    if self.request.destination_subaccount and self.request.destination_subaccount.subaccount_id.endswith("0" * 24):
+      raise FrontrunnerArgumentException(
+        "destination_subaccount must not be default 0 subaccount",
+        destination_subaccount=self.request.destination_subaccount
+      )
     validate_mutually_exclusive(
-      "subaccount_index", self.request.subaccount_index, "subaccount", self.request.subaccount
+      "destination_subaccount_index", self.request.destination_subaccount_index, "destination_subaccount",
+      self.request.destination_subaccount
     )
 
   def __init__(self, request: FundSubaccountRequest):
@@ -36,12 +48,23 @@ class FundSubaccountOperation(FrontrunnerOperation[FundSubaccountRequest, FundSu
 
   @log_operation(__name__)
   async def execute(self, deps: FrontrunnerIoC) -> FundSubaccountResponse:
-    subaccount = self.request.subaccount if self.request.subaccount else Subaccount.from_wallet_and_index(
-      await deps.wallet(),
-      self.request.subaccount_index # type: ignore[arg-type]
-    )
-    response = await deps.injective_chain.fund_subaccount(
-      await deps.wallet(), subaccount.subaccount_id, self.request.amount, self.request.denom
-    )
+    if self.request.destination_subaccount:
+      destination_subaccount = self.request.destination_subaccount
+    else:
+      wallet = await deps.wallet()
+      destination_subaccount = wallet.subaccount(self.request.destination_subaccount_index) # type: ignore[arg-type]
+    # Use fund_subaccount_from_subaccount (MsgSubaccountTransfer) if source subaccount is provided and non-zero.
+    # Otherwise, use fund_subaccount_from_bank (MsgDeposit).
+    if self.request.source_subaccount_index:
+      wallet = await deps.wallet()
+      source_subaccount = wallet.subaccount(self.request.source_subaccount_index)
+      response = await deps.injective_chain.fund_subaccount_from_subaccount(
+        await deps.wallet(), source_subaccount.subaccount_id, destination_subaccount.subaccount_id, self.request.amount,
+        self.request.denom
+      )
+    else:
+      response = await deps.injective_chain.fund_subaccount_from_bank(
+        await deps.wallet(), destination_subaccount.subaccount_id, self.request.amount, self.request.denom
+      )
 
     return FundSubaccountResponse(transaction=response.txhash)

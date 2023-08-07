@@ -7,14 +7,40 @@ so they can be used to isolate positions or margin or to run multiple strategies
 All orders in Injective markets are from a subaccount (often the default subaccount).
 
 Subaccounts are 0-indexed, and the default subaccount, subaccount 0, has a special 
-property: trading from the default subaccount draws funds from the main bank balance. 
+property: trading from the default subaccount draws funds from the **main bank balance**.
 Detailed information about this feature can be found [here](https://injective.notion.site/The-new-trading-logic-to-be-introduced-in-v1-10-8b422f7bec6c4cac96459d558e917b6d).
+The main bank balance is associated with the Injective address (e.g. `inj14w0zfp47jqpgjst87vxg5ydgvtevfdm38338xp`).
+Subaccount balances are associated with each subaccount (e.g. `0xb4efdbe3240d3d2a1bc6be8a1f717944e734a0dd000000000000000000000000`).
 
 ## Properties
 * Each subaccount can have a maximum of 20 open orders per market
 * A single subaccount cannot create orders for both the `long` and `short` sides in a binary options market
 
-## Sample Code
+## Transferring Funds
+These are the operations involved in transferring funds between accounts or subaccounts:
+
+| Operation                  | Usage                                                                                                                                                             | Notes                                                                                        |
+|----------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------|
+| `fund_external_subaccount` | Send funds to a subaccount that is NOT owned by the SDK wallet.                                                                                                   | Cannot fund subaccount 0.                                                                    |
+| `fund_subaccount`          | Send funds from the main bank balance to a subaccount that IS owned by the SDK wallet. Or send funds between subaccounts that ARE BOTH owned by the SDK wallet.   | Cannot fund subaccount 0. Funding from source subaccount 0 sends from the main bank balance. |
+| `withdraw_from_subaccount` | Withdraw funds from a subaccount that IS owned by the SDK wallet to the main bank balance.                                                                        | Cannot withdraw from subaccount 0.                                                           |
+
+Where operations involve subaccounts owned by the SDK wallet, either a `Subaccount` object or an integer `index` can be provided for convenience.  
+A `Subaccount` object can be created in a few different ways:
+
+```python
+from frontrunner_sdk.models import Subaccount, Wallet
+
+wallet = Wallet._new()
+
+Subaccount.from_subaccount_id("0xb4efdbe3240d3d2a1bc6be8a1f717944e734a0dd000000000000000000000001")
+wallet.subaccount(1)
+Subaccount.from_injective_address_and_index("inj1knhahceyp57j5x7xh69p7utegnnnfgxavmahjr", 1)
+Subaccount.from_ethereum_address_and_index("0xb4efdbe3240d3d2a1bc6be8a1f717944e734a0dd", 1)
+```
+
+
+## Sample Code: Market Making
 A simple setup to create liquidity on both sides of a Frontrunner market involves using two non-default 
 subaccounts, where one subaccount creates `long` orders and another creates `short` orders.
 
@@ -88,10 +114,10 @@ async def main():
   short_subaccount = wallet.subaccount_address(short_subaccount_index)
   print(f"Running with wallet {wallet.injective_address}. {long_subaccount=}, {short_subaccount=}")
 
-  response = await sdk.injective.fund_subaccount(1000, "FRCOIN", subaccount_index=long_subaccount_index)
+  response = await sdk.injective.fund_subaccount(1000, "FRCOIN", destination_subaccount_index=long_subaccount_index)
   print(f"View deposit transaction to long side subaccount: https://testnet.explorer.injective.network/transaction/{response.transaction}")
 
-  response = await sdk.injective.fund_subaccount(1000, "FRCOIN", subaccount_index=short_subaccount_index)
+  response = await sdk.injective.fund_subaccount(1000, "FRCOIN", destination_subaccount_index=short_subaccount_index)
   print(f"View deposit transaction to short side subaccount: https://testnet.explorer.injective.network/transaction/{response.transaction}")
 
   probability = 0.68

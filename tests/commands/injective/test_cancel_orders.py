@@ -8,7 +8,6 @@ from frontrunner_sdk.commands.injective.cancel_orders import CancelOrdersOperati
 from frontrunner_sdk.commands.injective.cancel_orders import CancelOrdersRequest # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.models.cancel_order import CancelOrder
-from frontrunner_sdk.models.wallet import Subaccount
 from frontrunner_sdk.models.wallet import Wallet
 
 
@@ -32,7 +31,7 @@ class TestCancelOrdersOperation(IsolatedAsyncioTestCase):
 
   async def test_cancel_all_orders(self):
     wallet = Wallet._new()
-    subaccount = Subaccount.from_wallet_and_index(wallet, 0)
+    subaccount = wallet.subaccount(0)
 
     self.deps.wallet = AsyncMock(return_value=wallet)
     self.deps.injective_chain.get_all_open_orders = AsyncMock(return_value=self.order_responses)
@@ -53,7 +52,7 @@ class TestCancelOrdersOperation(IsolatedAsyncioTestCase):
   async def test_cancel_all_orders_subaccount_index(self):
     subaccount_index = 2
     wallet = Wallet._new()
-    subaccount = Subaccount.from_wallet_and_index(wallet, subaccount_index)
+    subaccount = wallet.subaccount(subaccount_index)
 
     self.deps.wallet = AsyncMock(return_value=wallet)
     self.deps.injective_chain.get_all_open_orders = AsyncMock(return_value=self.order_responses)
