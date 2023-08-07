@@ -1,6 +1,6 @@
 ## Injective: Fund Subaccount
 
-Send funds to a subaccount that IS owned by the SDK wallet.
+Send funds from the main bank balance to a subaccount that IS owned by the SDK wallet. Or send funds between subaccounts that ARE BOTH owned by the SDK wallet.
 
 ### Parameters
 
