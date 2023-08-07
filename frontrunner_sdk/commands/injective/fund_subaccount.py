@@ -29,9 +29,15 @@ class FundSubaccountOperation(FrontrunnerOperation[FundSubaccountRequest, FundSu
     if self.request.destination_subaccount_index is None and self.request.destination_subaccount is None:
       raise FrontrunnerArgumentException("Must specify either destination_subaccount_index or destination_subaccount")
     if self.request.destination_subaccount_index == 0:
-      raise FrontrunnerArgumentException("destination_subaccount_index must be > 0 if provided", destination_subaccount_index=self.request.destination_subaccount_index)
+      raise FrontrunnerArgumentException(
+        "destination_subaccount_index must be > 0 if provided",
+        destination_subaccount_index=self.request.destination_subaccount_index
+      )
     if self.request.destination_subaccount and self.request.destination_subaccount.subaccount_id.endswith("0" * 24):
-      raise FrontrunnerArgumentException("destination_subaccount must not be default 0 subaccount", destination_subaccount=self.request.destination_subaccount)
+      raise FrontrunnerArgumentException(
+        "destination_subaccount must not be default 0 subaccount",
+        destination_subaccount=self.request.destination_subaccount
+      )
     validate_mutually_exclusive(
       "destination_subaccount_index", self.request.destination_subaccount_index, "destination_subaccount",
       self.request.destination_subaccount
