@@ -19,6 +19,11 @@ Subaccount balances are associated with each subaccount (e.g. `0xb4efdbe3240d3d2
 ## Transferring Funds
 These are the operations involved in transferring funds between accounts or subaccounts:
 
+| Operation                  | Usage                                                                                                                                                              | Notes                                                                                        |
+|----------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------|
+| `fund_external_subaccount` | Send funds to a subaccount that is NOT owned by the SDK wallet.                                                                                                    | Cannot fund subaccount 0.                                                                    |
+| `fund_subaccount`          | Send funds from the main bank balance to a subaccount that IS owned by the SDK wallet. Or, send funds between subaccounts that ARE BOTH owned by the SDK wallet.   | Cannot fund subaccount 0. Funding from source subaccount 0 sends from the main bank balance. |
+| `withdraw_from_subaccount` | Withdraw funds from a subaccount that IS owned by the SDK wallet to the main bank balance.                                                                         | Cannot withdraw from subaccount 0.                                                           |
 
 ## Sample Code: Market Making
 A simple setup to create liquidity on both sides of a Frontrunner market involves using two non-default 
