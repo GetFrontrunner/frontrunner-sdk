@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-from typing import Optional
 
 from frontrunner_sdk.commands.base import FrontrunnerOperation
+from frontrunner_sdk.exceptions import FrontrunnerArgumentException
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.logging.log_operation import log_operation
 from frontrunner_sdk.models import Subaccount
@@ -11,7 +11,7 @@ from frontrunner_sdk.models import Subaccount
 class WithdrawFromSubaccountRequest:
   amount: int
   denom: str
-  subaccount_index: Optional[int] = None
+  subaccount_index: int
 
 
 @dataclass
@@ -23,17 +23,18 @@ class WithdrawFromSubaccountOperation(FrontrunnerOperation[WithdrawFromSubaccoun
                                                            WithdrawFromSubaccountResponse]):
 
   def validate(self, deps: FrontrunnerIoC) -> None:
-    pass
+    # Subaccount 0 is shared with the bank balance so cannot be withdrawn
+    if not self.request.subaccount_index:
+      raise FrontrunnerArgumentException(
+        "subaccount_index must be present and > 0", subaccount_index=self.request.subaccount_index
+      )
 
   def __init__(self, request: WithdrawFromSubaccountRequest):
     super().__init__(request)
 
   @log_operation(__name__)
   async def execute(self, deps: FrontrunnerIoC) -> WithdrawFromSubaccountResponse:
-    subaccount = Subaccount.from_wallet_and_index(
-      await deps.wallet(),
-      self.request.subaccount_index # type: ignore[arg-type]
-    )
+    subaccount = Subaccount.from_wallet_and_index(await deps.wallet(), self.request.subaccount_index)
     response = await deps.injective_chain.withdraw_from_subaccount(
       await deps.wallet(), subaccount.subaccount_id, self.request.amount, self.request.denom
     )
