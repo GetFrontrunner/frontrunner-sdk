@@ -14,11 +14,11 @@ class TestFundSubaccountOperation(IsolatedAsyncioTestCase):
 
   def setUp(self) -> None:
     self.deps = MagicMock(spec=FrontrunnerIoC)
-    self.subaccount_id = "0xfddd3e6d98a236a1df56716ab8c407b1004113df000000000000000000000000"
+    self.subaccount_id = "0xfddd3e6d98a236a1df56716ab8c407b1004113df000000000000000000000001"
     self.subaccount = Subaccount.from_subaccount_id(self.subaccount_id)
 
   def test_validate(self):
-    req = FundSubaccountRequest(amount=10, denom="FRCOIN", destination_subaccount_index=0)
+    req = FundSubaccountRequest(amount=10, denom="FRCOIN", destination_subaccount_index=1)
     cmd = FundSubaccountOperation(req)
     cmd.validate(self.deps)
 
@@ -30,7 +30,21 @@ class TestFundSubaccountOperation(IsolatedAsyncioTestCase):
     with self.assertRaises(FrontrunnerArgumentException):
       FundSubaccountOperation(
         FundSubaccountRequest(
-          amount=10, denom="FRCOIN", destination_subaccount_index=0, destination_subaccount=self.subaccount
+          amount=10, denom="FRCOIN", destination_subaccount_index=1, destination_subaccount=self.subaccount
+        )
+      ).validate(self.deps)
+
+  def test_validate_subaccount_0_exceptions(self):
+    with self.assertRaises(FrontrunnerArgumentException):
+      FundSubaccountOperation(
+        FundSubaccountRequest(
+          amount=10, denom="FRCOIN", destination_subaccount_index=0,
+        )
+      ).validate(self.deps)
+    with self.assertRaises(FrontrunnerArgumentException):
+      FundSubaccountOperation(
+        FundSubaccountRequest(
+          amount=10, denom="FRCOIN", destination_subaccount=Subaccount.from_subaccount_id("0xfddd3e6d98a236a1df56716ab8c407b1004113df000000000000000000000000"),
         )
       ).validate(self.deps)
 

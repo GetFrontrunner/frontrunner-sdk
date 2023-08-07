@@ -32,7 +32,7 @@ class FundExternalSubaccountOperation(FrontrunnerOperation[FundExternalSubaccoun
   async def execute(self, deps: FrontrunnerIoC) -> FundExternalSubaccountResponse:
     source_subaccount = Subaccount.from_wallet_and_index(await deps.wallet(), self.request.source_subaccount_index)
     destination_subaccount = self.request.destination_subaccount
-    # Use fund_subaccount (MsgDeposit) to send from bank balance shared with subaccount 0 because
+    # Use fund_subaccount_from_bank (MsgDeposit) to send from bank balance shared with subaccount 0 because
     # fund_external_subaccount (MsgExternalTransfer) doesn't work from subaccount 0
     if self.request.source_subaccount_index == 0:
       response = await deps.injective_chain.fund_subaccount_from_bank(

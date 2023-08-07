@@ -7,14 +7,20 @@ so they can be used to isolate positions or margin or to run multiple strategies
 All orders in Injective markets are from a subaccount (often the default subaccount).
 
 Subaccounts are 0-indexed, and the default subaccount, subaccount 0, has a special 
-property: trading from the default subaccount draws funds from the main bank balance. 
+property: trading from the default subaccount draws funds from the **main bank balance**.
 Detailed information about this feature can be found [here](https://injective.notion.site/The-new-trading-logic-to-be-introduced-in-v1-10-8b422f7bec6c4cac96459d558e917b6d).
+The main bank balance is associated with the Injective address (e.g. `inj14w0zfp47jqpgjst87vxg5ydgvtevfdm38338xp`).
+Subaccount balances are associated with each subaccount (e.g. `0xb4efdbe3240d3d2a1bc6be8a1f717944e734a0dd000000000000000000000000`).
 
 ## Properties
 * Each subaccount can have a maximum of 20 open orders per market
 * A single subaccount cannot create orders for both the `long` and `short` sides in a binary options market
 
-## Sample Code
+## Transferring Funds
+These are the operations involved in transferring funds between accounts or subaccounts:
+
+
+## Sample Code: Market Making
 A simple setup to create liquidity on both sides of a Frontrunner market involves using two non-default 
 subaccounts, where one subaccount creates `long` orders and another creates `short` orders.
 
