@@ -85,6 +85,21 @@ class TestGetOrdersOperation(IsolatedAsyncioTestCase):
       subaccount_id=self.wallet.subaccount_address(),
     )
 
+  async def test_get_orders_not_mine_and_subaccount(self):
+    self.deps.wallet = AsyncMock(return_value=self.wallet)
+    self.deps.injective_client.get_historical_derivative_orders = AsyncMock(return_value=self.orders_response)
+
+    req = GetOrdersRequest(mine=False, subaccount=self.wallet.subaccount())
+    cmd = GetOrdersOperation(req)
+    res = await cmd.execute(self.deps)
+
+    self.assertEqual(res.orders, OrderHistory._from_injective_derivative_order_histories(self.orders))
+
+    self.deps.injective_client.get_historical_derivative_orders.assert_awaited_once_with(
+      None,
+      subaccount_id=self.wallet.subaccount_address(),
+    )
+
   async def test_get_orders_other_args(self):
     self.deps.wallet = AsyncMock(return_value=self.wallet)
     self.deps.injective_client.get_historical_derivative_orders = AsyncMock(return_value=self.orders_response)

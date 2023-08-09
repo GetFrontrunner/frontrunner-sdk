@@ -9,6 +9,7 @@ from pyinjective.proto.exchange.injective_derivative_exchange_rpc_pb2 import Der
 from pyinjective.proto.exchange.injective_derivative_exchange_rpc_pb2 import DerivativeOrderHistory # NOQA
 
 from frontrunner_sdk.commands.base import FrontrunnerOperation
+from frontrunner_sdk.exceptions import FrontrunnerArgumentException
 from frontrunner_sdk.helpers.paginators import injective_paginated_list
 from frontrunner_sdk.helpers.validation import validate_all_mutually_exclusive
 from frontrunner_sdk.helpers.validation import validate_start_time_end_time
@@ -54,7 +55,8 @@ class GetOrdersOperation(FrontrunnerOperation[GetOrdersRequest, GetOrdersRespons
 
   def validate(self, deps: FrontrunnerIoC) -> None:
     validate_all_mutually_exclusive(self.request, self.MUTUALLY_EXCLUSIVE_PARAMS)
-    validate_all_mutually_exclusive(self.request, self.MUTUALLY_EXCLUSIVE_PARAMS_MINE)
+    if self.request.mine and self.request.subaccount or self.request.mine and self.request.subaccount_id:
+      raise FrontrunnerArgumentException("mine and subaccount[_id] are mutually exclusive")
     validate_start_time_end_time(self.request.start_time, self.request.end_time)
 
   @log_operation(__name__)
