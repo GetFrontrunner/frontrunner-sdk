@@ -16,6 +16,9 @@ from frontrunner_sdk.commands.injective.create_orders import CreateOrdersRespons
 from frontrunner_sdk.commands.injective.create_wallet import CreateWalletOperation # NOQA
 from frontrunner_sdk.commands.injective.create_wallet import CreateWalletRequest # NOQA
 from frontrunner_sdk.commands.injective.create_wallet import CreateWalletResponse # NOQA
+from frontrunner_sdk.commands.injective.fund_external_account import FundExternalAccountOperation # NOQA
+from frontrunner_sdk.commands.injective.fund_external_account import FundExternalAccountRequest # NOQA
+from frontrunner_sdk.commands.injective.fund_external_account import FundExternalAccountResponse # NOQA
 from frontrunner_sdk.commands.injective.fund_external_subaccount import FundExternalSubaccountOperation # NOQA
 from frontrunner_sdk.commands.injective.fund_external_subaccount import FundExternalSubaccountRequest # NOQA
 from frontrunner_sdk.commands.injective.fund_external_subaccount import FundExternalSubaccountResponse # NOQA
@@ -75,6 +78,15 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
   async def create_wallet(self, fund_and_initialize: bool = True) -> CreateWalletResponse:
     request = CreateWalletRequest(fund_and_initialize=fund_and_initialize)
     return await self._run_operation(CreateWalletOperation, self.deps, request)
+
+  async def fund_external_account(
+    self,
+    amount: int,
+    denom: str,
+    destination_injective_address: str,
+  ) -> FundExternalAccountResponse:
+    request = FundExternalAccountRequest(amount, denom, destination_injective_address)
+    return await self._run_operation(FundExternalAccountOperation, self.deps, request)
 
   async def fund_external_subaccount(
     self,
@@ -241,6 +253,14 @@ class InjectiveFacade(SyncMixin):
 
   def create_wallet(self) -> CreateWalletResponse:
     return self._synchronously(self.impl.create_wallet)
+
+  def fund_external_account(
+    self,
+    amount: int,
+    denom: str,
+    destination_injective_address: str,
+  ) -> FundExternalAccountResponse:
+    return self._synchronously(self.impl.fund_external_account, amount, denom, destination_injective_address)
 
   def fund_external_subaccount(
     self,
