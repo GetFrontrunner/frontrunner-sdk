@@ -1,13 +1,16 @@
 import json
+
 from collections import Iterable
 from dataclasses import dataclass
-from typing import Optional, List
+from typing import List
+from typing import Optional
 
 from pyinjective.proto.cosmos.tx.v1beta1.service_pb2 import GetTxResponse
 
 from frontrunner_sdk.commands.base import FrontrunnerOperation
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.logging.log_operation import log_operation
+
 
 @dataclass
 class OrderFailure:
@@ -28,8 +31,12 @@ class OrderFailure:
             for event in log.events:
               if event.type == clz.EVENT_ORDER_FAIL_TYPE:
                 attributes = event.attributes
-                flags: List[int] = next((json.loads(attribute.value) for attribute in attributes if attribute.key == "flags"), [])
-                hashes: List[str] = next((json.loads(attribute.value) for attribute in attributes if attribute.key == "hashes"), [])
+                flags: List[int] = next(
+                  (json.loads(attribute.value) for attribute in attributes if attribute.key == "flags"), []
+                )
+                hashes: List[str] = next(
+                  (json.loads(attribute.value) for attribute in attributes if attribute.key == "hashes"), []
+                )
                 result.append(clz(flags, hashes))
 
     return result

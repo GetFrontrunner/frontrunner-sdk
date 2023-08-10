@@ -1,11 +1,15 @@
 import json
+
 from unittest import IsolatedAsyncioTestCase
-from unittest.mock import AsyncMock, MagicMock, Mock
+from unittest.mock import AsyncMock
+from unittest.mock import MagicMock
+from unittest.mock import Mock
 
 from frontrunner_sdk import FrontrunnerIoC
-from frontrunner_sdk.commands.injective.get_transaction import GetTransactionOperation, OrderFailure  # NOQA
-from frontrunner_sdk.commands.injective.get_transaction import GetTransactionRequest  # NOQA
-from frontrunner_sdk.exceptions import FrontrunnerArgumentException  # NOQA
+from frontrunner_sdk.commands.injective.get_transaction import GetTransactionOperation # NOQA
+from frontrunner_sdk.commands.injective.get_transaction import GetTransactionRequest # NOQA
+from frontrunner_sdk.commands.injective.get_transaction import OrderFailure
+from frontrunner_sdk.exceptions import FrontrunnerArgumentException # NOQA
 
 
 class TestGetTransactionOperation(IsolatedAsyncioTestCase):
@@ -21,7 +25,10 @@ class TestGetTransactionOperation(IsolatedAsyncioTestCase):
     cmd.validate(self.deps)
 
   async def test_get_transaction_order_failures(self):
-    mock_attributes = [Mock(key="flags", value=json.dumps(self.flags)), Mock(key="hashes", value=json.dumps(self.hashes))]
+    mock_attributes = [
+      Mock(key="flags", value=json.dumps(self.flags)),
+      Mock(key="hashes", value=json.dumps(self.hashes))
+    ]
     mock_log = Mock(events=[Mock(type="injective.exchange.v1beta1.EventOrderFail", attributes=mock_attributes)])
     mock_response = mock_tx_response = Mock()
     mock_tx_response.logs = [mock_log]

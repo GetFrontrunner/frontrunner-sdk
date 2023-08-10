@@ -43,7 +43,9 @@ from frontrunner_sdk.commands.injective.get_positions import GetPositionsRespons
 from frontrunner_sdk.commands.injective.get_trades import GetTradesOperation # NOQA
 from frontrunner_sdk.commands.injective.get_trades import GetTradesRequest
 from frontrunner_sdk.commands.injective.get_trades import GetTradesResponse
-from frontrunner_sdk.commands.injective.get_transaction import GetTransactionRequest, GetTransactionOperation, GetTransactionResponse
+from frontrunner_sdk.commands.injective.get_transaction import GetTransactionOperation # NOQA
+from frontrunner_sdk.commands.injective.get_transaction import GetTransactionRequest # NOQA
+from frontrunner_sdk.commands.injective.get_transaction import GetTransactionResponse # NOQA
 from frontrunner_sdk.commands.injective.stream_markets import StreamMarketsOperation # NOQA
 from frontrunner_sdk.commands.injective.stream_markets import StreamMarketsRequest # NOQA
 from frontrunner_sdk.commands.injective.stream_markets import StreamMarketsResponse # NOQA
