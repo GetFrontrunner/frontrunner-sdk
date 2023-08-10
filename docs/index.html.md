@@ -36,6 +36,7 @@ includes:
   - operations/injective/get_orders
   - operations/injective/get_positions
   - operations/injective/get_trades
+  - operations/injective/get_transaction
   - operations/injective/stream_markets
   - operations/injective/stream_orders
   - operations/injective/stream_positions
