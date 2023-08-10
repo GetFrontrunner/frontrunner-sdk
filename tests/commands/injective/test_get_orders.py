@@ -9,6 +9,7 @@ from frontrunner_sdk.commands.injective.get_orders import GetOrdersRequest # NOQ
 from frontrunner_sdk.exceptions import FrontrunnerArgumentException # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.models import OrderHistory
+from frontrunner_sdk.models.wallet import Subaccount
 from frontrunner_sdk.models.wallet import Wallet
 
 
@@ -18,6 +19,8 @@ class TestGetOrdersOperation(IsolatedAsyncioTestCase):
     self.wallet = Wallet._new()
     self.deps = MagicMock(spec=FrontrunnerIoC)
     self.market_ids = ["0x1234"]
+    self.subaccount_id = "0xfddd3e6d98a236a1df56716ab8c407b1004113df000000000000000000000000"
+    self.subaccount = Subaccount.from_subaccount_id(self.subaccount_id)
     self.order_types = ["stop_buy"]
     self.execution_types = ["limit"]
     self.orders = [MagicMock(direction="buy", is_reduce_only=False), MagicMock(direction="buy", is_reduce_only=False)]
@@ -32,12 +35,16 @@ class TestGetOrdersOperation(IsolatedAsyncioTestCase):
     cmd = GetOrdersOperation(req)
     cmd.validate(self.deps)
 
-  def test_validate_exception_when_mine_and_subaccount_id(self):
-    req = GetOrdersRequest(mine=True, subaccount_id="1234")
-    cmd = GetOrdersOperation(req)
+  def test_validate_exceptions_mutually_exclusive(self):
+    with self.assertRaises(FrontrunnerArgumentException):
+      GetOrdersOperation(GetOrdersRequest(mine=True, subaccount_id="1234")).validate(self.deps)
 
     with self.assertRaises(FrontrunnerArgumentException):
-      cmd.validate(self.deps)
+      GetOrdersOperation(GetOrdersRequest(mine=True, subaccount_id="1234",
+                                          subaccount=self.subaccount)).validate(self.deps)
+
+    with self.assertRaises(FrontrunnerArgumentException):
+      GetOrdersOperation(GetOrdersRequest(mine=True, subaccount=self.subaccount)).validate(self.deps)
 
   def test_validate_exception_when_start_in_future(self):
     start = datetime.now() + timedelta(days=1)
@@ -75,6 +82,21 @@ class TestGetOrdersOperation(IsolatedAsyncioTestCase):
     self.deps.injective_client.get_historical_derivative_orders = AsyncMock(return_value=self.orders_response)
 
     req = GetOrdersRequest(mine=True)
+    cmd = GetOrdersOperation(req)
+    res = await cmd.execute(self.deps)
+
+    self.assertEqual(res.orders, OrderHistory._from_injective_derivative_order_histories(self.orders))
+
+    self.deps.injective_client.get_historical_derivative_orders.assert_awaited_once_with(
+      None,
+      subaccount_id=self.wallet.subaccount_address(),
+    )
+
+  async def test_get_orders_not_mine_and_subaccount(self):
+    self.deps.wallet = AsyncMock(return_value=self.wallet)
+    self.deps.injective_client.get_historical_derivative_orders = AsyncMock(return_value=self.orders_response)
+
+    req = GetOrdersRequest(mine=False, subaccount=self.wallet.subaccount())
     cmd = GetOrdersOperation(req)
     res = await cmd.execute(self.deps)
 
