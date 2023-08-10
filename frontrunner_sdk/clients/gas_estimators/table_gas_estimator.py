@@ -9,6 +9,7 @@ class TableGasEstimator(GasEstimator):
 
   MESSAGE_RATES = {
     "MsgDeposit": 73532,
+    "MsgSend": 64441,
     "MsgWithdraw": 71077,
     "MsgExternalTransfer": 64769,
     "MsgSubaccountTransfer": 63789,
