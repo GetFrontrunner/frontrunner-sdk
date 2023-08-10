@@ -43,6 +43,7 @@ from frontrunner_sdk.commands.injective.get_positions import GetPositionsRespons
 from frontrunner_sdk.commands.injective.get_trades import GetTradesOperation # NOQA
 from frontrunner_sdk.commands.injective.get_trades import GetTradesRequest
 from frontrunner_sdk.commands.injective.get_trades import GetTradesResponse
+from frontrunner_sdk.commands.injective.get_transaction import GetTransactionRequest, GetTransactionOperation, GetTransactionResponse
 from frontrunner_sdk.commands.injective.stream_markets import StreamMarketsOperation # NOQA
 from frontrunner_sdk.commands.injective.stream_markets import StreamMarketsRequest # NOQA
 from frontrunner_sdk.commands.injective.stream_markets import StreamMarketsResponse # NOQA
@@ -188,6 +189,10 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
     kwargs = as_request_args(locals())
     request = GetTradesRequest(**kwargs)
     return await self._run_operation(GetTradesOperation, self.deps, request)
+
+  async def get_transaction(self, transaction_hash: str) -> GetTransactionResponse:
+    request = GetTransactionRequest(transaction_hash)
+    return await self._run_operation(GetTransactionOperation, self.deps, request)
 
   async def stream_trades(
     self,
@@ -358,6 +363,9 @@ class InjectiveFacade(SyncMixin):
   ) -> GetTradesResponse:
     kwargs = as_request_args(locals())
     return self._synchronously(self.impl.get_trades, **kwargs)
+
+  def get_transaction(self, transaction_hash: str) -> GetTransactionResponse:
+    return self._synchronously(self.impl.get_transaction, transaction_hash)
 
   def withdraw_from_subaccount(
     self,
