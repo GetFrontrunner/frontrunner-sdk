@@ -31,7 +31,7 @@ response = sdk.injective.create_orders([
 | `orders[].subaccount_index` | `int` | ◯ `0` | Index of the subaccount to create the order from |
 | `orders[].is_post_only` | `bool` | ◯ `False` | If True, this is a post-only order that will only succeed if it enters the orderbook unmatched |
 
-<aside class="notice">
+<aside class="warning">
 If a post-only order would match with an existing order, the operation will still return a transaction hash 
 but transaction logs will show failure with <a href="https://api.injective.exchange/#error-codes">error code</a> <code>59</code>.
 The error code can be seen with <a href="https://api.injective.exchange/#account-gettx">GetTx</a> or 

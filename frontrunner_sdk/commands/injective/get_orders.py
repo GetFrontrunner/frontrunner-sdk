@@ -56,7 +56,12 @@ class GetOrdersOperation(FrontrunnerOperation[GetOrdersRequest, GetOrdersRespons
   def validate(self, deps: FrontrunnerIoC) -> None:
     validate_all_mutually_exclusive(self.request, self.MUTUALLY_EXCLUSIVE_PARAMS)
     if self.request.mine and self.request.subaccount or self.request.mine and self.request.subaccount_id:
-      raise FrontrunnerArgumentException("mine and subaccount[_id] are mutually exclusive")
+      raise FrontrunnerArgumentException(
+        "mine and subaccount[_id] are mutually exclusive",
+        mine=self.request.mine,
+        subaccount=self.request.subaccount,
+        subaccount_id=self.request.subaccount_id
+      )
     validate_start_time_end_time(self.request.start_time, self.request.end_time)
 
   @log_operation(__name__)
