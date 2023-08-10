@@ -1,3 +1,4 @@
+import itertools
 import json
 
 from dataclasses import dataclass
@@ -20,26 +21,30 @@ class OrderFailure:
 
   @classmethod
   def from_injective_response(clz, injective_response: GetTxResponse) -> list:
-    result = []
-    if getattr(injective_response, "tx_response"):
-      tx_response = injective_response.tx_response
-      if getattr(tx_response, "logs"):
-        logs = tx_response.logs
-        if logs:
-          for log in logs:
-            if getattr(log, "events"):
-              for event in log.events:
-                if event.type == clz.EVENT_ORDER_FAIL_TYPE:
-                  attributes = event.attributes
-                  flags: List[int] = next(
-                    (json.loads(attribute.value) for attribute in attributes if attribute.key == "flags"), []
-                  )
-                  hashes: List[str] = next(
-                    (json.loads(attribute.value) for attribute in attributes if attribute.key == "hashes"), []
-                  )
-                  result.append(clz(flags, hashes))
+    if not hasattr(injective_response, "tx_response"):
+      return []
 
-    return result
+    tx_response = injective_response.tx_response
+
+    if not hasattr(tx_response, "logs"):
+      return []
+
+    try:
+      logs = list(tx_response.logs)
+    except Exception:
+      return []
+
+    try:
+      events = list(itertools.chain.from_iterable(log.events for log in logs))
+    except Exception:
+      return []
+
+    return [
+      clz(
+        next((json.loads(attribute.value) for attribute in event.attributes if attribute.key == "flags"), []),
+        next((json.loads(attribute.value) for attribute in event.attributes if attribute.key == "hashes"), []),
+      ) for event in events if event.type == clz.EVENT_ORDER_FAIL_TYPE
+    ]
 
 
 @dataclass
