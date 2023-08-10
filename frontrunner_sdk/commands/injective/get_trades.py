@@ -42,8 +42,6 @@ class GetTradesResponse:
 class GetTradesOperation(FrontrunnerOperation[GetTradesRequest, GetTradesResponse]):
 
   MUTUALLY_EXCLUSIVE_PARAMS = ["subaccount", "subaccount_index", "subaccounts", "subaccount_indexes"]
-  MUTUALLY_EXCLUSIVE_PARAMS_MINE = ["mine", "subaccount"]
-  MUTUALLY_EXCLUSIVE_PARAMS_MINE_PLURAL = ["mine", "subaccounts"]
 
   def __init__(self, request: GetTradesRequest):
     super().__init__(request)
@@ -53,8 +51,9 @@ class GetTradesOperation(FrontrunnerOperation[GetTradesRequest, GetTradesRespons
       raise FrontrunnerArgumentException("At least one market id is required")
 
     validate_all_mutually_exclusive(self.request, self.MUTUALLY_EXCLUSIVE_PARAMS)
-    validate_all_mutually_exclusive(self.request, self.MUTUALLY_EXCLUSIVE_PARAMS_MINE)
-    validate_all_mutually_exclusive(self.request, self.MUTUALLY_EXCLUSIVE_PARAMS_MINE_PLURAL)
+    if self.request.mine and self.request.subaccount or self.request.mine and self.request.subaccounts:
+      raise FrontrunnerArgumentException("mine and subaccount[s] are mutually exclusive")
+
     validate_start_time_end_time(self.request.start_time, self.request.end_time)
 
   @log_operation(__name__)

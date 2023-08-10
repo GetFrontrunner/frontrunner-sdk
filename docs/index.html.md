@@ -26,8 +26,9 @@ includes:
   - operations/injective/cancel_orders
   - operations/injective/create_orders
   - operations/injective/create_wallet
-  - operations/injective/fund_external_subaccount.md
-  - operations/injective/fund_subaccount.md
+  - operations/injective/fund_external_subaccount
+  - operations/injective/fund_external_wallet
+  - operations/injective/fund_subaccount
   - operations/injective/fund_wallet_from_faucet
   - operations/injective/get_account_portfolio
   - operations/injective/get_order_books
@@ -38,7 +39,7 @@ includes:
   - operations/injective/stream_orders
   - operations/injective/stream_positions
   - operations/injective/stream_trades
-  - operations/injective/withdraw_from_subaccount.md
+  - operations/injective/withdraw_from_subaccount
   - utilities
   - utilities/currency
 

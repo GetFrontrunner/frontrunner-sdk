@@ -50,7 +50,11 @@ class GetPositionsOperation(FrontrunnerOperation[GetPositionsRequest, GetPositio
       )
 
     validate_all_mutually_exclusive(self.request, self.MUTUALLY_EXCLUSIVE_PARAMS)
-    validate_all_mutually_exclusive(self.request, self.MUTUALLY_EXCLUSIVE_PARAMS_MINE)
+    if self.request.mine and self.request.subaccount:
+      raise FrontrunnerArgumentException(
+        "mine and subaccount are mutually exclusive", mine=self.request.mine, subaccount=self.request.subaccount
+      )
+
     validate_start_time_end_time(self.request.start_time, self.request.end_time)
 
   @log_operation(__name__)

@@ -154,6 +154,16 @@ class TestGetPositionsOperation(IsolatedAsyncioTestCase):
       subaccount_id=self.subaccount_id,
     )
 
+  async def test_get_positions_when_not_mine_and_subaccount(self):
+    self.deps.wallet = AsyncMock(return_value=self.wallet)
+    self.deps.injective_client.get_derivative_positions = AsyncMock(return_value=self.position_response)
+
+    req = GetPositionsRequest(mine=False, subaccount=self.subaccount)
+    cmd = GetPositionsOperation(req)
+    await cmd.execute(self.deps)
+
+    self.deps.injective_client.get_derivative_positions.assert_awaited_once_with(subaccount_id=self.subaccount_id,)
+
   async def test_get_positions_when_start_end_time(self):
     self.deps.injective_client.get_derivative_positions = AsyncMock(return_value=self.position_response)
 
