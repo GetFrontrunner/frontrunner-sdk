@@ -114,7 +114,7 @@ class InjectiveChain:
       signed = wallet.sign(transaction)
 
       logger.debug(
-        "Calling Injective chain to send sync transaction with messages=%s account=%s sequence=%d chain_id=%s gas=%d fee=%d",
+        "Calling Injective chain to send sync transaction with messages=%s account=%s seq=%d chain_id=%s gas=%d fee=%d",
         str(messages),
         wallet.account_number,
         wallet.sequence,
