@@ -2,8 +2,8 @@ import json
 
 from collections import Iterable
 from dataclasses import dataclass
+from dataclasses import field
 from typing import List
-from typing import Optional
 
 from pyinjective.proto.cosmos.tx.v1beta1.service_pb2 import GetTxResponse
 
@@ -28,16 +28,17 @@ class OrderFailure:
         logs = tx_response.logs
         if logs and issubclass(type(logs), Iterable):
           for log in logs:
-            for event in log.events:
-              if event.type == clz.EVENT_ORDER_FAIL_TYPE:
-                attributes = event.attributes
-                flags: List[int] = next(
-                  (json.loads(attribute.value) for attribute in attributes if attribute.key == "flags"), []
-                )
-                hashes: List[str] = next(
-                  (json.loads(attribute.value) for attribute in attributes if attribute.key == "hashes"), []
-                )
-                result.append(clz(flags, hashes))
+            if getattr(log, "events") and issubclass(type(log.events), Iterable):
+              for event in log.events:
+                if event.type == clz.EVENT_ORDER_FAIL_TYPE:
+                  attributes = event.attributes
+                  flags: List[int] = next(
+                    (json.loads(attribute.value) for attribute in attributes if attribute.key == "flags"), []
+                  )
+                  hashes: List[str] = next(
+                    (json.loads(attribute.value) for attribute in attributes if attribute.key == "hashes"), []
+                  )
+                  result.append(clz(flags, hashes))
 
     return result
 
@@ -50,7 +51,7 @@ class GetTransactionRequest:
 @dataclass
 class GetTransactionResponse:
   injective_response: GetTxResponse
-  order_failures: List[OrderFailure] = None
+  order_failures: List[OrderFailure] = field(default_factory=list)
 
 
 class GetTransactionOperation(FrontrunnerOperation[GetTransactionRequest, GetTransactionResponse]):
