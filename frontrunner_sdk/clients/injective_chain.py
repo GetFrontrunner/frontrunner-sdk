@@ -1,13 +1,12 @@
+import asyncio
 import logging
 
-from typing import cast
 from typing import Iterable
 from typing import List
 from typing import Set
 from typing import Tuple
 
 from google.protobuf.message import Message
-from grpc.aio import AioRpcError
 from pyinjective.async_client import AsyncClient
 from pyinjective.composer import Composer
 from pyinjective.constant import Denom
@@ -18,6 +17,7 @@ from pyinjective.proto.exchange.injective_derivative_exchange_rpc_pb2 import Der
 from pyinjective.transaction import Coin
 from pyinjective.transaction import Transaction
 
+from frontrunner_sdk.clients.gas_estimators.gas_estimator import GasEstimator
 from frontrunner_sdk.exceptions import FrontrunnerInjectiveException
 from frontrunner_sdk.helpers.paginators import injective_paginated_list
 from frontrunner_sdk.logging.log_external_exceptions import log_external_exceptions # NOQA
@@ -33,7 +33,6 @@ class InjectiveChain:
 
   # TODO these are made up numbers
   GAS_PRICE = 500_000_000
-  ADDITIONAL_GAS_FEE = 20_000
 
   DENOM = Denom(
     description="Frontrunner",
@@ -47,22 +46,16 @@ class InjectiveChain:
     min_quantity_tick_size=1,
   )
 
-  def __init__(self, composer: Composer, client: AsyncClient, network: Network):
+  def __init__(self, composer: Composer, client: AsyncClient, network: Network, gas_estimator: GasEstimator):
     self.composer = composer
     self.client = client
     self.network = network
+    self.fee_estimator = gas_estimator
 
-  @classmethod
-  def _sign_transaction(clz, wallet: Wallet, transaction: Transaction) -> bytes:
-    signing_document = transaction.get_sign_doc(wallet.public_key)
-    signature = wallet.private_key.sign(signing_document.SerializeToString())
-    return transaction.get_tx_data(signature, wallet.public_key)
-
-  def _estimate_fee(self, simulation: SimulationResponse) -> Tuple[int, List[Coin]]:
-    limit = int(simulation.gas_info.gas_used) + self.ADDITIONAL_GAS_FEE
-    amount = self.GAS_PRICE * limit
-    fee = [self.composer.Coin(amount=amount, denom=self.network.fee_denom)]
-    return limit, fee
+  async def _estimate_cost(self, messages: List[Message]) -> Tuple[int, List[Coin]]:
+    gas = sum(await asyncio.gather(*[self.fee_estimator.gas_for(message) for message in messages]))
+    fee = [self.composer.Coin(amount=self.GAS_PRICE * gas, denom=self.network.fee_denom)]
+    return gas, fee
 
   def _injective_order(self, wallet: Wallet, order: Order) -> Message:
     return self.composer.BinaryOptionsOrder(
@@ -70,10 +63,10 @@ class InjectiveChain:
       quantity=order.quantity,
       price=order.price,
 
-      # [buy, long]      => [is_buy = True, is_reduce_only = False]
+      # [buy, long]   => [is_buy = True,  is_reduce_only = False]
       # [buy, short]  => [is_buy = False, is_reduce_only = False]
-      # [sell, long]     => [is_buy = False, is_reduce_only = True]
-      # [sell, short] => [is_buy = True, is_reduce_only = True]
+      # [sell, long]  => [is_buy = False, is_reduce_only = True]
+      # [sell, short] => [is_buy = True,  is_reduce_only = True]
       is_buy=((order.direction == "buy") == (order.side == "long")),
       is_reduce_only=(order.direction == "sell"),
 
@@ -96,61 +89,23 @@ class InjectiveChain:
       market_id=market_id, subaccount_id=wallet.subaccount_address(subaccount_index), order_hash=order_hash
     )
 
-  async def _simulate_transaction(self, wallet: Wallet, sequence: int, messages: List[Message]) -> SimulationResponse:
-    transaction = self._sign_transaction(
-      wallet,
-      Transaction(
-        msgs=messages,
-        sequence=sequence,
-        account_num=wallet.account_number,
-        chain_id=self.network.chain_id,
-      )
-    )
-
-    logger.debug(
-      "Calling Injective chain to simulate transaction with messages=%s account=%s sequence=%s chain_id=%s",
-      str(messages),
-      wallet.account_number,
-      wallet.sequence,
-      self.network.chain_id,
-    )
-
-    result, success = await self.client.simulate_tx(transaction)
-
-    if not success:
-      cause = cast(AioRpcError, result)
-      raise FrontrunnerInjectiveException(
-        "Simulation failed",
-        code=cause.code(),
-        message=cause.debug_error_string(),
-        details=cause.details(),
-      ) from cause
-
-    response = cast(SimulationResponse, result)
-
-    logger.debug("Received simulation response from Injective chain yielding response=%s", response)
-
-    return response
-
   async def _send_transaction(
     self,
     wallet: Wallet,
-    sequence: int,
     messages: List[Message],
     gas: int,
     fee: List[Coin],
   ) -> TxResponse:
-    transaction = self._sign_transaction(
-      wallet,
-      Transaction(
-        msgs=messages,
-        sequence=sequence,
-        account_num=wallet.account_number,
-        chain_id=self.network.chain_id,
-        gas=gas,
-        fee=fee,
-      )
+    transaction = Transaction(
+      msgs=messages,
+      sequence=wallet.sequence,
+      account_num=wallet.account_number,
+      chain_id=self.network.chain_id,
+      gas=gas,
+      fee=fee,
     )
+
+    signed = wallet.sign(transaction)
 
     logger.debug(
       "Calling Injective chain to send sync transaction with messages=%s account=%s chain_id=%s gas=%d fee=%d",
@@ -161,20 +116,21 @@ class InjectiveChain:
       fee,
     )
 
-    response = await self.client.send_tx_sync_mode(transaction)
+    response = await self.client.send_tx_sync_mode(signed)
 
     logger.debug("Received transaction response from Injective chain yielding response=%s", response)
 
     if response.code > 0:
       raise FrontrunnerInjectiveException("Transaction failed", message=response.raw_log)
 
+    else:
+      wallet.get_and_increment_sequence()
+
     return response
 
   async def _execute_transaction(self, wallet: Wallet, messages: List[Message]) -> TxResponse:
-    sequence = wallet.get_and_increment_sequence()
-    simulation = await self._simulate_transaction(wallet, sequence, messages)
-    gas, fee = self._estimate_fee(simulation)
-    return await self._send_transaction(wallet, sequence, messages, gas, fee)
+    gas, fee = await self._estimate_cost(messages)
+    return await self._send_transaction(wallet, messages, gas, fee)
 
   @log_external_exceptions(__name__)
   async def get_all_open_orders(self, subaccount: Subaccount) -> Iterable[DerivativeLimitOrder]:

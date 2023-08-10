@@ -7,6 +7,10 @@ from pyinjective.composer import Composer
 from pyinjective.constant import Network
 
 from frontrunner_sdk.clients.denom_factory import DenomFactory
+from frontrunner_sdk.clients.gas_estimators.gas_estimator import GasEstimator
+from frontrunner_sdk.clients.gas_estimators.offsetting_gas_estimator import OffsettingGasEstimator # NOQA
+from frontrunner_sdk.clients.gas_estimators.simulation_gas_estimator import SimulationGasEstimator # NOQA
+from frontrunner_sdk.clients.gas_estimators.table_gas_estimator import TableGasEstimator # NOQA
 from frontrunner_sdk.clients.injective_chain import InjectiveChain
 from frontrunner_sdk.clients.injective_faucet import InjectiveFaucet
 from frontrunner_sdk.clients.injective_light_client_daemon import InjectiveLightClientDaemon # NOQA
@@ -87,12 +91,23 @@ class FrontrunnerIoC(SyncMixin):
     return AsyncClient(self.network, self.config.injective_insecure)
 
   @cached_property
+  def injective_gas_estimator(self) -> GasEstimator:
+    estimator: GasEstimator
+
+    # with simulation-based estimator instead, use...
+    # estimator = SimulationGasEstimator(self.injective_client, self.network, self.wallet)
+
+    estimator = TableGasEstimator()
+    estimator = OffsettingGasEstimator(estimator)
+    return estimator
+
+  @cached_property
   def injective_light_client_daemon(self) -> InjectiveLightClientDaemon:
     return InjectiveLightClientDaemon(self.config.injective_lcd_base_url)
 
   @cached_property
   def injective_chain(self) -> InjectiveChain:
-    return InjectiveChain(self.injective_composer, self.injective_client, self.network)
+    return InjectiveChain(self.injective_composer, self.injective_client, self.network, self.injective_gas_estimator)
 
   @cached_property
   def injective_faucet(self) -> InjectiveFaucet:

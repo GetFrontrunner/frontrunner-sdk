@@ -7,6 +7,7 @@ from typing import Optional
 from pyinjective import Address
 from pyinjective import PrivateKey
 from pyinjective import PublicKey
+from pyinjective.transaction import Transaction
 
 from frontrunner_sdk.exceptions import FrontrunnerArgumentException
 
@@ -113,3 +114,8 @@ class Wallet:
   def _from_private_key(clz, private_key_hex: str):
     private_key = PrivateKey.from_hex(private_key_hex)
     return clz(private_key=private_key)
+
+  def sign(self, transaction: Transaction) -> bytes:
+    signing_document = transaction.get_sign_doc(self.public_key)
+    signature = self.private_key.sign(signing_document.SerializeToString())
+    return transaction.get_tx_data(signature, self.public_key)
