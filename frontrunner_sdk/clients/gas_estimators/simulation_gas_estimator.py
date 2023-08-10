@@ -27,13 +27,6 @@ class SimulationGasEstimator(GasEstimator):
     self.network = network
     self.walletFn = walletFn
 
-  @classmethod
-  def _sign_transaction(clz, wallet: Wallet, transaction: Transaction) -> bytes:
-    # TODO extract to dedupe from injective chain
-    signing_document = transaction.get_sign_doc(wallet.public_key)
-    signature = wallet.private_key.sign(signing_document.SerializeToString())
-    return transaction.get_tx_data(signature, wallet.public_key)
-
   async def gas_for(self, message: Message) -> int:
     wallet = await self.walletFn()
 
@@ -44,7 +37,7 @@ class SimulationGasEstimator(GasEstimator):
       chain_id=self.network.chain_id,
     )
 
-    signed = self._sign_transaction(wallet, transaction)
+    signed = wallet.sign(wallet, transaction)
 
     logger.debug(
       "Calling Injective chain to simulate transaction with message=%s account=%s sequence=%s chain_id=%s",

@@ -59,14 +59,6 @@ class TestInjectiveChain(IsolatedAsyncioTestCase):
     self.network.fee_denom = "inj"
     self.network.chain_id = "<chain-id>"
 
-  def test_sign_transaction(self):
-    signed_transaction = InjectiveChain._sign_transaction(self.wallet, self.transaction)
-
-    public_key = self.wallet.public_key
-    signature = self.wallet.private_key.signing_key.to_der()
-
-    public_key.verify(signed_transaction, signature)
-
   async def test_estimate_cost(self):
     self.gas_estimator.gas_for = AsyncMock(return_value=1000)
 

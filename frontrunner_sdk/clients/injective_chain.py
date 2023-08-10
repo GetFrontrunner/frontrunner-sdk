@@ -52,12 +52,6 @@ class InjectiveChain:
     self.network = network
     self.fee_estimator = gas_estimator
 
-  @classmethod
-  def _sign_transaction(clz, wallet: Wallet, transaction: Transaction) -> bytes:
-    signing_document = transaction.get_sign_doc(wallet.public_key)
-    signature = wallet.private_key.sign(signing_document.SerializeToString())
-    return transaction.get_tx_data(signature, wallet.public_key)
-
   async def _estimate_cost(self, messages: List[Message]) -> Tuple[int, List[Coin]]:
     gas = sum(await asyncio.gather(*[self.fee_estimator.gas_for(message) for message in messages]))
     fee = [self.composer.Coin(amount=self.GAS_PRICE * gas, denom=self.network.fee_denom)]
@@ -99,17 +93,16 @@ class InjectiveChain:
     gas: int,
     fee: List[Coin],
   ) -> TxResponse:
-    transaction = self._sign_transaction(
-      wallet,
-      Transaction(
-        msgs=messages,
-        sequence=wallet.sequence,
-        account_num=wallet.account_number,
-        chain_id=self.network.chain_id,
-        gas=gas,
-        fee=fee,
-      )
+    transaction = Transaction(
+      msgs=messages,
+      sequence=wallet.sequence,
+      account_num=wallet.account_number,
+      chain_id=self.network.chain_id,
+      gas=gas,
+      fee=fee,
     )
+
+    signed = wallet.sign(transaction)
 
     logger.debug(
       "Calling Injective chain to send sync transaction with messages=%s account=%s chain_id=%s gas=%d fee=%d",
@@ -120,7 +113,7 @@ class InjectiveChain:
       fee,
     )
 
-    response = await self.client.send_tx_sync_mode(transaction)
+    response = await self.client.send_tx_sync_mode(signed)
 
     logger.debug("Received transaction response from Injective chain yielding response=%s", response)
 
