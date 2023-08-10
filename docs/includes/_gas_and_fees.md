@@ -1,6 +1,6 @@
 # Gas and Fees
 
-Gas represents the computational effor required to execute an operation. The fee is how much `INJ` to pay to execute a transaction. Insufficient gas will result in a failed transaction, and consumed gas.
+Gas represents the computational effor required to execute an operation. The fee is how much `INJ` to pay to execute a transaction.
 
 The fee amount is `fee = gas * gas price` where `gas price` is an arbitrary constant.
 
