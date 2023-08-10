@@ -1,7 +1,9 @@
 import asyncio
 import logging
 
+from asyncio import Lock
 from collections import defaultdict
+from typing import Dict
 from typing import Iterable
 from typing import List
 from typing import Set
@@ -32,7 +34,7 @@ logger = logging.getLogger(__name__)
 
 class InjectiveChain:
 
-  LOCKS = defaultdict(asyncio.Lock)
+  LOCKS: Dict[str, Lock] = defaultdict(Lock)
 
   # TODO these are made up numbers
   GAS_PRICE = 500_000_000
