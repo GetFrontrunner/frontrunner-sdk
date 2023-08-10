@@ -93,6 +93,10 @@ class FrontrunnerIoC(SyncMixin):
   @cached_property
   def injective_gas_estimator(self) -> GasEstimator:
     estimator: GasEstimator
+
+    # with simulation-based estimator instead, use...
+    # estimator = SimulationGasEstimator(self.injective_client, self.network, self.wallet)
+
     estimator = TableGasEstimator()
     estimator = OffsettingGasEstimator(estimator)
     return estimator
