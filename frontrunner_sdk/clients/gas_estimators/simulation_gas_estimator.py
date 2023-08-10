@@ -35,7 +35,7 @@ class SimulationGasEstimator(GasEstimator):
       chain_id=self.network.chain_id,
     )
 
-    signed = wallet.sign(wallet, transaction)
+    signed = wallet.sign(transaction)
 
     logger.debug(
       "Calling Injective chain to simulate transaction with message=%s account=%s sequence=%s chain_id=%s",
