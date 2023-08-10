@@ -50,7 +50,7 @@ class GetTransactionRequest:
 @dataclass
 class GetTransactionResponse:
   injective_response: GetTxResponse
-  order_failures: Optional[List[OrderFailure]] = None
+  order_failures: List[OrderFailure] = None
 
 
 class GetTransactionOperation(FrontrunnerOperation[GetTransactionRequest, GetTransactionResponse]):
