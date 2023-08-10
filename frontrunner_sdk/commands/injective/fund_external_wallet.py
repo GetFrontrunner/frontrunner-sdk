@@ -6,29 +6,29 @@ from frontrunner_sdk.logging.log_operation import log_operation
 
 
 @dataclass
-class FundExternalAccountRequest:
+class FundExternalWalletRequest:
   amount: int
   denom: str
   destination_injective_address: str
 
 
 @dataclass
-class FundExternalAccountResponse:
+class FundExternalWalletResponse:
   transaction: str
 
 
-class FundExternalAccountOperation(FrontrunnerOperation[FundExternalAccountRequest, FundExternalAccountResponse]):
+class FundExternalWalletOperation(FrontrunnerOperation[FundExternalWalletRequest, FundExternalWalletResponse]):
 
   def validate(self, deps: FrontrunnerIoC) -> None:
     pass
 
-  def __init__(self, request: FundExternalAccountRequest):
+  def __init__(self, request: FundExternalWalletRequest):
     super().__init__(request)
 
   @log_operation(__name__)
-  async def execute(self, deps: FrontrunnerIoC) -> FundExternalAccountResponse:
+  async def execute(self, deps: FrontrunnerIoC) -> FundExternalWalletResponse:
     wallet = await deps.wallet()
-    response = await deps.injective_chain.fund_account_from_bank(
+    response = await deps.injective_chain.fund_external_wallet_from_bank(
       wallet, self.request.destination_injective_address, self.request.amount, self.request.denom
     )
-    return FundExternalAccountResponse(transaction=response.txhash)
+    return FundExternalWalletResponse(transaction=response.txhash)
