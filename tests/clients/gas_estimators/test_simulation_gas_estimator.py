@@ -20,7 +20,7 @@ class TestTableGasEstimator(IsolatedAsyncioTestCase):
 
   def setUp(self):
     self.client = MagicMock(spec=AsyncClient)
-    self.client.simulate_tx = AsyncMock(return_value=(None, None))
+    self.client.simulate_tx = AsyncMock(return_value=self._simulation_response(0))
     self.network = MagicMock(spec=Network, chain_id="<chain-id>")
     self.wallet = Wallet._new()
     self.estimator = SimulationGasEstimator(self.client, self.network, self.walletFn)
