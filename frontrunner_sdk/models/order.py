@@ -88,19 +88,28 @@ class Order:
   quantity: int
   price: float
   subaccount_index: int
+  is_post_only: bool
 
   @classmethod
-  def buy_long(clz, market_id: str, quantity: int, price: float, subaccount_index: int = 0) -> "Order":
-    return clz("buy", "long", market_id, quantity, price, subaccount_index)
+  def buy_long(
+    clz, market_id: str, quantity: int, price: float, subaccount_index: int = 0, is_post_only: bool = False
+  ) -> "Order":
+    return clz("buy", "long", market_id, quantity, price, subaccount_index, is_post_only)
 
   @classmethod
-  def buy_short(clz, market_id: str, quantity: int, price: float, subaccount_index: int = 0) -> "Order":
-    return clz("buy", "short", market_id, quantity, price, subaccount_index)
+  def buy_short(
+    clz, market_id: str, quantity: int, price: float, subaccount_index: int = 0, is_post_only: bool = False
+  ) -> "Order":
+    return clz("buy", "short", market_id, quantity, price, subaccount_index, is_post_only)
 
   @classmethod
-  def sell_long(clz, market_id: str, quantity: int, price: float, subaccount_index: int = 0) -> "Order":
-    return clz("sell", "long", market_id, quantity, price, subaccount_index)
+  def sell_long(
+    clz, market_id: str, quantity: int, price: float, subaccount_index: int = 0, is_post_only: bool = False
+  ) -> "Order":
+    return clz("sell", "long", market_id, quantity, price, subaccount_index, is_post_only)
 
   @classmethod
-  def sell_short(clz, market_id: str, quantity: int, price: float, subaccount_index: int = 0) -> "Order":
-    return clz("sell", "short", market_id, quantity, price, subaccount_index)
+  def sell_short(
+    clz, market_id: str, quantity: int, price: float, subaccount_index: int = 0, is_post_only: bool = False
+  ) -> "Order":
+    return clz("sell", "short", market_id, quantity, price, subaccount_index, is_post_only)

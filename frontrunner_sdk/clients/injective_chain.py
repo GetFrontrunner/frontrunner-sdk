@@ -70,6 +70,9 @@ class InjectiveChain:
       is_buy=((order.direction == "buy") == (order.side == "long")),
       is_reduce_only=(order.direction == "sell"),
 
+      # a post-only order will only succeed if it enters the orderbook unmatched
+      is_po=order.is_post_only,
+
       # TODO allow different fee recipient address
       fee_recipient=wallet.injective_address,
 

@@ -16,7 +16,7 @@ class TestCreateOrdersOperation(IsolatedAsyncioTestCase):
     self.orders = [
       Order.buy_long("<market-id>", 10, 0.75),
       Order.buy_short("<market-id>", 10, 0.25, subaccount_index=1),
-      Order.buy_short("<market-id2>", 10, 0.25),
+      Order.buy_short("<market-id2>", 10, 0.25, is_post_only=True),
     ]
 
   def test_validate(self):
