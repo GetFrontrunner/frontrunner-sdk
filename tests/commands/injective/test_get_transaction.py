@@ -42,6 +42,7 @@ class TestGetTransactionOperation(IsolatedAsyncioTestCase):
 
   async def test_get_transaction_no_order_failures(self):
     mock_response = mock_tx_response = Mock()
+    mock_tx_response.logs = None
     mock_response.tx_response = mock_tx_response
     self.deps.injective_client.get_tx = AsyncMock(return_value=mock_response)
 
