@@ -1,3 +1,5 @@
+import logging
+
 from typing import Awaitable
 from typing import Callable
 from typing import cast
@@ -12,6 +14,8 @@ from pyinjective.transaction import Transaction
 from frontrunner_sdk.clients.gas_estimators.gas_estimator import GasEstimator
 from frontrunner_sdk.exceptions import FrontrunnerInjectiveException
 from frontrunner_sdk.models.wallet import Wallet
+
+logger = logging.getLogger(__name__)
 
 
 class SimulationGasEstimator(GasEstimator):
@@ -32,6 +36,7 @@ class SimulationGasEstimator(GasEstimator):
 
   async def gas_for(self, message: Message) -> int:
     wallet = await self.walletFn()
+
     transaction = Transaction(
       msgs=[message],
       sequence=wallet.sequence,
@@ -41,13 +46,13 @@ class SimulationGasEstimator(GasEstimator):
 
     signed = self._sign_transaction(wallet, transaction)
 
-    # logger.debug(
-    #   "Calling Injective chain to simulate transaction with messages=%s account=%s sequence=%s chain_id=%s",
-    #   str(messages),
-    #   wallet.account_number,
-    #   wallet.sequence,
-    #   self.network.chain_id,
-    # )
+    logger.debug(
+      "Calling Injective chain to simulate transaction with message=%s account=%s sequence=%s chain_id=%s",
+      str(message),
+      wallet.account_number,
+      wallet.sequence,
+      self.network.chain_id,
+    )
 
     result, success = await self.client.simulate_tx(signed)
 
@@ -62,6 +67,6 @@ class SimulationGasEstimator(GasEstimator):
 
     response = cast(SimulationResponse, result)
 
-    # logger.debug("Received simulation response from Injective chain yielding response=%s", response)
+    logger.debug("Received simulation response from Injective chain yielding response=%s", response)
 
     return response.gas_info.gas_used

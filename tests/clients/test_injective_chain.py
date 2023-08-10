@@ -2,8 +2,6 @@ from unittest import IsolatedAsyncioTestCase
 from unittest.mock import AsyncMock
 from unittest.mock import MagicMock
 
-from grpc import StatusCode
-from grpc.aio import AioRpcError
 from pyinjective.async_client import AsyncClient
 from pyinjective.composer import Composer
 from pyinjective.constant import Network
@@ -15,8 +13,8 @@ from pyinjective.proto.injective.exchange.v1beta1.exchange_pb2 import OrderType
 from pyinjective.transaction import Transaction
 from pyinjective.utils.utils import derivative_price_to_backend
 from pyinjective.utils.utils import derivative_quantity_to_backend
-from frontrunner_sdk.clients.gas_estimators.gas_estimator import GasEstimator
 
+from frontrunner_sdk.clients.gas_estimators.gas_estimator import GasEstimator
 from frontrunner_sdk.clients.injective_chain import InjectiveChain
 from frontrunner_sdk.exceptions import FrontrunnerInjectiveException
 from frontrunner_sdk.models.order import Order
