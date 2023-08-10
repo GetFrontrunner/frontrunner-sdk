@@ -20,8 +20,6 @@ logger = logging.getLogger(__name__)
 
 class SimulationGasEstimator(GasEstimator):
 
-  GAS_OFFSET = 20_000
-
   def __init__(self, client: AsyncClient, network: Network, walletFn: Callable[[], Awaitable[Wallet]]):
     self.client = client
     self.network = network
