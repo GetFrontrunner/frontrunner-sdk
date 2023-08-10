@@ -7,9 +7,5 @@ from google.protobuf.message import Message
 class GasEstimator(ABC):
 
   @abstractmethod
-  async def reset(self) -> None:
-    pass
-
-  @abstractmethod
   async def gas_for(self, message: Message) -> int:
     pass

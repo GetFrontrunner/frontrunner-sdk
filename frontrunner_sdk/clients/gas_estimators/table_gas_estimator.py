@@ -20,9 +20,6 @@ class TableGasEstimator(GasEstimator):
     "DerivativeOrder": 12884,
   }
 
-  async def reset(self) -> None:
-    pass
-
   async def gas_for(self, message: Message) -> int:
     message_type = message.__class__.__name__
 

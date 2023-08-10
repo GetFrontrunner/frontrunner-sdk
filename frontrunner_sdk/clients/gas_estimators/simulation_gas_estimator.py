@@ -30,9 +30,6 @@ class SimulationGasEstimator(GasEstimator):
     signature = wallet.private_key.sign(signing_document.SerializeToString())
     return transaction.get_tx_data(signature, wallet.public_key)
 
-  async def reset(self) -> None:
-    pass
-
   async def gas_for(self, message: Message) -> int:
     wallet = await self.walletFn()
     transaction = Transaction(

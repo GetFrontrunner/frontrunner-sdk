@@ -1,5 +1,0 @@
-type,gas
-MsgDeposit,73532
-MsgWithdraw,71077
-MsgExternalTransfer,64769
-MsgSubaccountTransfer,63789

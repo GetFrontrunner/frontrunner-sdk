@@ -10,8 +10,5 @@ class OffsettingGasEstimator(GasEstimator):
   def __init__(self, estimator: GasEstimator):
     self.estimator = estimator
 
-  async def reset(self) -> None:
-    pass
-
   async def gas_for(self, message: Message) -> int:
     return self.GAS_OFFSET + await self.estimator.gas_for(message)
