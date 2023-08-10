@@ -1,4 +1,5 @@
 import json
+from collections import Iterable
 from dataclasses import dataclass
 from typing import Optional, List
 
@@ -22,7 +23,7 @@ class OrderFailure:
       tx_response = injective_response.tx_response
       if getattr(tx_response, "logs"):
         logs = tx_response.logs
-        if logs:
+        if logs and issubclass(type(logs), Iterable):
           for log in logs:
             for event in log.events:
               if event.type == clz.EVENT_ORDER_FAIL_TYPE:
