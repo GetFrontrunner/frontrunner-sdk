@@ -142,8 +142,8 @@ class TestInjectiveChain(IsolatedAsyncioTestCase):
       await asyncio.gather(*[self.injective_chain._execute_transaction(self.wallet, [self.order]) for _ in range(10)])
 
     self.assertEqual(
-      set(sequence_ids),
-      set(range(10)),
+      sorted(sequence_ids),
+      list(range(10)),
     )
 
   async def test_execute_transaction(self):
