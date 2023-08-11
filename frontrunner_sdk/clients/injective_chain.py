@@ -101,43 +101,43 @@ class InjectiveChain:
     gas: int,
     fee: List[Coin],
   ) -> TxResponse:
-    async with self.LOCKS[wallet.injective_address]:
-      transaction = Transaction(
-        msgs=messages,
-        sequence=wallet.sequence,
-        account_num=wallet.account_number,
-        chain_id=self.network.chain_id,
-        gas=gas,
-        fee=fee,
-      )
+    transaction = Transaction(
+      msgs=messages,
+      sequence=wallet.sequence,
+      account_num=wallet.account_number,
+      chain_id=self.network.chain_id,
+      gas=gas,
+      fee=fee,
+    )
 
-      signed = wallet.sign(transaction)
+    signed = wallet.sign(transaction)
 
-      logger.debug(
-        "Calling Injective chain to send sync transaction with messages=%s account=%s seq=%d chain_id=%s gas=%d fee=%d",
-        str(messages),
-        wallet.account_number,
-        wallet.sequence,
-        self.network.chain_id,
-        gas,
-        fee,
-      )
+    logger.debug(
+      "Calling Injective chain to send sync transaction with messages=%s account=%s seq=%d chain_id=%s gas=%d fee=%d",
+      str(messages),
+      wallet.account_number,
+      wallet.sequence,
+      self.network.chain_id,
+      gas,
+      fee,
+    )
 
-      response = await self.client.send_tx_sync_mode(signed)
+    response = await self.client.send_tx_sync_mode(signed)
 
-      logger.debug("Received transaction response from Injective chain yielding response=%s", response)
+    logger.debug("Received transaction response from Injective chain yielding response=%s", response)
 
-      if response.code > 0:
-        raise FrontrunnerInjectiveException("Transaction failed", message=response.raw_log)
+    if response.code > 0:
+      raise FrontrunnerInjectiveException("Transaction failed", message=response.raw_log)
 
-      else:
-        wallet.get_and_increment_sequence()
+    else:
+      wallet.get_and_increment_sequence()
 
-      return response
+    return response
 
   async def _execute_transaction(self, wallet: Wallet, messages: List[Message]) -> TxResponse:
-    gas, fee = await self._estimate_cost(messages)
-    return await self._send_transaction(wallet, messages, gas, fee)
+    async with self.LOCKS[wallet.injective_address]:
+      gas, fee = await self._estimate_cost(messages)
+      return await self._send_transaction(wallet, messages, gas, fee)
 
   @log_external_exceptions(__name__)
   async def get_all_open_orders(self, subaccount: Subaccount) -> Iterable[DerivativeLimitOrder]:
