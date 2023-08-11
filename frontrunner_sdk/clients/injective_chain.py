@@ -1,6 +1,9 @@
 import asyncio
 import logging
 
+from asyncio import Lock
+from collections import defaultdict
+from typing import Dict
 from typing import Iterable
 from typing import List
 from typing import Set
@@ -30,6 +33,8 @@ logger = logging.getLogger(__name__)
 
 
 class InjectiveChain:
+
+  LOCKS: Dict[str, Lock] = defaultdict(Lock)
 
   # TODO these are made up numbers
   GAS_PRICE = 500_000_000
@@ -108,9 +113,10 @@ class InjectiveChain:
     signed = wallet.sign(transaction)
 
     logger.debug(
-      "Calling Injective chain to send sync transaction with messages=%s account=%s chain_id=%s gas=%d fee=%d",
+      "Calling Injective chain to send sync transaction with messages=%s account=%s seq=%d chain_id=%s gas=%d fee=%d",
       str(messages),
       wallet.account_number,
+      wallet.sequence,
       self.network.chain_id,
       gas,
       fee,
@@ -129,8 +135,9 @@ class InjectiveChain:
     return response
 
   async def _execute_transaction(self, wallet: Wallet, messages: List[Message]) -> TxResponse:
-    gas, fee = await self._estimate_cost(messages)
-    return await self._send_transaction(wallet, messages, gas, fee)
+    async with self.LOCKS[wallet.injective_address]:
+      gas, fee = await self._estimate_cost(messages)
+      return await self._send_transaction(wallet, messages, gas, fee)
 
   @log_external_exceptions(__name__)
   async def get_all_open_orders(self, subaccount: Subaccount) -> Iterable[DerivativeLimitOrder]:

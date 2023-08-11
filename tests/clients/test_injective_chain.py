@@ -1,6 +1,9 @@
+import asyncio
+
 from unittest import IsolatedAsyncioTestCase
 from unittest.mock import AsyncMock
 from unittest.mock import MagicMock
+from unittest.mock import patch
 
 from pyinjective.async_client import AsyncClient
 from pyinjective.composer import Composer
@@ -114,6 +117,34 @@ class TestInjectiveChain(IsolatedAsyncioTestCase):
     with self.assertRaises(FrontrunnerInjectiveException):
       await self.injective_chain._send_transaction(self.wallet, [self.order], 100, [])
       self.assertEqual(0, self.wallet.sequence)
+
+  @patch.object(InjectiveChain, "_estimate_cost", new_callable=AsyncMock, return_value=(0, []))
+  async def test_execute_transaction_concurrent(self, _estimate_cost):
+    # This asserts that within _execute_transaction, there is no interleaving such that multiple of the same sequence
+    # number are used for transactions. This is possible when:
+    #
+    # * there are `await`s between tx create and sequence update
+    # * the awaits are "slow" enough such that Python interleaves their execution
+    # * there are multiple `_execute_transaction` coroutines happening simultaneously
+
+    async def delayed_tx_response(*args, **kwargs):
+      # simulated delay to force interleaving between `await`s in asyncio.gather
+      await asyncio.sleep(0.01)
+      return TxResponse(code=0)
+
+    self.client.send_tx_sync_mode = AsyncMock(side_effect=delayed_tx_response)
+
+    sequence_ids = []
+
+    # there's no good way to inspect the sequence ids used, so we'll just intercept and record instead
+    with patch.object(Wallet, "sign", side_effect=lambda tx: sequence_ids.append(tx.sequence)):
+      # multiple coroutines in asyncio.gather allows for the interleaving to happen
+      await asyncio.gather(*[self.injective_chain._execute_transaction(self.wallet, [self.order]) for _ in range(10)])
+
+    self.assertEqual(
+      sorted(sequence_ids),
+      list(range(10)),
+    )
 
   async def test_execute_transaction(self):
     expected = MagicMock(spec=TxResponse)
