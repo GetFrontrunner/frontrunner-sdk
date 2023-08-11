@@ -46,6 +46,9 @@ from frontrunner_sdk.commands.injective.get_trades import GetTradesResponse
 from frontrunner_sdk.commands.injective.get_transaction import GetTransactionOperation # NOQA
 from frontrunner_sdk.commands.injective.get_transaction import GetTransactionRequest # NOQA
 from frontrunner_sdk.commands.injective.get_transaction import GetTransactionResponse # NOQA
+from frontrunner_sdk.commands.injective.refresh_wallet import RefreshWalletOperation # NOQA
+from frontrunner_sdk.commands.injective.refresh_wallet import RefreshWalletRequest # NOQA
+from frontrunner_sdk.commands.injective.refresh_wallet import RefreshWalletResponse # NOQA
 from frontrunner_sdk.commands.injective.stream_markets import StreamMarketsOperation # NOQA
 from frontrunner_sdk.commands.injective.stream_markets import StreamMarketsRequest # NOQA
 from frontrunner_sdk.commands.injective.stream_markets import StreamMarketsResponse # NOQA
@@ -81,6 +84,10 @@ class InjectiveFacadeAsync(FrontrunnerFacadeMixin):
   async def create_wallet(self, fund_and_initialize: bool = True) -> CreateWalletResponse:
     request = CreateWalletRequest(fund_and_initialize=fund_and_initialize)
     return await self._run_operation(CreateWalletOperation, self.deps, request)
+
+  async def refresh_wallet(self) -> RefreshWalletResponse:
+    request = RefreshWalletRequest()
+    return await self._run_operation(RefreshWalletOperation, self.deps, request)
 
   async def fund_external_wallet(
     self,
@@ -258,8 +265,11 @@ class InjectiveFacade(SyncMixin):
   def __init__(self, deps: FrontrunnerIoC):
     self.impl = InjectiveFacadeAsync(deps)
 
-  def create_wallet(self) -> CreateWalletResponse:
-    return self._synchronously(self.impl.create_wallet)
+  def create_wallet(self, fund_and_initialize: bool = True) -> CreateWalletResponse:
+    return self._synchronously(self.impl.create_wallet, fund_and_initialize)
+
+  def refresh_wallet(self) -> RefreshWalletResponse:
+    return self._synchronously(self.impl.refresh_wallet)
 
   def fund_external_wallet(
     self,
