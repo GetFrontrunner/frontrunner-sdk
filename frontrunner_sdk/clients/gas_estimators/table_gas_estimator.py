@@ -26,7 +26,7 @@ class TableGasEstimator(GasEstimator):
 
     if message_type not in self.MESSAGE_RATES:
       raise FrontrunnerInjectiveException(
-        "Fee not available for message type",
+        "Gas not available for message type",
         message_type=message_type,
       )
 
@@ -42,7 +42,7 @@ class TableGasEstimator(GasEstimator):
 
         if order_type not in self.ORDER_RATES:
           raise FrontrunnerInjectiveException(
-            "Fee not available for order type",
+            "Gas not available for order type",
             message_type=message_type,
             order_type=descriptor.message_type.name,
           )
