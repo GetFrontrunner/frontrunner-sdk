@@ -1,8 +1,9 @@
 from unittest import IsolatedAsyncioTestCase
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
+from unittest.mock import MagicMock
 
-from frontrunner_sdk.commands.injective.refresh_wallet import RefreshWalletRequest # NOQA
 from frontrunner_sdk.commands.injective.refresh_wallet import RefreshWalletOperation # NOQA
+from frontrunner_sdk.commands.injective.refresh_wallet import RefreshWalletRequest # NOQA
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.models.wallet import Wallet
 

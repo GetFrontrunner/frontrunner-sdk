@@ -46,7 +46,8 @@ from frontrunner_sdk.commands.injective.get_trades import GetTradesResponse
 from frontrunner_sdk.commands.injective.get_transaction import GetTransactionOperation # NOQA
 from frontrunner_sdk.commands.injective.get_transaction import GetTransactionRequest # NOQA
 from frontrunner_sdk.commands.injective.get_transaction import GetTransactionResponse # NOQA
-from frontrunner_sdk.commands.injective.refresh_wallet import RefreshWalletOperation, RefreshWalletRequest # NOQA
+from frontrunner_sdk.commands.injective.refresh_wallet import RefreshWalletOperation # NOQA
+from frontrunner_sdk.commands.injective.refresh_wallet import RefreshWalletRequest # NOQA
 from frontrunner_sdk.commands.injective.refresh_wallet import RefreshWalletResponse # NOQA
 from frontrunner_sdk.commands.injective.stream_markets import StreamMarketsOperation # NOQA
 from frontrunner_sdk.commands.injective.stream_markets import StreamMarketsRequest # NOQA
