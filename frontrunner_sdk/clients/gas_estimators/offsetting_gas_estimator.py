@@ -5,7 +5,7 @@ from frontrunner_sdk.clients.gas_estimators.gas_estimator import GasEstimator
 
 class OffsettingGasEstimator(GasEstimator):
 
-  GAS_OFFSET = 20_000
+  GAS_OFFSET = 80_000
 
   def __init__(self, estimator: GasEstimator):
     self.estimator = estimator
