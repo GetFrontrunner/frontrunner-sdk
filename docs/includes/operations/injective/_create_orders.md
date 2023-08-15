@@ -43,8 +43,18 @@ See <a href="https://testnet.explorer.injective.network/transaction/BAE72A64BE09
 
 ```python
 print("transaction:", response.transaction)
+
+for order in response.orders:
+  print(
+    "order:",
+    order.market_id,
+    "for", order.quantity, "@" order.price,
+    "in subaccount", order.subaccount_index,
+    "with hash", order.hash,
+  )
 ```
 
 | Name | Type | Description |
 | - | - | - |
 | `transaction` | `str` | Transaction ID of the order creation |
+| `orders` | `List[Order]` | Orders from input, but with `hash` defined |
