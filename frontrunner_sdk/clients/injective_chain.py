@@ -21,6 +21,7 @@ from pyinjective.transaction import Coin
 from pyinjective.transaction import Transaction
 
 from frontrunner_sdk.clients.gas_estimators.gas_estimator import GasEstimator
+from frontrunner_sdk.clients.injective_order_hasher import InjectiveOrderHasher
 from frontrunner_sdk.exceptions import FrontrunnerInjectiveException
 from frontrunner_sdk.helpers.paginators import injective_paginated_list
 from frontrunner_sdk.logging.log_external_exceptions import log_external_exceptions # NOQA
@@ -51,10 +52,14 @@ class InjectiveChain:
     min_quantity_tick_size=1,
   )
 
-  def __init__(self, composer: Composer, client: AsyncClient, network: Network, gas_estimator: GasEstimator):
+  def __init__(
+    self, composer: Composer, client: AsyncClient, network: Network, order_hasher: InjectiveOrderHasher,
+    gas_estimator: GasEstimator
+  ):
     self.composer = composer
     self.client = client
     self.network = network
+    self.order_hasher = order_hasher
     self.fee_estimator = gas_estimator
 
   async def _estimate_cost(self, messages: List[Message]) -> Tuple[int, List[Coin]]:
@@ -152,7 +157,7 @@ class InjectiveChain:
     self,
     wallet: Wallet,
     orders: Iterable[Order],
-  ) -> TxResponse:
+  ) -> Tuple[TxResponse, List[str]]:
     order_messages = [self._injective_order(wallet, order) for order in orders]
 
     batch_message = self.composer.MsgBatchUpdateOrders(
@@ -160,7 +165,11 @@ class InjectiveChain:
       binary_options_orders_to_create=order_messages,
     )
 
-    return await self._execute_transaction(wallet, [batch_message])
+    order_hashes = [
+      await self.order_hasher.hash(message, order.subaccount_index) for message, order in zip(order_messages, orders)
+    ]
+
+    return await self._execute_transaction(wallet, [batch_message]), order_hashes
 
   @log_external_exceptions(__name__)
   async def cancel_all_orders_for_markets(

@@ -14,6 +14,7 @@ from frontrunner_sdk.clients.gas_estimators.table_gas_estimator import TableGasE
 from frontrunner_sdk.clients.injective_chain import InjectiveChain
 from frontrunner_sdk.clients.injective_faucet import InjectiveFaucet
 from frontrunner_sdk.clients.injective_light_client_daemon import InjectiveLightClientDaemon # NOQA
+from frontrunner_sdk.clients.injective_order_hasher import InjectiveOrderHasher # NOQA
 from frontrunner_sdk.clients.openapi_client import openapi_client # NOQA
 from frontrunner_sdk.config import DEFAULT
 from frontrunner_sdk.config.base import FrontrunnerConfig
@@ -106,8 +107,15 @@ class FrontrunnerIoC(SyncMixin):
     return InjectiveLightClientDaemon(self.config.injective_lcd_base_url)
 
   @cached_property
+  def injective_order_hasher(self) -> InjectiveOrderHasher:
+    return InjectiveOrderHasher(self.network, self.wallet)
+
+  @cached_property
   def injective_chain(self) -> InjectiveChain:
-    return InjectiveChain(self.injective_composer, self.injective_client, self.network, self.injective_gas_estimator)
+    return InjectiveChain(
+      self.injective_composer, self.injective_client, self.network, self.injective_order_hasher,
+      self.injective_gas_estimator
+    )
 
   @cached_property
   def injective_faucet(self) -> InjectiveFaucet:

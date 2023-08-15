@@ -3,9 +3,11 @@ from unittest.mock import AsyncMock
 from unittest.mock import patch
 
 from frontrunner_sdk.clients.denom_factory import DenomFactory
+from frontrunner_sdk.clients.gas_estimators.gas_estimator import GasEstimator
 from frontrunner_sdk.clients.injective_chain import InjectiveChain
 from frontrunner_sdk.clients.injective_faucet import InjectiveFaucet
 from frontrunner_sdk.clients.injective_light_client_daemon import InjectiveLightClientDaemon # NOQA
+from frontrunner_sdk.clients.injective_order_hasher import InjectiveOrderHasher # NOQA
 from frontrunner_sdk.config import DEFAULT # NOQA
 from frontrunner_sdk.config.base import FrontrunnerConfig
 from frontrunner_sdk.config.static import StaticFrontrunnerConfig
@@ -81,11 +83,21 @@ class TestFrontrunnerIoC(IsolatedAsyncioTestCase):
     self.assertIsInstance(ioc.injective_chain, InjectiveChain)
 
   def test_injective_faucet(self):
-    ioc = self.ioc_for(injective_faucet_base_url="https://faucet.injective.example",)
+    ioc = self.ioc_for(injective_faucet_base_url="https://faucet.injective.example")
 
     self.assertIsInstance(ioc.injective_faucet, InjectiveFaucet)
 
   def test_injective_light_client_daemon(self):
-    ioc = self.ioc_for(injective_lcd_base_url="https://lcd.injective.example",)
+    ioc = self.ioc_for(injective_lcd_base_url="https://lcd.injective.example")
 
     self.assertIsInstance(ioc.injective_light_client_daemon, InjectiveLightClientDaemon)
+
+  def test_injective_gas_estimator(self):
+    ioc = self.ioc_for()
+
+    self.assertIsInstance(ioc.injective_gas_estimator, GasEstimator)
+
+  def test_injective_order_hasher(self):
+    ioc = self.ioc_for(injective_network="mainnet")
+
+    self.assertIsInstance(ioc.injective_order_hasher, InjectiveOrderHasher)

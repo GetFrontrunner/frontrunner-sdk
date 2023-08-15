@@ -9,7 +9,7 @@ from frontrunner_sdk import FrontrunnerIoC
 from frontrunner_sdk.commands.injective.get_transaction import GetTransactionOperation # NOQA
 from frontrunner_sdk.commands.injective.get_transaction import GetTransactionRequest # NOQA
 from frontrunner_sdk.commands.injective.get_transaction import OrderFailure
-from frontrunner_sdk.exceptions import FrontrunnerArgumentException # NOQA
+from frontrunner_sdk.helpers.encoders import b64_to_hex
 
 
 class TestGetTransactionOperation(IsolatedAsyncioTestCase):
@@ -17,7 +17,8 @@ class TestGetTransactionOperation(IsolatedAsyncioTestCase):
   def setUp(self) -> None:
     self.deps = MagicMock(spec=FrontrunnerIoC)
     self.flags = [59]
-    self.hashes = ["3LVlH0iM5ZvkrZd9yCOZP5F3bgSEjPm7oPEkkOl7ank="]
+    self.b64_hashes = ["3LVlH0iM5ZvkrZd9yCOZP5F3bgSEjPm7oPEkkOl7ank="]
+    self.hashes = ["0x" + b64_to_hex(h) for h in self.b64_hashes]
 
   def test_validate(self):
     req = GetTransactionRequest(transaction_hash="abc")
@@ -27,7 +28,7 @@ class TestGetTransactionOperation(IsolatedAsyncioTestCase):
   async def test_get_transaction_order_failures(self):
     mock_attributes = [
       Mock(key="flags", value=json.dumps(self.flags)),
-      Mock(key="hashes", value=json.dumps(self.hashes))
+      Mock(key="hashes", value=json.dumps(self.b64_hashes))
     ]
     mock_log = Mock(events=[Mock(type="injective.exchange.v1beta1.EventOrderFail", attributes=mock_attributes)])
     mock_response = mock_tx_response = Mock()

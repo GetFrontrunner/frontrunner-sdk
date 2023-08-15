@@ -47,17 +47,28 @@ class TestCreateOrdersOperation(IsolatedAsyncioTestCase):
 
     with self.assertRaises(FrontrunnerArgumentException):
       CreateOrdersOperation(
-        CreateOrdersRequest(orders=[Order.buy_long("<market-id>", 1, 1.25),
-                                    Order.buy_short("<market-id>", 1, 1.25)])
+        CreateOrdersRequest(orders=[
+          Order.buy_long("<market-id>", 1, 1.25),
+          Order.buy_short("<market-id>", 1, 1.25),
+        ])
       ).validate(self.deps)
 
   async def test_create_orders(self):
-    self.deps.injective_chain.create_orders = AsyncMock(return_value=MagicMock(txhash="<txhash>"))
+    self.deps.injective_chain.create_orders = AsyncMock(
+      return_value=(
+        MagicMock(txhash="<txhash>"),
+        ["<hash-1>", "<hash-2>", "<hash-3>"],
+      )
+    )
 
     req = CreateOrdersRequest(orders=self.orders)
     cmd = CreateOrdersOperation(req)
     res = await cmd.execute(self.deps)
 
     self.assertEqual(res.transaction, "<txhash>")
+    self.assertEqual(
+      [order.hash for order in res.orders],
+      ["<hash-1>", "<hash-2>", "<hash-3>"],
+    )
 
     self.deps.injective_chain.create_orders.assert_awaited_once_with(await self.deps.wallet(), self.orders)

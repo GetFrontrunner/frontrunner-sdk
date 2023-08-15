@@ -76,7 +76,7 @@ class TestInjectiveFacadeAsync(IsolatedAsyncioTestCase):
     CreateOrdersOperation,
     "execute",
     new_callable=AsyncMock,
-    return_value=CreateOrdersResponse(transaction="<hash>"),
+    return_value=CreateOrdersResponse(transaction="<hash>", orders=[]),
   )
   async def test_create_orders(self, _execute: AsyncMock):
     await self.facade.create_orders([Order.buy_short("<marketid>", 10, 0.7)])

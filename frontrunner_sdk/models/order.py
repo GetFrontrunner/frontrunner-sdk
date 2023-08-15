@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import AsyncIterator
 from typing import Literal
+from typing import Optional
 from typing import Sequence
 from typing import Type
 from typing import TypeVar
@@ -80,7 +81,7 @@ class OrderHistory:
       yield cls(injective_order.order)
 
 
-@dataclass
+@dataclass(frozen=True)
 class Order:
   direction: Literal["buy", "sell"]
   side: Literal["long", "short"]
@@ -89,6 +90,7 @@ class Order:
   price: float
   subaccount_index: int
   is_post_only: bool
+  hash: Optional[str] = None
 
   @classmethod
   def buy_long(
@@ -113,3 +115,15 @@ class Order:
     clz, market_id: str, quantity: int, price: float, subaccount_index: int = 0, is_post_only: bool = False
   ) -> "Order":
     return clz("sell", "short", market_id, quantity, price, subaccount_index, is_post_only)
+
+  def with_hash(self, hash: str) -> "Order":
+    return Order(
+      direction=self.direction,
+      side=self.side,
+      market_id=self.market_id,
+      quantity=self.quantity,
+      price=self.price,
+      subaccount_index=self.subaccount_index,
+      is_post_only=self.is_post_only,
+      hash=hash,
+    )
