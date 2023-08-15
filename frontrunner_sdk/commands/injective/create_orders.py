@@ -18,6 +18,7 @@ class CreateOrdersRequest:
 @dataclass
 class CreateOrdersResponse:
   transaction: str
+  orders: List[Order]
 
 
 class CreateOrdersOperation(FrontrunnerOperation[CreateOrdersRequest, CreateOrdersResponse]):
@@ -49,6 +50,11 @@ class CreateOrdersOperation(FrontrunnerOperation[CreateOrdersRequest, CreateOrde
 
   @log_operation(__name__)
   async def execute(self, deps: FrontrunnerIoC) -> CreateOrdersResponse:
-    response = await deps.injective_chain.create_orders(await deps.wallet(), self.request.orders)
+    response, order_hashes = await deps.injective_chain.create_orders(await deps.wallet(), self.request.orders)
 
-    return CreateOrdersResponse(transaction=response.txhash)
+    orders = [order.with_hash(hash) for order, hash in zip(self.request.orders, order_hashes)]
+
+    return CreateOrdersResponse(
+      transaction=response.txhash,
+      orders=orders,
+    )

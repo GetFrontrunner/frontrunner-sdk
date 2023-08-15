@@ -19,6 +19,7 @@ from pyinjective.utils.utils import derivative_quantity_to_backend
 
 from frontrunner_sdk.clients.gas_estimators.gas_estimator import GasEstimator
 from frontrunner_sdk.clients.injective_chain import InjectiveChain
+from frontrunner_sdk.clients.injective_order_hasher import InjectiveOrderHasher
 from frontrunner_sdk.exceptions import FrontrunnerInjectiveException
 from frontrunner_sdk.models.order import Order
 from frontrunner_sdk.models.wallet import Subaccount
@@ -57,7 +58,14 @@ class TestInjectiveChain(IsolatedAsyncioTestCase):
     self.network = MagicMock(spec=Network)
     self.composer = MagicMock(wraps=Composer(self.network))
     self.gas_estimator = MagicMock(spec=GasEstimator)
-    self.injective_chain = InjectiveChain(self.composer, self.client, self.network, self.gas_estimator)
+    self.order_hasher = MagicMock(spec=InjectiveOrderHasher)
+    self.injective_chain = InjectiveChain(
+      self.composer,
+      self.client,
+      self.network,
+      self.order_hasher,
+      self.gas_estimator,
+    )
 
     self.network.fee_denom = "inj"
     self.network.chain_id = "<chain-id>"
@@ -163,9 +171,10 @@ class TestInjectiveChain(IsolatedAsyncioTestCase):
     expected = MagicMock(spec=TxResponse)
     self.injective_chain._execute_transaction = AsyncMock(return_value=expected)
 
-    response = await self.injective_chain.create_orders(self.wallet, [Order.buy_long("<market-id>", 1, 0.5)])
+    transaction, hashes = await self.injective_chain.create_orders(self.wallet, [Order.buy_long("<market-id>", 1, 0.5)])
 
-    self.assertEqual(expected, response)
+    self.assertEqual(expected, transaction)
+    self.assertEqual(len(hashes), 1)
 
     self.injective_chain._execute_transaction.assert_awaited_once()
 

@@ -3,11 +3,15 @@ import json
 
 from dataclasses import dataclass
 from dataclasses import field
+from typing import Iterable
 from typing import List
 
+from pyinjective.proto.cosmos.base.abci.v1beta1.abci_pb2 import Attribute
+from pyinjective.proto.cosmos.base.abci.v1beta1.abci_pb2 import StringEvent
 from pyinjective.proto.cosmos.tx.v1beta1.service_pb2 import GetTxResponse
 
 from frontrunner_sdk.commands.base import FrontrunnerOperation
+from frontrunner_sdk.helpers.encoders import b64_to_hex
 from frontrunner_sdk.ioc import FrontrunnerIoC
 from frontrunner_sdk.logging.log_operation import log_operation
 
@@ -18,6 +22,29 @@ class OrderFailure:
   hashes: List[str]
 
   EVENT_ORDER_FAIL_TYPE = "injective.exchange.v1beta1.EventOrderFail"
+
+  @classmethod
+  def _flags(clz, attributes: Iterable[Attribute]) -> List[int]:
+    flags = itertools.chain.from_iterable(
+      json.loads(attribute.value) for attribute in attributes if attribute.key == "flags"
+    )
+
+    return list(flags)
+
+  @classmethod
+  def _hashes(clz, attributes: Iterable[Attribute]) -> List[str]:
+    raw_hashes = itertools.chain.from_iterable(
+      json.loads(attribute.value) for attribute in attributes if attribute.key == "hashes"
+    )
+
+    return list("0x" + b64_to_hex(raw_hash) for raw_hash in raw_hashes)
+
+  @classmethod
+  def _from_event(clz, event: StringEvent) -> "OrderFailure":
+    return clz(
+      clz._flags(event.attributes),
+      clz._hashes(event.attributes),
+    )
 
   @classmethod
   def from_injective_response(clz, injective_response: GetTxResponse) -> list:
@@ -39,12 +66,7 @@ class OrderFailure:
     except Exception:
       return []
 
-    return [
-      clz(
-        next((json.loads(attribute.value) for attribute in event.attributes if attribute.key == "flags"), []),
-        next((json.loads(attribute.value) for attribute in event.attributes if attribute.key == "hashes"), []),
-      ) for event in events if event.type == clz.EVENT_ORDER_FAIL_TYPE
-    ]
+    return [clz._from_event(event) for event in events if event.type == clz.EVENT_ORDER_FAIL_TYPE]
 
 
 @dataclass
