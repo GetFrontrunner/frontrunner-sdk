@@ -58,3 +58,41 @@ for order in response.orders:
 | - | - | - |
 | `transaction` | `str` | Transaction ID of the order creation |
 | `orders` | `List[Order]` | Orders from input, but with `hash` defined |
+
+### Failure Detection
+
+Even though a _transaction_ may succeed, the orders within it may individually fail for a number of reasons. Order failure detection is not handled internally within this SDK. However, there is a way to detect failures.
+
+This operation returns your orders augmented with an order hash field, which can be used to cross-reference order failures when retrieving the transaction.
+
+```python
+from itertools import chain
+
+create_orders = sdk.injective.create_orders([
+  Order.buy_long(some_market, 120, 0.70),
+  Order.sell_short(other_market, 25, 0.95),
+])
+
+# store order hashes
+order_hashes = { order.hash: order for order in create_orders.orders }
+
+get_transaction = sdk.injective.get_transaction(create_orders.transaction)
+
+# find order failures and causes
+order_failures = dict(chain.from_iterable(
+  zip(order_failure.hashes, order_failure.flags)
+  for order_failure
+  in get_transaction.order_failures
+))
+
+# get (order, flag) correlated by hash
+correlated_failed_orders = [
+  (order_hashes[order_hash], flag)
+  for order_hash, flag
+  in order_failures.items()
+  if order_hash in order_hashes
+]
+
+for order, flag in correlated_failed_orders:
+  print("failed order:", order.market_id, order.quantity, "@", order.price, "flag =", flag)
+```
