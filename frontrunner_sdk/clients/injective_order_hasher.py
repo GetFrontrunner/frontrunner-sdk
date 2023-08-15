@@ -1,6 +1,7 @@
 from typing import Awaitable
 from typing import Callable
 from typing import Dict
+from typing import Optional
 from typing import Tuple
 
 from pyinjective.constant import Network
@@ -26,6 +27,14 @@ class InjectiveOrderHasher:
       )
 
     return self.hashers[wallet.injective_address, subaccount_index]
+
+  async def reset(self, subaccount_index: Optional[int] = None) -> None:
+    if subaccount_index is None:
+      self.hashers.clear()
+
+    else:
+      wallet = await self.wallet_fn()
+      del self.hashers[wallet.injective_address, subaccount_index]
 
   async def hash(self, order: DerivativeOrder, subaccount_index: int) -> str:
     wallet = await self.wallet_fn()
