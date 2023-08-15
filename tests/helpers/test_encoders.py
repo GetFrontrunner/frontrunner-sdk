@@ -1,6 +1,7 @@
 from unittest import TestCase
 
-from frontrunner_sdk.helpers.encoders import b64_to_hex, hex_to_b64
+from frontrunner_sdk.helpers.encoders import b64_to_hex
+from frontrunner_sdk.helpers.encoders import hex_to_b64
 
 
 class TestEncoders(TestCase):
