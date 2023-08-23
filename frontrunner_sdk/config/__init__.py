@@ -18,8 +18,9 @@ def fr_injective_network():
 
 
 def should_use_node_set(injective_network: str, endpoint_set_identifier: str):
+  default_preset = "frontrunner" if injective_network == "testnet" else "injective-global"
   return fr_injective_network() == injective_network and \
-    os.environ.get("FR_PRESET_NODES", "frontrunner") == endpoint_set_identifier
+    os.environ.get("FR_PRESET_NODES", default_preset) == endpoint_set_identifier
 
 
 DEFAULT: FrontrunnerConfig = ChainedFrontrunnerConfig([
@@ -52,6 +53,8 @@ DEFAULT: FrontrunnerConfig = ChainedFrontrunnerConfig([
       injective_insecure=True,
     )
   ),
+
+  # default mainnet config
   ConditionalFrontrunnerConfig(
     lambda: should_use_node_set("mainnet", "injective-global"),
     StaticFrontrunnerConfig(
@@ -60,19 +63,6 @@ DEFAULT: FrontrunnerConfig = ChainedFrontrunnerConfig([
       injective_grpc_authority=injective_mainnet_global_network.grpc_endpoint,
       injective_lcd_base_url=injective_mainnet_global_network.lcd_endpoint,
       injective_rpc_base_url=injective_mainnet_global_network.tm_websocket_endpoint,
-    )
-  ),
-
-  # default mainnet config
-  ConditionalFrontrunnerConfig(
-    lambda: should_use_node_set("mainnet", "frontrunner"),
-    StaticFrontrunnerConfig(
-      injective_exchange_authority="injective-node-mainnet.grpc-exchange.getfrontrunner.com:443",
-      # Frontrunner doesn't run the explorer, so use Injective's endpoint regardless
-      injective_explorer_authority=injective_mainnet_global_network.grpc_explorer_endpoint,
-      injective_grpc_authority="injective-node-mainnet.grpc.getfrontrunner.com:443",
-      injective_lcd_base_url="https://injective-node-mainnet.lcd.getfrontrunner.com",
-      injective_rpc_base_url="wss://injective-node-mainnet.tm.getfrontrunner.com/websocket",
     )
   ),
   ConditionalFrontrunnerConfig(

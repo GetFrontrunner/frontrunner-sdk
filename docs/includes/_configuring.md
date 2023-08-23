@@ -116,11 +116,11 @@ Frontrunner does not run the Injective Explorer, so Explorer Authority defaults 
 
 | Endpoint Type | Default Value |
 | - | - |
-| Exchange Authority | `injective-node-mainnet.grpc-exchange.getfrontrunner.com:443` |
+| Exchange Authority | `k8s.global.mainnet.exchange.grpc.injective.network:443` |
 | Explorer Authority | `k8s.global.mainnet.explorer.grpc.injective.network:443` |
-| LCD Base URL | `https://injective-node-mainnet.lcd.getfrontrunner.com` |
-| RPC Base URL | `wss://injective-node-mainnet.tm.getfrontrunner.com/websocket` |
-| gRPC Authority | `injective-node-mainnet.grpc.getfrontrunner.com:443` |
+| LCD Base URL | `https://k8s.global.mainnet.lcd.injective.network:443` |
+| RPC Base URL | `wss://k8s.global.mainnet.tm.injective.network:443/websocket` |
+| gRPC Authority | `k8s.global.mainnet.chain.grpc.injective.network:443` |
 
 ### Presets
 
