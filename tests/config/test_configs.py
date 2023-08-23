@@ -42,12 +42,10 @@ class TestFrontrunnerConfig(TestCase):
     self.assertEqual("mainnet", DEFAULT.injective_network)
     self.assertEqual("injective-1", DEFAULT.injective_chain_id)
     self.assertEqual(False, DEFAULT.injective_insecure)
-    self.assertEqual(
-      "injective-node-mainnet.grpc-exchange.getfrontrunner.com:443", DEFAULT.injective_exchange_authority
-    )
-    self.assertEqual("injective-node-mainnet.grpc.getfrontrunner.com:443", DEFAULT.injective_grpc_authority)
-    self.assertEqual("https://injective-node-mainnet.lcd.getfrontrunner.com", DEFAULT.injective_lcd_base_url)
-    self.assertEqual("wss://injective-node-mainnet.tm.getfrontrunner.com/websocket", DEFAULT.injective_rpc_base_url)
+    self.assertEqual("k8s.global.mainnet.exchange.grpc.injective.network:443", DEFAULT.injective_exchange_authority)
+    self.assertEqual("k8s.global.mainnet.chain.grpc.injective.network:443", DEFAULT.injective_grpc_authority)
+    self.assertEqual("https://k8s.global.mainnet.lcd.injective.network:443", DEFAULT.injective_lcd_base_url)
+    self.assertEqual("wss://k8s.global.mainnet.tm.injective.network:443/websocket", DEFAULT.injective_rpc_base_url)
     self.assertEqual("k8s.global.mainnet.explorer.grpc.injective.network:443", DEFAULT.injective_explorer_authority)
     self.assertEqual("https://partner-api-mainnet.getfrontrunner.com/api/v1", DEFAULT.partner_api_base_url)
 
