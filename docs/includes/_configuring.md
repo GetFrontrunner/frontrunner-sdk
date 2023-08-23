@@ -118,7 +118,7 @@ Frontrunner does not run the Injective Explorer, so Explorer Authority defaults 
 | - | - |
 | Exchange Authority | `k8s.global.mainnet.exchange.grpc.injective.network:443` |
 | Explorer Authority | `k8s.global.mainnet.explorer.grpc.injective.network:443` |
-| LCD Base URL | `https://k8s.global.mainnet.lcd.injective.network:44` |
+| LCD Base URL | `https://k8s.global.mainnet.lcd.injective.network:443` |
 | RPC Base URL | `wss://k8s.global.mainnet.tm.injective.network:443/websocket` |
 | gRPC Authority | `k8s.global.mainnet.chain.grpc.injective.network:443` |
 
