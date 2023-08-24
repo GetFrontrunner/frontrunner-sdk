@@ -5,7 +5,6 @@ from pyinjective.proto.injective.exchange.v1beta1.tx_pb2 import MsgBatchUpdateOr
 from pyinjective.proto.injective.exchange.v1beta1.tx_pb2 import MsgCreateSpotMarketOrder # NOQA
 from pyinjective.proto.injective.exchange.v1beta1.tx_pb2 import MsgDeposit
 from pyinjective.proto.injective.exchange.v1beta1.tx_pb2 import MsgRewardsOptOut # NOQA
-from pyinjective.proto.injective.exchange.v1beta1.tx_pb2 import OrderData
 
 from frontrunner_sdk.clients.gas_estimators.table_gas_estimator import TableGasEstimator # NOQA
 from frontrunner_sdk.exceptions import FrontrunnerInjectiveException
@@ -36,14 +35,12 @@ class TestTableGasEstimator(IsolatedAsyncioTestCase):
       await self.estimator.gas_for(msg),
     )
 
-  async def test_gas_for_composite_message(self):
-    msg = MsgBatchUpdateOrders(
-      binary_options_orders_to_create=[DerivativeOrder(), DerivativeOrder()],
-      binary_options_orders_to_cancel=[OrderData()],
-    )
+  async def test_gas_for_composite_message_with_cancels(self):
+    number_of_markets = 6
+    msg = MsgBatchUpdateOrders(binary_options_market_ids_to_cancel_all=[""] * number_of_markets)
 
     self.assertEqual(
-      TableGasEstimator.MESSAGE_RATES["MsgBatchUpdateOrders"] + 2 * TableGasEstimator.ORDER_RATES["DerivativeOrder"] +
-      1 * TableGasEstimator.ORDER_RATES["OrderData"],
+      TableGasEstimator.MESSAGE_RATES["MsgBatchUpdateOrders"] +
+      number_of_markets * TableGasEstimator.ORDER_RATES["CancelAll"],
       await self.estimator.gas_for(msg),
     )

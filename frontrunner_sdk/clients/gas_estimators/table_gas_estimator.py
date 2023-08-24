@@ -16,10 +16,7 @@ class TableGasEstimator(GasEstimator):
     "MsgBatchUpdateOrders": 50656,
   }
 
-  ORDER_RATES = {
-    "OrderData": 4878,
-    "DerivativeOrder": 12884,
-  }
+  ORDER_RATES = {"OrderData": 10000, "DerivativeOrder": 50000, "CancelAll": 40000}
 
   async def gas_for(self, message: Message) -> int:
     message_type = message.__class__.__name__
@@ -35,6 +32,10 @@ class TableGasEstimator(GasEstimator):
     if message_type.startswith("MsgBatch"):
 
       for descriptor, value in message.ListFields():
+        if descriptor.name == "binary_options_market_ids_to_cancel_all":
+          gas += len(value) * self.ORDER_RATES["CancelAll"]
+          continue
+
         if not descriptor.message_type:
           continue
 
