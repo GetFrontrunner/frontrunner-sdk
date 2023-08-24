@@ -8,6 +8,7 @@ from pyinjective.constant import Network
 
 from frontrunner_sdk.clients.denom_factory import DenomFactory
 from frontrunner_sdk.clients.gas_estimators.gas_estimator import GasEstimator
+from frontrunner_sdk.clients.gas_estimators.multiplier_table_gas_estimator import MultiplierTableGasEstimator # NOQA
 from frontrunner_sdk.clients.gas_estimators.offsetting_gas_estimator import OffsettingGasEstimator # NOQA
 from frontrunner_sdk.clients.gas_estimators.simulation_gas_estimator import SimulationGasEstimator # NOQA
 from frontrunner_sdk.clients.gas_estimators.table_gas_estimator import TableGasEstimator # NOQA
@@ -98,7 +99,7 @@ class FrontrunnerIoC(SyncMixin):
     # with simulation-based estimator instead, use...
     # estimator = SimulationGasEstimator(self.injective_client, self.network, self.wallet)
 
-    estimator = TableGasEstimator()
+    estimator = MultiplierTableGasEstimator(2)
     estimator = OffsettingGasEstimator(estimator)
     return estimator
 
